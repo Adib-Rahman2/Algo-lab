@@ -1,0 +1,15 @@
+Sort activities by finish time
+            ↓
+Select the first activity
+            ↓
+Check next activity
+            ↓
+Does start >= lastFinish?
+       ↙              ↘
+     YES               NO
+      ↓                 ↓
+   Select             Skip
+      ↓
+Update lastFinish
+      ↓
+Continue
