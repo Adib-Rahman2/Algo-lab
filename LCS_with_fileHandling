@@ -1,0 +1,104 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+int main() {
+    string file1, file2;
+
+    cout << "Enter first file name: ";
+    cin >> file1;
+
+    cout << "Enter second file name: ";
+    cin >> file2;
+
+    ifstream f1(file1);
+    ifstream f2(file2);
+
+    if (!f1.is_open()) {
+        cout << "Error: Could not open " << file1 << endl;
+        return 1;
+    }
+
+    if (!f2.is_open()) {
+        cout << "Error: Could not open " << file2 << endl;
+        return 1;
+    }
+
+    string text1, text2;
+    string line;
+
+    while (getline(f1, line)) {
+        text1 += line;
+        text1 += '\n';
+    }
+
+    while (getline(f2, line)) {
+        text2 += line;
+        text2 += '\n';
+    }
+
+    f1.close();
+    f2.close();
+
+    int m = text1.length();
+    int n = text2.length();
+
+    int** dp = new int*[m + 1];
+
+    for (int i = 0; i <= m; i++) {
+        dp[i] = new int[n + 1];
+    }
+
+    for (int i = 0; i <= m; i++) {
+        for (int j = 0; j <= n; j++) {
+            if (i == 0 || j == 0) {
+                dp[i][j] = 0;
+            }
+            else if (text1[i - 1] == text2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            }
+            else {
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+            }
+        }
+    }
+
+    cout << "\nLength of LCS: " << dp[m][n] << endl;
+
+    string lcs;
+
+    int i = m;
+    int j = n;
+
+    while (i > 0 && j > 0) {
+        if (text1[i - 1] == text2[j - 1]) {
+            lcs += text1[i - 1];
+            i--;
+            j--;
+        }
+        else if (dp[i - 1][j] > dp[i][j - 1]) {
+            i--;
+        }
+        else {
+            j--;
+        }
+    }
+
+    for (int k = 0; k < lcs.length() / 2; k++) {
+        char temp = lcs[k];
+        lcs[k] = lcs[lcs.length() - 1 - k];
+        lcs[lcs.length() - 1 - k] = temp;
+    }
+
+    cout << "LCS:\n";
+    cout << lcs << endl;
+
+    for (int i = 0; i <= m; i++) {
+        delete[] dp[i];
+    }
+
+    delete[] dp;
+
+    return 0;
+}
