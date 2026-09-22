@@ -1,0 +1,58 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+int main() {
+    string file1, file2;
+
+    cout << "Enter first file name: ";
+    cin >> file1;
+
+    cout << "Enter second file name: ";
+    cin >> file2;
+
+    ifstream f1(file1);
+    ifstream f2(file2);
+
+    if (!f1.is_open() || !f2.is_open()) {
+        cout << "Error opening file." << endl;
+        return 1;
+    }
+
+    string word1[10000];
+    string word2[10000];
+
+    int count1 = 0;
+    int count2 = 0;
+
+    while (f1 >> word1[count1]) {
+        count1++;
+    }
+
+    while (f2 >> word2[count2]) {
+        count2++;
+    }
+
+    f1.close();
+    f2.close();
+
+    bool used[10000] = {false};
+    int commonCount = 0;
+
+    for (int i = 0; i < count1; i++) {
+        for (int j = 0; j < count2; j++) {
+            if (!used[j] && word1[i] == word2[j]) {
+                commonCount++;
+                used[j] = true;
+                break;
+            }
+        }
+    }
+
+    cout << "Total words in first file: " << count1 << endl;
+    cout << "Total words in second file: " << count2 << endl;
+    cout << "Common words: " << commonCount << endl;
+
+    return 0;
+}
