@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Huffman Coding (Greedy) — Complete Exam Cheat Sheet</title>
+<style>
+:root{
+  --bg:#F5F7FA;--surface:#FFFFFF;--ink:#17212F;--muted:#566275;--rule:#D8DEE7;
+  --accent:#0F766E;--accent-soft:#D3F0EC;--hit:#0B5E57;
+  --warn:#9A4A06;--warn-bg:#FDF1E1;--tip:#3B3AA8;--tip-bg:#ECEDFE;
+  --formula-bg:#EEF2F7;--code-bg:#F3F5F8;--mark:#FFE58A;--mark-cur:#FFB547;
+  --k:#7C2D9E;--t:#0B5E8C;--s:#A2451A;--n:#0F766E;--c:#7A8494;--p:#A3266B;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F141B;--surface:#161D27;--ink:#E3E8EF;--muted:#9BA6B7;--rule:#2B3544;
+    --accent:#3CCFBC;--accent-soft:#123B37;--hit:#7DE8DA;
+    --warn:#F2B35C;--warn-bg:#2B2012;--tip:#AEB6FF;--tip-bg:#1D2142;
+    --formula-bg:#1B2431;--code-bg:#121922;--mark:#7A6410;--mark-cur:#B0700F;
+    --k:#D59BF2;--t:#7CC4F2;--s:#F2A97C;--n:#6FE0D0;--c:#7D8899;--p:#F28AC4;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F141B;--surface:#161D27;--ink:#E3E8EF;--muted:#9BA6B7;--rule:#2B3544;
+  --accent:#3CCFBC;--accent-soft:#123B37;--hit:#7DE8DA;
+  --warn:#F2B35C;--warn-bg:#2B2012;--tip:#AEB6FF;--tip-bg:#1D2142;
+  --formula-bg:#1B2431;--code-bg:#121922;--mark:#7A6410;--mark-cur:#B0700F;
+  --k:#D59BF2;--t:#7CC4F2;--s:#F2A97C;--n:#6FE0D0;--c:#7D8899;--p:#F28AC4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;}
+h1,h2,h3,h4{font-family:Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;line-height:1.25;font-weight:700}
+h1{font-size:2.3rem;margin:.2em 0 .3em;letter-spacing:-.01em}
+h2{font-size:1.65rem;margin:2.6rem 0 .8rem;padding-top:1rem;border-top:2px solid var(--ink)}
+h3{font-size:1.25rem;margin:1.8rem 0 .5rem}
+h4{font-size:1.05rem;margin:1.2rem 0 .4rem}
+p,li{max-width:76ch}
+a{color:var(--accent)}
+code,kbd,pre,.mono{font-family:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;font-size:.9em}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;border:1px solid var(--rule)}
+var{font-family:Cambria,"Times New Roman",serif;font-size:1.08em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+aside{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--rule);padding:18px 16px 40px}
+aside .brand{font-family:Charter,Georgia,serif;font-weight:700;font-size:1.1rem;margin-bottom:12px}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+button,select,input[type=text]{font:inherit;font-size:.9rem;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+.search{display:flex;gap:4px;margin-bottom:6px}
+.search input{flex:1;min-width:0}
+.search-status{font-size:.82rem;color:var(--muted);min-height:1.2em;margin-bottom:10px}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li{margin:0}
+nav.toc a{display:block;padding:3px 8px;border-radius:5px;color:var(--ink);text-decoration:none;font-size:.9rem;border-left:3px solid transparent}
+nav.toc a:hover{background:var(--formula-bg)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft)}
+nav.toc ol ol a{padding-left:22px;font-size:.84rem;color:var(--muted)}
+.menu-btn{display:none}
+
+main{padding:28px clamp(16px,4vw,56px) 80px;max-width:1080px}
+.hero p.lede{font-size:1.1rem;color:var(--muted);max-width:68ch}
+.hero .formula{font-size:1.05rem}
+
+.box{border-radius:8px;padding:12px 16px;margin:14px 0;border:1px solid var(--rule);background:var(--surface)}
+.box>:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.box .label{font-weight:700;display:block;margin-bottom:4px}
+.formula{background:var(--formula-bg);border-left:4px solid var(--accent);font-family:Cambria,"Times New Roman",serif;font-size:1.05rem;overflow-x:auto}
+.formula .row{white-space:nowrap}
+.warn{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.warn .label{color:var(--warn)}
+.tip{background:var(--tip-bg);border-left:4px solid var(--tip)}
+.tip .label{color:var(--tip)}
+.algo{border-left:4px solid var(--ink)}
+.example{border-left:4px solid var(--accent)}
+.example .label{color:var(--accent)}
+
+.tbl-wrap{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;font-size:.92rem;background:var(--surface)}
+th,td{border:1px solid var(--rule);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--formula-bg)}
+table.info{width:100%}
+table.dp{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88rem}
+table.dp th,table.dp td{text-align:center;padding:4px 7px;min-width:2.6em;vertical-align:middle}
+table.dp th.idx{color:var(--muted);font-weight:400;font-size:.75rem;background:transparent;border:none}
+table.dp td .ar{color:var(--muted);font-size:.8em;margin-right:2px}
+table.dp td.path{background:var(--accent-soft)}
+table.dp td.hit{background:var(--accent);color:var(--surface);font-weight:700}
+table.dp td.hit .ar{color:var(--surface)}
+table.dp.words th{font-size:.78rem}
+.legend{font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-block;width:14px;height:14px;vertical-align:-2px;border-radius:3px;margin:0 4px 0 10px}
+
+details{border:1px solid var(--rule);border-radius:8px;background:var(--surface);margin:12px 0}
+details>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;position:relative;padding-left:34px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";position:absolute;left:14px;top:50%;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(-45deg);transition:transform .15s}
+details[open]>summary::before{transform:translateY(-50%) rotate(45deg)}
+details>.inner{padding:0 16px 14px}
+details.var>summary .tag{font-weight:400;font-size:.8rem;color:var(--muted);margin-left:8px}
+.adv-badge{display:inline-block;font-size:.75rem;font-weight:600;border:1px solid var(--warn);color:var(--warn);border-radius:4px;padding:0 6px;margin-left:6px}
+dl.v9{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+dl.v9 dt{font-weight:600;color:var(--muted)}
+dl.v9 dd{margin:0}
+
+.codeblock{border:1px solid var(--rule);border-radius:8px;margin:12px 0;background:var(--code-bg);overflow:hidden}
+.codebar{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid var(--rule);font-size:.82rem;color:var(--muted)}
+.codebar button{padding:2px 10px;font-size:.8rem}
+.codeblock pre{margin:0;padding:12px 14px;overflow-x:auto;line-height:1.45}
+.tok-k{color:var(--k);font-weight:600}.tok-t{color:var(--t)}.tok-s{color:var(--s)}.tok-n{color:var(--n)}.tok-c{color:var(--c);font-style:italic}.tok-p{color:var(--p)}
+pre.io{background:var(--code-bg);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;overflow-x:auto;margin:8px 0}
+
+.lab{border:2px solid var(--accent);border-radius:10px;padding:16px;background:var(--surface);margin:20px 0}
+.lab h3{margin-top:0}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lab-grid label{font-size:.85rem;color:var(--muted);display:block}
+.lab-grid input,.lab-grid select{width:100%}
+.lab-out{margin-top:12px}
+.lab-out .res{font-size:.95rem}
+.lab-out .res b{color:var(--accent)}
+
+.steps{counter-reset:s;padding-left:0;list-style:none}
+.steps>li{counter-increment:s;position:relative;padding-left:2.2em;margin:6px 0}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:.1em;width:1.6em;height:1.6em;border-radius:50%;background:var(--formula-bg);border:1px solid var(--rule);text-align:center;font-size:.8rem;line-height:1.6em;font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+mark.hl{background:var(--mark);color:inherit;border-radius:2px}
+mark.hl.cur{background:var(--mark-cur);outline:2px solid var(--mark-cur)}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+hr{border:none;border-top:1px solid var(--rule);margin:24px 0}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  main{overflow-wrap:anywhere}
+  main table{overflow-wrap:normal}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);transform:translateX(-102%);transition:transform .2s;z-index:20;box-shadow:0 0 0 100vmax transparent}
+  aside.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+  .menu-btn{display:inline-block;position:fixed;right:12px;bottom:12px;z-index:21;background:var(--ink);color:var(--surface);border:none;padding:10px 14px;border-radius:8px}
+  h1{font-size:1.8rem}
+  .lab-grid{grid-template-columns:1fr}
+  dl.v9{grid-template-columns:1fr}
+  dl.v9 dt{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--ink:#000;--muted:#333;--rule:#999;--accent:#000;--accent-soft:#e6e6e6;--formula-bg:#f2f2f2;--code-bg:#f7f7f7;--warn-bg:#fff;--tip-bg:#fff}
+  aside,.menu-btn,.codebar button,.lab,.no-print{display:none!important}
+  .layout{display:block}
+  main{padding:0;max-width:none}
+  body{font-size:11pt}
+  h2{break-after:avoid;page-break-after:avoid}
+  h3,h4{break-after:avoid}
+  .codeblock,table,.box{break-inside:avoid}
+  details>summary::before{display:none}
+  details>summary{padding-left:14px}
+  table.dp td.hit{background:#000;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table.dp td.path{background:#ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{color:#000;text-decoration:none}
+}
+
+.tree svg{display:block;max-width:none}
+.tree{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:6px}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside aria-label="Contents and tools">
+  <div class="brand">Huffman coding cheat sheet</div>
+  <div class="tools">
+    <button id="themeBtn" type="button">Dark mode</button>
+    <button id="printBtn" type="button">Print / PDF</button>
+    <button id="expandAll" type="button">Expand all</button>
+    <button id="collapseAll" type="button">Collapse all</button>
+  </div>
+  <div class="search" role="search">
+    <input id="searchInput" type="text" placeholder="Search the sheet…" aria-label="Search the cheat sheet">
+    <button id="sPrev" type="button" aria-label="Previous match">↑</button>
+    <button id="sNext" type="button" aria-label="Next match">↓</button>
+  </div>
+  <div id="searchStatus" class="search-status" aria-live="polite"></div>
+  <nav class="toc" id="toc" aria-label="Table of contents"></nav>
+</aside>
+<button class="menu-btn" id="menuBtn" type="button">Contents</button>
+
+<main>
+<header class="hero">
+<h1>Huffman Coding</h1>
+<p class="lede">The greedy algorithm for optimal prefix codes: building the tree, reading off codes, encoding and decoding, cost and compression calculations, proofs, and every exam variation from frequency tables to optimal file merging and ternary codes.</p>
+<div class="box formula">
+<div class="row">Minimise &nbsp;<var>B</var>(<var>T</var>) = Σ<sub><var>c</var> ∈ <var>C</var></sub> <var>f</var>(<var>c</var>) · <var>d<sub>T</sub></var>(<var>c</var>)</div>
+<div class="row">Repeat <var>n</var> − 1 times: take the two smallest weights <var>x</var>, <var>y</var>; make a parent <var>z</var> with weight <var>f</var>(<var>x</var>) + <var>f</var>(<var>y</var>); put <var>z</var> back.</div>
+<div class="row"><var>B</var>(<var>T</var>) = sum of all merged weights. Time O(<var>n</var> log <var>n</var>) with a min-heap.</div>
+</div>
+
+<section class="lab" aria-labelledby="labTitle">
+<h3 id="labTitle">Huffman lab: check any exam answer</h3>
+<p class="small muted" style="margin-top:0">Enter text, or a frequency table such as <code>a:45, b:13, c:12</code>. The merge steps, tree, codes, cost, savings and entropy appear below, and you can decode bit strings with the tree.</p>
+<div class="lab-grid">
+  <div style="grid-column:1/-1"><label for="labIn">Input</label><input id="labIn" type="text" value="a:45, b:13, c:12, d:16, e:9, f:5"></div>
+  <div><label for="labMode">Input is</label>
+    <select id="labMode"><option value="table">Frequency or probability table</option><option value="text">Text (count characters, sorted by character)</option></select></div>
+  <div><label for="labTie">Tie rule for equal weights</label>
+    <select id="labTie"><option value="old">Older node first (leaves in given order, then merged nodes)</option><option value="new">Newer node first</option></select></div>
+</div>
+<p><button id="labRun" type="button">Build tree</button></p>
+<div id="labOut" class="lab-out"></div>
+</section>
+</header>
+
+<h2 id="fund" data-short="1. Fundamentals">1. Fundamentals</h2>
+
+<h3 class="toc" id="what">What Huffman coding is and why it is used</h3>
+<p>Huffman coding (David Huffman, 1952) builds an <b>optimal prefix code</b>: a binary codeword for every symbol so that the total number of bits needed for a message with known symbol frequencies is as small as possible. Frequent symbols get short codewords, rare symbols get long ones.</p>
+<p>It is a <b>greedy</b> algorithm: repeatedly merge the two least frequent items. It is used inside real compression formats (DEFLATE in ZIP/gzip/PNG, JPEG, MP3), and the same merge procedure solves “optimal merge pattern” and “minimum cost to connect ropes”.</p>
+<div class="box tip"><span class="label">Core intuition</span>
+The two rarest symbols should sit at the very bottom of the tree as siblings, because that is where long codes do the least damage. Glue them into one “super-symbol” whose frequency is their sum, and repeat the same reasoning on the smaller alphabet.</div>
+
+<h3 class="toc" id="terms">Terminology</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Alphabet <var>C</var>, frequency <var>f</var>(<var>c</var>)</td><td>The set of symbols and how often each occurs (a count, a percentage or a probability; only relative sizes matter).</td></tr>
+<tr><td>Fixed-length code</td><td>Every symbol uses ⌈log<sub>2</sub> <var>n</var>⌉ bits (6 symbols → 3 bits).</td></tr>
+<tr><td>Variable-length code</td><td>Codewords of different lengths.</td></tr>
+<tr><td>Prefix (prefix-free) code</td><td>No codeword is a prefix of another. Decoding is then unique and instantaneous: read bits until they match a codeword.</td></tr>
+<tr><td>Code tree</td><td>Binary tree with symbols at leaves; left edge = 0, right edge = 1; a codeword is the root-to-leaf path.</td></tr>
+<tr><td>Depth <var>d<sub>T</sub></var>(<var>c</var>)</td><td>Depth of leaf <var>c</var> = length of its codeword.</td></tr>
+<tr><td>Cost <var>B</var>(<var>T</var>)</td><td>Σ <var>f</var>(<var>c</var>)·<var>d<sub>T</sub></var>(<var>c</var>): total bits for the whole message.</td></tr>
+<tr><td>Average (expected) code length, ABL</td><td><var>B</var>(<var>T</var>) / Σ<var>f</var>(<var>c</var>); with probabilities it is Σ <var>p<sub>i</sub></var>·<var>l<sub>i</sub></var>.</td></tr>
+<tr><td>Full binary tree</td><td>Every internal node has exactly two children. Optimal prefix codes always correspond to full trees: <var>n</var> leaves, <var>n</var> − 1 internal nodes, 2<var>n</var> − 1 nodes in total.</td></tr>
+<tr><td>Compression ratio / saving</td><td>Ratio = original bits / compressed bits. Saving = 1 − compressed/original.</td></tr>
+<tr><td>Entropy <var>H</var></td><td>−Σ <var>p<sub>i</sub></var> log<sub>2</sub> <var>p<sub>i</sub></var>: the theoretical lower bound on average bits per symbol.</td></tr>
+</table></div>
+
+<h3 class="toc" id="prefix">Why prefix codes matter</h3>
+<p>With a = 0, b = 01, c = 1 (not prefix-free), the bits “01” could mean b, or a followed by c. Decoding is ambiguous. With a = 0, b = 10, c = 11 (prefix-free) every bit string has one parse. Every symbol sits at a leaf, so a codeword can never be on the path to another one.</p>
+<div class="box formula">
+<div class="row">Kraft inequality (any prefix code): Σ 2<sup>−<var>l<sub>i</sub></var></sup> ≤ 1. A full tree (every Huffman tree with ≥ 2 symbols) gives equality: Σ 2<sup>−<var>l<sub>i</sub></var></sup> = 1.</div>
+<div class="row">Shannon bound for the Huffman average length <var>L</var>: <var>H</var> ≤ <var>L</var> &lt; <var>H</var> + 1.</div>
+</div>
+
+<h3 class="toc" id="whenuse">When to use it and when not to</h3>
+<div class="cols">
+<div class="box example"><span class="label">Use Huffman when</span>
+<ul><li>You know (or can count) the frequency of each symbol and want minimum total bits.</li>
+<li>You must repeatedly combine two items where combining costs their sum and you want the minimum total cost (files, ropes, sorted lists).</li>
+<li>The question says “optimal prefix code”, “variable-length code”, “minimum weighted path length”, “expected number of yes/no questions”.</li></ul></div>
+<div class="box warn"><span class="label">Do not use Huffman (or use with care) when</span>
+<ul><li>Symbols must keep alphabetical order in the tree (that is the Hu–Tucker problem / optimal alphabetic tree; also different from optimal BST).</li>
+<li>The cost of combining is not the sum, or you can only merge adjacent items (that is an interval DP, e.g. stone merging).</li>
+<li>Codeword length has a hard maximum (length-limited Huffman, package-merge).</li>
+<li>All frequencies are equal and n is a power of 2: Huffman gives the same as fixed-length (no gain).</li>
+<li>Data has long repeats or patterns (LZ77/LZW or RLE exploit those; Huffman only uses single-symbol frequencies).</li></ul></div>
+</div>
+
+<h3 class="toc" id="advlim">Advantages, limitations, typical pitfalls</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Advantages</th><th>Limitations</th></tr>
+<tr><td>Provably optimal among symbol-by-symbol prefix codes. Simple O(<var>n</var> log <var>n</var>) greedy. Decoding needs no separators. Works with counts, percentages or probabilities. Same algorithm solves several merge-cost problems.</td>
+<td>Needs frequencies in advance (two passes or a known model). The tree/code table must be stored or sent with the data. At least 1 bit per symbol even if a symbol has probability 0.99. Not unique when there are ties (cost still unique). A single flipped bit can corrupt the decoding of the rest.</td></tr>
+</table></div>
+
+<h2 id="form" data-short="2. Algorithm & proofs">2. The greedy algorithm, its correctness and complexity</h2>
+
+<h3 class="toc" id="pseudo">Pseudocode (CLRS HUFFMAN)</h3>
+<div class="box algo"><pre class="mono" style="margin:0;white-space:pre;overflow-x:auto">HUFFMAN(C)
+  n ← |C|
+  Q ← min-priority queue of C keyed on f
+  for i ← 1 to n − 1
+      allocate a new node z
+      z.left  ← x ← EXTRACT-MIN(Q)
+      z.right ← y ← EXTRACT-MIN(Q)
+      z.freq  ← x.freq + y.freq
+      INSERT(Q, z)
+  return EXTRACT-MIN(Q)          ▷ the root
+
+ASSIGN-CODES(node, path)
+  if node is a leaf: code[node.symbol] ← path   (use "0" if path is empty)
+  else ASSIGN-CODES(node.left,  path + "0")
+       ASSIGN-CODES(node.right, path + "1")</pre></div>
+<div class="box tip"><span class="label">Conventions used on this whole sheet (state them in exams)</span>
+<ol><li>The first extracted node (smaller) becomes the <b>left</b> child; left edge = <b>0</b>, right edge = <b>1</b>.</li>
+<li>Ties between equal weights: the node that has been in the queue longer goes first (leaves in the order given, then merged nodes in creation order). For text, leaves are ordered by character.</li></ol>
+Other books put the larger node on the left or label edges the other way. The codewords change, but code <b>lengths</b> and the total cost do not. Any consistent convention is accepted if you state it.</div>
+
+<h3 class="toc" id="cost">Two ways to compute the cost</h3>
+<div class="box formula">
+<div class="row"><var>B</var>(<var>T</var>) = Σ<sub>leaves</sub> <var>f</var>(<var>c</var>)·<var>d<sub>T</sub></var>(<var>c</var>) = Σ<sub>internal nodes <var>z</var></sub> <var>f</var>(<var>z</var>)</div>
+</div>
+<p>Why the second form works: a leaf at depth <var>d</var> has <var>d</var> ancestors, and its frequency is included in each ancestor’s weight exactly once. So summing all merged weights counts every frequency <var>d</var> times. Use this as a quick check: in the CLRS example the merged weights are 14 + 25 + 30 + 55 + 100 = 224, which equals the leaf-by-leaf sum.</p>
+
+<h3 class="toc" id="proof">Correctness proof (greedy choice + optimal substructure)</h3>
+<p><b>Lemma 1 (greedy choice).</b> Let <var>x</var>, <var>y</var> be the two symbols with the lowest frequencies. Some optimal prefix code has <var>x</var> and <var>y</var> as sibling leaves at maximum depth (so their codewords have the same length and differ only in the last bit).</p>
+<details><summary>Proof of Lemma 1 (exchange argument)</summary><div class="inner">
+<p>Take any optimal tree <var>T</var>. Because it is full, the deepest level contains two sibling leaves <var>a</var>, <var>b</var>; assume <var>f</var>(<var>a</var>) ≤ <var>f</var>(<var>b</var>) and <var>f</var>(<var>x</var>) ≤ <var>f</var>(<var>y</var>). Then <var>f</var>(<var>x</var>) ≤ <var>f</var>(<var>a</var>), <var>f</var>(<var>y</var>) ≤ <var>f</var>(<var>b</var>), and <var>d</var>(<var>a</var>) ≥ <var>d</var>(<var>x</var>), <var>d</var>(<var>b</var>) ≥ <var>d</var>(<var>y</var>).</p>
+<p>Swap <var>x</var> with <var>a</var> to get <var>T′</var>. The change in cost is</p>
+<div class="box formula"><div class="row"><var>B</var>(<var>T</var>) − <var>B</var>(<var>T′</var>) = (<var>f</var>(<var>a</var>) − <var>f</var>(<var>x</var>))(<var>d<sub>T</sub></var>(<var>a</var>) − <var>d<sub>T</sub></var>(<var>x</var>)) ≥ 0</div></div>
+<p>since both factors are non-negative. So <var>T′</var> is no worse. Swapping <var>y</var> with <var>b</var> similarly gives <var>T″</var> with <var>B</var>(<var>T″</var>) ≤ <var>B</var>(<var>T</var>). <var>T</var> was optimal, so <var>T″</var> is optimal too, and in <var>T″</var> the leaves <var>x</var>, <var>y</var> are deepest siblings.</p></div></details>
+<p><b>Lemma 2 (optimal substructure).</b> Replace <var>x</var>, <var>y</var> by a new symbol <var>z</var> with <var>f</var>(<var>z</var>) = <var>f</var>(<var>x</var>) + <var>f</var>(<var>y</var>), giving alphabet <var>C′</var>. If <var>T′</var> is optimal for <var>C′</var>, then replacing leaf <var>z</var> in <var>T′</var> by an internal node with children <var>x</var>, <var>y</var> gives an optimal tree <var>T</var> for <var>C</var>.</p>
+<details><summary>Proof of Lemma 2</summary><div class="inner">
+<p>Depths of all other leaves are unchanged and <var>d<sub>T</sub></var>(<var>x</var>) = <var>d<sub>T</sub></var>(<var>y</var>) = <var>d<sub>T′</sub></var>(<var>z</var>) + 1, so</p>
+<div class="box formula"><div class="row"><var>B</var>(<var>T</var>) = <var>B</var>(<var>T′</var>) + <var>f</var>(<var>x</var>) + <var>f</var>(<var>y</var>)</div></div>
+<p>Suppose some tree <var>T*</var> for <var>C</var> had <var>B</var>(<var>T*</var>) &lt; <var>B</var>(<var>T</var>). By Lemma 1 we may assume <var>x</var>, <var>y</var> are siblings in <var>T*</var>. Merging them into <var>z</var> gives <var>T*′</var> for <var>C′</var> with <var>B</var>(<var>T*′</var>) = <var>B</var>(<var>T*</var>) − <var>f</var>(<var>x</var>) − <var>f</var>(<var>y</var>) &lt; <var>B</var>(<var>T</var>) − <var>f</var>(<var>x</var>) − <var>f</var>(<var>y</var>) = <var>B</var>(<var>T′</var>), contradicting optimality of <var>T′</var>.</p>
+<p><b>Theorem.</b> By induction on <var>n</var>: each greedy merge is safe (Lemma 1) and leaves a smaller instance of the same problem (Lemma 2), so HUFFMAN produces an optimal prefix code.</p></div></details>
+
+<h3 class="toc" id="complex">Complexity analysis</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Part</th><th>Time</th><th>Space</th></tr>
+<tr><td>Count frequencies of a text of length <var>L</var></td><td>O(<var>L</var>)</td><td>O(<var>n</var>) (or O(σ) array for alphabet size σ)</td></tr>
+<tr><td>Build heap of <var>n</var> symbols</td><td>O(<var>n</var>) (BUILD-MIN-HEAP) or O(<var>n</var> log <var>n</var>) by pushes</td><td>O(<var>n</var>)</td></tr>
+<tr><td><var>n</var> − 1 iterations × (2 extract + 1 insert)</td><td>O(<var>n</var> log <var>n</var>)</td><td>2<var>n</var> − 1 nodes</td></tr>
+<tr><td>Assign codes by DFS</td><td>O(<var>n</var>) nodes, O(Σ code lengths) ≤ O(<var>n</var><sup>2</sup>) characters if strings are copied</td><td>O(<var>n</var>) recursion depth worst case</td></tr>
+<tr><td>Encode the text</td><td>O(<var>L</var> + <var>B</var>(<var>T</var>))</td><td>O(<var>B</var>(<var>T</var>)) output bits</td></tr>
+<tr><td>Decode a bit string of length <var>N</var></td><td>O(<var>N</var>)</td><td>O(<var>n</var>) tree</td></tr>
+<tr><td>Already sorted frequencies (two-queue method)</td><td>O(<var>n</var>)</td><td>O(<var>n</var>)</td></tr>
+<tr><td>Linear scan instead of a heap (naive)</td><td>O(<var>n</var><sup>2</sup>)</td><td>O(<var>n</var>)</td></tr>
+</table></div>
+<p>Maximum possible codeword length is <var>n</var> − 1 (a completely skewed tree, e.g. Fibonacci frequencies). Minimum is 1 (for <var>n</var> ≥ 2).</p>
+
+<h2 id="dry" data-short="3. Dry runs">3. Step-by-step dry runs</h2>
+
+<h3 class="toc" id="dry1">Dry run 1: frequency table (CLRS)</h3>
+<p>A file of 100 000 characters uses only a–f with frequencies (in thousands) a:45, b:13, c:12, d:16, e:9, f:5.</p>
+<p><b>Initial condition:</b> min-queue ordered by frequency: f:5, e:9, c:12, b:13, d:16, a:45.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>f:5, e:9, c:12, b:13, d:16, a:45</td></tr><tr><td>1</td><td>f:5</td><td>e:9</td><td><b>14</b></td><td>c:12, b:13, 14, d:16, a:45</td></tr><tr><td>2</td><td>c:12</td><td>b:13</td><td><b>25</b></td><td>14, d:16, 25, a:45</td></tr><tr><td>3</td><td>14</td><td>d:16</td><td><b>30</b></td><td>25, 30, a:45</td></tr><tr><td>4</td><td>25</td><td>30</td><td><b>55</b></td><td>a:45, 55</td></tr><tr><td>5</td><td>a:45</td><td>55</td><td><b>100</b></td><td>100</td></tr></table></div>
+<p>Why each choice: at every step the two smallest weights in the queue are taken, whether they are leaves or merged nodes (step 3 takes the merged 14 together with d:16).</p>
+<div class="tbl-wrap tree"><svg viewBox="0 0 420 350" width="420" height="350" role="img" aria-label="Huffman tree"><line x1="134.0" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="80.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="134.0" y1="24" x2="226.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="188.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="226.0" y1="86" x2="138.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="174.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="114.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="162.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="226.0" y1="86" x2="314.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="278.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="314.0" y1="148" x2="266.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="282.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="266.0" y1="210" x2="234.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="242.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="266.0" y1="210" x2="298.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="290.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="314.0" y1="148" x2="362.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="346.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">a:45</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">c:12</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">b:13</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="138.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="138.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">25</text><rect x="207.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">f:5</text><text x="234.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1100</text><rect x="271.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">e:9</text><text x="298.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1101</text><circle cx="266.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="266.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">14</text><rect x="335.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="362.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">d:16</text><text x="362.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111</text><circle cx="314.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="314.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">30</text><circle cx="226.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="226.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">55</text><circle cx="134.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="134.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">100</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>a</td><td>45</td><td><code>0</code></td><td>1</td><td>45</td></tr><tr><td>b</td><td>13</td><td><code>101</code></td><td>3</td><td>39</td></tr><tr><td>c</td><td>12</td><td><code>100</code></td><td>3</td><td>36</td></tr><tr><td>d</td><td>16</td><td><code>111</code></td><td>3</td><td>48</td></tr><tr><td>e</td><td>9</td><td><code>1101</code></td><td>4</td><td>36</td></tr><tr><td>f</td><td>5</td><td><code>1100</code></td><td>4</td><td>20</td></tr><tr><th>Total</th><th>100</th><th></th><th></th><th>224</th></tr></table></div><p class="small">B(T) = 224; average length = 224/100 = 2.2400 bits/symbol; fixed-length (3 bits) = 300; saving 25.3%; entropy H = 2.2199.</p>
+<p><b>Answer:</b> a = 0, b = 101, c = 100, d = 111, e = 1101, f = 1100. The file needs 224 000 bits instead of 300 000 with a 3-bit fixed code. Check: 14 + 25 + 30 + 55 + 100 = 224 ✓.</p>
+
+<h3 class="toc" id="dry2">Dry run 2: from a string</h3>
+<p>Encode “BCAADDDCCACACAC” (15 characters).</p>
+<p><b>Step 1, count:</b> A = 5, B = 1, C = 6, D = 3 (sum 15 ✓).</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>B:1, D:3, A:5, C:6</td></tr><tr><td>1</td><td>B:1</td><td>D:3</td><td><b>4</b></td><td>4, A:5, C:6</td></tr><tr><td>2</td><td>4</td><td>A:5</td><td><b>9</b></td><td>C:6, 9</td></tr><tr><td>3</td><td>C:6</td><td>9</td><td><b>15</b></td><td>15</td></tr></table></div>
+<div class="tbl-wrap tree"><svg viewBox="0 0 292 288" width="292" height="288" role="img" aria-label="Huffman tree"><line x1="114.0" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="70.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="114.0" y1="24" x2="186.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="158.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="186.0" y1="86" x2="138.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="154.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="114.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="162.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="186.0" y1="86" x2="234.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="218.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">C:6</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">B:1</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">D:3</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="138.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="138.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><rect x="207.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">A:5</text><text x="234.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11</text><circle cx="186.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="186.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">9</text><circle cx="114.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="114.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">15</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>A</td><td>5</td><td><code>11</code></td><td>2</td><td>10</td></tr><tr><td>B</td><td>1</td><td><code>100</code></td><td>3</td><td>3</td></tr><tr><td>C</td><td>6</td><td><code>0</code></td><td>1</td><td>6</td></tr><tr><td>D</td><td>3</td><td><code>101</code></td><td>3</td><td>9</td></tr><tr><th>Total</th><th>15</th><th></th><th></th><th>28</th></tr></table></div><p class="small">B(T) = 28; average length = 28/15 = 1.8667 bits/symbol; fixed-length (2 bits) = 30; saving 6.7%; entropy H = 1.7819.</p>
+<p><b>Encoding</b> replaces every character by its codeword: B C A A D … → <code>100 0 11 11 101 …</code>. The full output of the program is shown below: 28 bits instead of 15 × 8 = 120 ASCII bits (76.7% smaller), or instead of 15 × 2 = 30 bits with a 2-bit fixed code.</p>
+<pre class="io">Input:
+BCAADDDCCACACAC
+Output:
+A 5 11
+B 1 100
+C 6 0
+D 3 101
+Encoded: 1000111110110110100110110110
+Huffman bits: 28, ASCII bits: 120
+Decoded matches: yes</pre>
+
+<h3 class="toc" id="dry3">Dry run 3: probabilities and ties (two valid trees)</h3>
+<p>Symbols A, B, C, D, E with probabilities 0.4, 0.2, 0.2, 0.1, 0.1.</p>
+<div class="cols">
+<div><h4>Tie rule: older node first</h4><div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>D:0.1, E:0.1, B:0.2, C:0.2, A:0.4</td></tr><tr><td>1</td><td>D:0.1</td><td>E:0.1</td><td><b>0.2</b></td><td>B:0.2, C:0.2, 0.2, A:0.4</td></tr><tr><td>2</td><td>B:0.2</td><td>C:0.2</td><td><b>0.4</b></td><td>0.2, A:0.4, 0.4</td></tr><tr><td>3</td><td>0.2</td><td>A:0.4</td><td><b>0.6</b></td><td>0.4, 0.6</td></tr><tr><td>4</td><td>0.4</td><td>0.6</td><td><b>1</b></td><td>1</td></tr></table></div><div class="tbl-wrap tree"><svg viewBox="0 0 356 288" width="356" height="288" role="img" aria-label="Huffman tree"><line x1="162.0" y1="24" x2="74.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="110.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="86" x2="42.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="50.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="86" x2="106.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="98.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="162.0" y1="24" x2="250.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="214.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="250.0" y1="86" x2="202.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="218.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="178.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="148" x2="234.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="250.0" y1="86" x2="298.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="282.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">B:0.2</text><text x="42.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">00</text><rect x="79.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">C:0.2</text><text x="106.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">01</text><circle cx="74.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="74.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">0.4</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">D:0.1</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="207.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">E:0.1</text><text x="234.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="202.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="202.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">0.2</text><rect x="271.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">A:0.4</text><text x="298.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11</text><circle cx="250.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="250.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">0.6</text><circle cx="162.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="162.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">1</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>A</td><td>0.4</td><td><code>11</code></td><td>2</td><td>0.8</td></tr><tr><td>B</td><td>0.2</td><td><code>00</code></td><td>2</td><td>0.4</td></tr><tr><td>C</td><td>0.2</td><td><code>01</code></td><td>2</td><td>0.4</td></tr><tr><td>D</td><td>0.1</td><td><code>100</code></td><td>3</td><td>0.3</td></tr><tr><td>E</td><td>0.1</td><td><code>101</code></td><td>3</td><td>0.3</td></tr><tr><th>Total</th><th>1</th><th></th><th></th><th>2.2</th></tr></table></div><p class="small">B(T) = 2.2; average length = 2.2/1 = 2.2000 bits/symbol; fixed-length (3 bits) = 3; saving 26.7%; entropy H = 2.1219.</p></div>
+<div><h4>Tie rule: newer node first</h4><div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>E:0.1, D:0.1, C:0.2, B:0.2, A:0.4</td></tr><tr><td>1</td><td>E:0.1</td><td>D:0.1</td><td><b>0.2</b></td><td>0.2, C:0.2, B:0.2, A:0.4</td></tr><tr><td>2</td><td>0.2</td><td>C:0.2</td><td><b>0.4</b></td><td>B:0.2, 0.4, A:0.4</td></tr><tr><td>3</td><td>B:0.2</td><td>0.4</td><td><b>0.6</b></td><td>A:0.4, 0.6</td></tr><tr><td>4</td><td>A:0.4</td><td>0.6</td><td><b>1</b></td><td>1</td></tr></table></div><div class="tbl-wrap tree"><svg viewBox="0 0 356 350" width="356" height="350" role="img" aria-label="Huffman tree"><line x1="110.0" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="68.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="110.0" y1="24" x2="178.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="152.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="178.0" y1="86" x2="106.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="134.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="178.0" y1="86" x2="250.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="222.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="250.0" y1="148" x2="202.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="218.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="210" x2="170.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="178.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="210" x2="234.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="250.0" y1="148" x2="298.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="282.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">A:0.4</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">B:0.2</text><text x="106.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10</text><rect x="143.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">E:0.1</text><text x="170.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1100</text><rect x="207.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">D:0.1</text><text x="234.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1101</text><circle cx="202.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="202.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">0.2</text><rect x="271.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">C:0.2</text><text x="298.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111</text><circle cx="250.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="250.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">0.4</text><circle cx="178.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="178.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">0.6</text><circle cx="110.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="110.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">1</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>A</td><td>0.4</td><td><code>0</code></td><td>1</td><td>0.4</td></tr><tr><td>B</td><td>0.2</td><td><code>10</code></td><td>2</td><td>0.4</td></tr><tr><td>C</td><td>0.2</td><td><code>111</code></td><td>3</td><td>0.6</td></tr><tr><td>D</td><td>0.1</td><td><code>1101</code></td><td>4</td><td>0.4</td></tr><tr><td>E</td><td>0.1</td><td><code>1100</code></td><td>4</td><td>0.4</td></tr><tr><th>Total</th><th>1</th><th></th><th></th><th>2.2</th></tr></table></div><p class="small">B(T) = 2.2; average length = 2.2/1 = 2.2000 bits/symbol; fixed-length (3 bits) = 3; saving 26.7%; entropy H = 2.1219.</p></div>
+</div>
+<p>Both trees are optimal: ABL = 2.2 bits/symbol in both, entropy H ≈ 2.1219, efficiency H/L ≈ 96.45%. Code lengths differ: {2, 2, 2, 3, 3} versus {1, 2, 3, 4, 4}. The variance of code length is Σ <var>p<sub>i</sub></var>(<var>l<sub>i</sub></var> − 2.2)<sup>2</sup> = 0.16 for the first and 1.36 for the second. Putting merged nodes <i>after</i> equal-weight leaves (the first rule) gives the <b>minimum-variance</b> Huffman code, which is preferred for transmission buffers.</p>
+
+<h3 class="toc" id="dry4">Dry run 4: “MISSISSIPPI” and “ABRACADABRA”</h3>
+<div class="cols">
+<div><h4>MISSISSIPPI (I 4, M 1, P 2, S 4)</h4><div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>M:1, P:2, I:4, S:4</td></tr><tr><td>1</td><td>M:1</td><td>P:2</td><td><b>3</b></td><td>3, I:4, S:4</td></tr><tr><td>2</td><td>3</td><td>I:4</td><td><b>7</b></td><td>S:4, 7</td></tr><tr><td>3</td><td>S:4</td><td>7</td><td><b>11</b></td><td>11</td></tr></table></div><div class="tbl-wrap tree"><svg viewBox="0 0 292 288" width="292" height="288" role="img" aria-label="Huffman tree"><line x1="114.0" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="70.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="114.0" y1="24" x2="186.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="158.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="186.0" y1="86" x2="138.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="154.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="114.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="162.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="186.0" y1="86" x2="234.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="218.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">S:4</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">M:1</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">P:2</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="138.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="138.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">3</text><rect x="207.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">I:4</text><text x="234.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11</text><circle cx="186.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="186.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">7</text><circle cx="114.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="114.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">11</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>I</td><td>4</td><td><code>11</code></td><td>2</td><td>8</td></tr><tr><td>M</td><td>1</td><td><code>100</code></td><td>3</td><td>3</td></tr><tr><td>P</td><td>2</td><td><code>101</code></td><td>3</td><td>6</td></tr><tr><td>S</td><td>4</td><td><code>0</code></td><td>1</td><td>4</td></tr><tr><th>Total</th><th>11</th><th></th><th></th><th>21</th></tr></table></div><p class="small">B(T) = 21; average length = 21/11 = 1.9091 bits/symbol; fixed-length (2 bits) = 22; saving 4.5%; entropy H = 1.8231.</p></div>
+<div><h4>ABRACADABRA (A 5, B 2, C 1, D 1, R 2)</h4><div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>x = extract-min (left, 0)</th><th>y = extract-min (right, 1)</th><th>z = x + y</th><th>Queue after inserting z (sorted)</th></tr><tr><td>0</td><td colspan="3">Initial queue</td><td>C:1, D:1, B:2, R:2, A:5</td></tr><tr><td>1</td><td>C:1</td><td>D:1</td><td><b>2</b></td><td>B:2, R:2, 2, A:5</td></tr><tr><td>2</td><td>B:2</td><td>R:2</td><td><b>4</b></td><td>2, 4, A:5</td></tr><tr><td>3</td><td>2</td><td>4</td><td><b>6</b></td><td>A:5, 6</td></tr><tr><td>4</td><td>A:5</td><td>6</td><td><b>11</b></td><td>11</td></tr></table></div><div class="tbl-wrap tree"><svg viewBox="0 0 356 288" width="356" height="288" role="img" aria-label="Huffman tree"><line x1="122.0" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="74.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="122.0" y1="24" x2="202.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="170.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="202.0" y1="86" x2="138.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="162.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="114.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="162.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="202.0" y1="86" x2="266.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="242.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="266.0" y1="148" x2="234.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="242.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="266.0" y1="148" x2="298.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="290.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">A:5</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">C:1</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">D:1</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="138.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="138.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">2</text><rect x="207.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">B:2</text><text x="234.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">110</text><rect x="271.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">R:2</text><text x="298.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111</text><circle cx="266.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="266.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><circle cx="202.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="202.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">6</text><circle cx="122.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="122.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">11</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>A</td><td>5</td><td><code>0</code></td><td>1</td><td>5</td></tr><tr><td>B</td><td>2</td><td><code>110</code></td><td>3</td><td>6</td></tr><tr><td>C</td><td>1</td><td><code>100</code></td><td>3</td><td>3</td></tr><tr><td>D</td><td>1</td><td><code>101</code></td><td>3</td><td>3</td></tr><tr><td>R</td><td>2</td><td><code>111</code></td><td>3</td><td>6</td></tr><tr><th>Total</th><th>11</th><th></th><th></th><th>23</th></tr></table></div><p class="small">B(T) = 23; average length = 23/11 = 2.0909 bits/symbol; fixed-length (3 bits) = 33; saving 30.3%; entropy H = 2.0404.</p></div>
+</div>
+
+<h3 class="toc" id="dry5">Dry run 5: decoding a bit string by walking the tree</h3>
+<p>With the CLRS codes, decode <code>001011101</code>. Start at the root; 0 → left, 1 → right; on reaching a leaf output it and jump back to the root.</p>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Bits read</th><th>Path</th><th>Leaf reached</th><th>Output so far</th></tr>
+<tr><td>0</td><td>root → left</td><td>a</td><td>a</td></tr>
+<tr><td>0</td><td>root → left</td><td>a</td><td>aa</td></tr>
+<tr><td>1 0 1</td><td>right, left (25), right</td><td>b</td><td>aab</td></tr>
+<tr><td>1 1 0 1</td><td>right, right (30), left (14), right</td><td>e</td><td>aabe</td></tr>
+</table></div>
+<p>Result: <b>aabe</b>. If the bits end while you are at an internal node, the string is not a valid encoding (truncated or corrupted).</p>
+
+<h3 class="toc" id="dry6">Dry run 6: edge-case shapes</h3>
+<div class="cols">
+<div><h4>Equal frequencies (8 symbols × 10)</h4><div class="tbl-wrap tree"><svg viewBox="0 0 548 288" width="548" height="288" role="img" aria-label="Huffman tree"><line x1="266.0" y1="24" x2="138.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="194.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="138.0" y1="86" x2="74.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="98.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="148" x2="42.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="50.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="98.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="138.0" y1="86" x2="202.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="178.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="202.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="178.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="148" x2="234.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="266.0" y1="24" x2="394.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="338.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="394.0" y1="86" x2="330.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="354.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="330.0" y1="148" x2="298.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="306.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="330.0" y1="148" x2="362.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="354.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="394.0" y1="86" x2="458.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="434.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="458.0" y1="148" x2="426.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="434.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="458.0" y1="148" x2="490.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="482.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">A:10</text><text x="42.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">000</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">B:10</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">001</text><circle cx="74.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="74.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">C:10</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">010</text><rect x="207.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">D:10</text><text x="234.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">011</text><circle cx="202.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="202.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><circle cx="138.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="138.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">40</text><rect x="271.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">E:10</text><text x="298.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">100</text><rect x="335.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="362.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">F:10</text><text x="362.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">101</text><circle cx="330.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="330.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><rect x="399.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="426.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">G:10</text><text x="426.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">110</text><rect x="463.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="490.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">H:10</text><text x="490.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111</text><circle cx="458.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="458.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><circle cx="394.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="394.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">40</text><circle cx="266.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="266.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">80</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><p>Perfectly balanced: every code has 3 bits, identical to a fixed-length code. No saving (cost 240 = 80 × 3).</p></div>
+<div><h4>Fibonacci frequencies 1, 1, 2, 3, 5, 8, 13, 21 (CLRS 16.3-3)</h4><div class="tbl-wrap tree"><svg viewBox="0 0 548 536" width="548" height="536" role="img" aria-label="Huffman tree"><line x1="105.5" y1="24" x2="42.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="65.75" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="105.5" y1="24" x2="169.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="145.25" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="169.0" y1="86" x2="106.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="129.5" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="169.0" y1="86" x2="232.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="208.5" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="232.0" y1="148" x2="170.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="193.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="232.0" y1="148" x2="294.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="271.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="294.0" y1="210" x2="234.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="256.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="294.0" y1="210" x2="354.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="332.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="354.0" y1="272" x2="298.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="318.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="354.0" y1="272" x2="410.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="390.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="410.0" y1="334" x2="362.0" y2="396" stroke="var(--muted)" stroke-width="1.5"/><text x="378.0" y="365.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="410.0" y1="334" x2="458.0" y2="396" stroke="var(--muted)" stroke-width="1.5"/><text x="442.0" y="365.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="458.0" y1="396" x2="426.0" y2="458" stroke="var(--muted)" stroke-width="1.5"/><text x="434.0" y="427.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="458.0" y1="396" x2="490.0" y2="458" stroke="var(--muted)" stroke-width="1.5"/><text x="482.0" y="427.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="72" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">h:21</text><text x="42.0" y="114" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0</text><rect x="79.0" y="134" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">g:13</text><text x="106.0" y="176" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10</text><rect x="143.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">f:8</text><text x="170.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">110</text><rect x="207.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">e:5</text><text x="234.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1110</text><rect x="271.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">d:3</text><text x="298.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11110</text><rect x="335.0" y="382" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="362.0" y="400" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">c:2</text><text x="362.0" y="424" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111110</text><rect x="399.0" y="444" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="426.0" y="462" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">a:1</text><text x="426.0" y="486" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1111110</text><rect x="463.0" y="444" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="490.0" y="462" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">b:1</text><text x="490.0" y="486" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1111111</text><circle cx="458.0" cy="396" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="458.0" y="400" text-anchor="middle" font-size="11" fill="var(--ink)">2</text><circle cx="410.0" cy="334" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="410.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><circle cx="354.0" cy="272" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="354.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)">7</text><circle cx="294.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="294.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">12</text><circle cx="232.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="232.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><circle cx="169.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="169.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">33</text><circle cx="105.5" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="105.5" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">54</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p><p>Each new merged weight is at most the next frequency, so the tree is a single spine: lengths 7, 7, 6, 5, 4, 3, 2, 1 (maximum depth n − 1). Codes: h = 0, g = 10, f = 110, e = 1110, d = 11110, c = 111110, a = 1111110, b = 1111111. Cost 132.</p></div>
+</div>
+<div class="box warn"><span class="label">Single distinct symbol (“AAAA”)</span>
+The loop never runs and the root is a leaf with an empty path. Give it the code “0” (1 bit per symbol), otherwise the encoded output is empty and cannot be decoded.
+<pre class="io">Input:
+AAAA
+Output:
+A 4 0
+Encoded: 0000
+Huffman bits: 4, ASCII bits: 32
+Decoded matches: yes</pre></div>
+
+<h3 class="toc" id="dry7">Dry run 7: the classic 36-character sentence</h3>
+<p>“this is an example of a huffman tree” has 16 distinct characters including the space (shown as ␣, frequency 7). Count first, then run the same procedure.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>␣</td><td>7</td><td><code>111</code></td><td>3</td><td>21</td></tr><tr><td>a</td><td>4</td><td><code>000</code></td><td>3</td><td>12</td></tr><tr><td>e</td><td>4</td><td><code>001</code></td><td>3</td><td>12</td></tr><tr><td>f</td><td>3</td><td><code>1101</code></td><td>4</td><td>12</td></tr><tr><td>h</td><td>2</td><td><code>0100</code></td><td>4</td><td>8</td></tr><tr><td>i</td><td>2</td><td><code>0101</code></td><td>4</td><td>8</td></tr><tr><td>l</td><td>1</td><td><code>10100</code></td><td>5</td><td>5</td></tr><tr><td>m</td><td>2</td><td><code>0110</code></td><td>4</td><td>8</td></tr><tr><td>n</td><td>2</td><td><code>0111</code></td><td>4</td><td>8</td></tr><tr><td>o</td><td>1</td><td><code>10101</code></td><td>5</td><td>5</td></tr><tr><td>p</td><td>1</td><td><code>10110</code></td><td>5</td><td>5</td></tr><tr><td>r</td><td>1</td><td><code>10111</code></td><td>5</td><td>5</td></tr><tr><td>s</td><td>2</td><td><code>1000</code></td><td>4</td><td>8</td></tr><tr><td>t</td><td>2</td><td><code>1001</code></td><td>4</td><td>8</td></tr><tr><td>u</td><td>1</td><td><code>11000</code></td><td>5</td><td>5</td></tr><tr><td>x</td><td>1</td><td><code>11001</code></td><td>5</td><td>5</td></tr><tr><th>Total</th><th>36</th><th></th><th></th><th>135</th></tr></table></div><p class="small">B(T) = 135; average length = 135/36 = 3.7500 bits/symbol; fixed-length (4 bits) = 144; saving 6.2%; entropy H = 3.7142.</p>
+<details><summary>Show the full tree (16 leaves)</summary><div class="inner"><div class="tbl-wrap tree"><svg viewBox="0 0 1060 412" width="1060" height="412" role="img" aria-label="Huffman tree"><line x1="460.0" y1="24" x2="170.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="307.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="170.0" y1="86" x2="74.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="114.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="148" x2="42.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="50.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="74.0" y1="148" x2="106.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="98.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="170.0" y1="86" x2="266.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="266.0" y1="148" x2="202.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="210" x2="170.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="178.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="202.0" y1="210" x2="234.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="226.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="266.0" y1="148" x2="330.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="306.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="330.0" y1="210" x2="298.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="306.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="330.0" y1="210" x2="362.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="354.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="460.0" y1="24" x2="750.0" y2="86" stroke="var(--muted)" stroke-width="1.5"/><text x="613.0" y="55.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="750.0" y1="86" x2="554.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="644.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="554.0" y1="148" x2="458.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="498.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="458.0" y1="210" x2="426.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="434.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="458.0" y1="210" x2="490.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="482.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="554.0" y1="148" x2="650.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="610.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="650.0" y1="210" x2="586.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="610.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="586.0" y1="272" x2="554.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="562.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="586.0" y1="272" x2="618.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="610.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="650.0" y1="210" x2="714.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="690.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="714.0" y1="272" x2="682.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="690.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="714.0" y1="272" x2="746.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="738.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="750.0" y1="86" x2="946.0" y2="148" stroke="var(--muted)" stroke-width="1.5"/><text x="856.0" y="117.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="946.0" y1="148" x2="890.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="910.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="890.0" y1="210" x2="842.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="858.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="842.0" y1="272" x2="810.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="818.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">0</text><line x1="842.0" y1="272" x2="874.0" y2="334" stroke="var(--muted)" stroke-width="1.5"/><text x="866.0" y="303.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="890.0" y1="210" x2="938.0" y2="272" stroke="var(--muted)" stroke-width="1.5"/><text x="922.0" y="241.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><line x1="946.0" y1="148" x2="1002.0" y2="210" stroke="var(--muted)" stroke-width="1.5"/><text x="982.0" y="179.0" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">1</text><rect x="15.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="42.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">a:4</text><text x="42.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">000</text><rect x="79.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="106.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">e:4</text><text x="106.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">001</text><circle cx="74.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="74.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">8</text><rect x="143.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="170.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">h:2</text><text x="170.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0100</text><rect x="207.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="234.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">i:2</text><text x="234.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0101</text><circle cx="202.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="202.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><rect x="271.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="298.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">m:2</text><text x="298.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0110</text><rect x="335.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="362.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">n:2</text><text x="362.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">0111</text><circle cx="330.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="330.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><circle cx="266.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="266.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">8</text><circle cx="170.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="170.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">16</text><rect x="399.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="426.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">s:2</text><text x="426.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1000</text><rect x="463.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="490.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">t:2</text><text x="490.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1001</text><circle cx="458.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="458.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><rect x="527.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="554.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">l:1</text><text x="554.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10100</text><rect x="591.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="618.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">o:1</text><text x="618.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10101</text><circle cx="586.0" cy="272" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="586.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)">2</text><rect x="655.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="682.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">p:1</text><text x="682.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10110</text><rect x="719.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="746.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">r:1</text><text x="746.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">10111</text><circle cx="714.0" cy="272" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="714.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)">2</text><circle cx="650.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="650.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">4</text><circle cx="554.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="554.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">8</text><rect x="783.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="810.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">u:1</text><text x="810.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11000</text><rect x="847.0" y="320" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="874.0" y="338" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">x:1</text><text x="874.0" y="362" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">11001</text><circle cx="842.0" cy="272" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="842.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)">2</text><rect x="911.0" y="258" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="938.0" y="276" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">f:3</text><text x="938.0" y="300" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">1101</text><circle cx="890.0" cy="210" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="890.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)">5</text><rect x="975.0" y="196" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="1002.0" y="214" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">␣:7</text><text x="1002.0" y="238" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">111</text><circle cx="946.0" cy="148" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="946.0" y="152" text-anchor="middle" font-size="11" fill="var(--ink)">12</text><circle cx="750.0" cy="86" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="750.0" y="90" text-anchor="middle" font-size="11" fill="var(--ink)">20</text><circle cx="460.0" cy="24" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="460.0" y="28" text-anchor="middle" font-size="11" fill="var(--ink)">36</text></svg></div><p class="legend">Circles are internal nodes (sum of frequencies); boxes are leaves with their codeword underneath. Left edge = 0, right edge = 1.</p></div></details>
+<p>Total 135 bits versus 36 × 8 = 288 ASCII bits, or 36 × 4 = 144 bits with a 4-bit fixed code.</p>
+
+<h2 id="story" data-short="4. Story → algorithm">4. Converting story problems into Huffman problems</h2>
+<p>Huffman questions are often disguised as compression, communication, file-merging or questioning games. Use this routine.</p>
+<ol class="steps">
+<li><b>Find the items and their weights.</b> Symbols with counts, percentages or probabilities; or files/ropes/lists with sizes.</li>
+<li><b>Check the cost structure.</b> Is the cost of an item proportional to “frequency × depth / number of bits / number of times it is touched”? Or is “combining two things costs their sum”? Both mean Huffman.</li>
+<li><b>Check freedom of order.</b> Huffman may combine <i>any</i> two items. If only <i>adjacent</i> items can be combined, or the leaves must stay in alphabetical order, it is a different problem.</li>
+<li><b>Identify the output.</b> Codewords? Tree? Total bits? Average length? Savings vs fixed length? Decoded message? Minimum merge cost?</li>
+<li><b>Write the mapping</b> (“symbols = …, weights = …, required = B(T) / codes / …”) and run the standard merges.</li>
+</ol>
+
+<h3 class="toc" id="storyA">Worked translations</h3>
+
+<details class="var" open><summary>A. Direct frequency table</summary><div class="inner">
+<p><i>“Construct a Huffman code for a:45, b:13, c:12, d:16, e:9, f:5.”</i> Already in standard form. Answer: Dry run 1.</p></div></details>
+
+<details class="var"><summary>B. Compress a message (count characters first)</summary><div class="inner">
+<p><i>“A telegraph operator must send ‘MISSISSIPPI’. Design the shortest binary code where no codeword starts another codeword, and give the number of bits sent.”</i></p>
+<p><b>Extract:</b> “no codeword starts another” = prefix code; “shortest” = Huffman. Count: I 4, M 1, P 2, S 4. <b>Answer:</b> S = 0, I = 11, M = 100, P = 101; 21 bits (vs 22 with a 2-bit fixed code, 88 with ASCII). See Dry run 4.</p></div></details>
+
+<details class="var"><summary>C. Percentages from a survey or sensor</summary><div class="inner">
+<p><i>“A weather station sends one of five states: Sunny 40%, Cloudy 20%, Rain 20%, Fog 10%, Snow 10%. Design a binary code minimising the expected bits per report.”</i></p>
+<p><b>Extract:</b> weights = probabilities; output = codes + expected length. Map Sunny=A … Snow=E: ABL = 2.2 bits per report (Dry run 3), versus 3 bits fixed. Entropy 2.12 bits.</p>
+<div class="box tip"><span class="label">Tip</span>Percentages can be used as integers (40, 20, 20, 10, 10) for easier arithmetic: the tree is the same; divide the cost by 100 at the end.</div></div></details>
+
+<details class="var"><summary>D. Optimal merge pattern (files / sorted lists)</summary><div class="inner">
+<p><i>“Five sorted files have 20, 30, 10, 5 and 30 records. Merging two files of sizes p and q costs p + q record moves. Find the minimum total cost to merge them into one file.”</i></p>
+<p><b>Extract:</b> combining any two costs their sum → Huffman on sizes; output = sum of merges (no codes needed).</p>
+<pre class="io">Input:
+5
+20 30 10 5 30
+Output:
+Merge 5 + 10 = 15
+Merge 15 + 20 = 35
+Merge 30 + 30 = 60
+Merge 35 + 60 = 95
+Minimum total cost: 205</pre>
+<p>Equivalent “weighted external path length”: each file is moved once per merge level above it.</p></div></details>
+
+<details class="var"><summary>E. Connect ropes / sticks with minimum cost</summary><div class="inner">
+<p><i>“Ropes of lengths 4, 3, 2, 6 must be joined into one. Joining two ropes costs the sum of their lengths.”</i></p>
+<p>Merges: 2+3 = 5, 4+5 = 9, 6+9 = 15 → total <b>29</b>. Identical code to D.</p></div></details>
+
+<details class="var"><summary>F. Twenty-questions / decision game</summary><div class="inner">
+<p><i>“A secret item is chosen with known probabilities. You may ask yes/no questions of the form ‘is it in set S?’. Design a questioning strategy minimising the expected number of questions.”</i></p>
+<p>Each strategy is a binary tree (yes = 1, no = 0); the expected number of questions = Σ p·depth. That is exactly Huffman. With the probabilities of story C, the minimum expected number of questions is 2.2.</p></div></details>
+
+<details class="var"><summary>G. DNA storage</summary><div class="inner">
+<p><i>“In a genome sample, A appears 50%, C 25%, G 15%, T 10%. Assign variable-length binary codes to minimise storage.”</i></p>
+<p>Merges: T 10 + G 15 = 25; C 25 + 25 = 50 (older node C first, so C left); A 50 + 50 = 100. In the last step A:50 (an older leaf) ties with the merged 50, so A goes left. Codes: A = 0, C = 10, T = 110, G = 111. ABL = 0.5·1 + 0.25·2 + 0.15·3 + 0.10·3 = 1.75 bits, versus 2 bits fixed (12.5% saving).</p></div></details>
+
+<details class="var"><summary>H. Word-level compression</summary><div class="inner">
+<p><i>“A chat app compresses messages by assigning codes to whole words. Build the code for ‘the cat and the dog and the bird’.”</i></p>
+<p>Symbols = words (split on spaces). Frequencies: the 3, and 2, bird 1, cat 1, dog 1.</p>
+<pre class="io">Input:
+the cat and the dog and the bird
+Output:
+and 2 01
+bird 1 100
+cat 1 101
+dog 1 00
+the 3 11
+Words: 8, total bits: 18</pre></div></details>
+
+<details class="var"><summary>I. Decoding a received message</summary><div class="inner">
+<p><i>“Using the code a=0, b=101, c=100, d=111, e=1101, f=1100, decode 001011101.”</i></p>
+<p>Walk the tree or greedily match prefixes: 0 | 0 | 101 | 1101 → <b>aabe</b> (Dry run 5).</p></div></details>
+
+<details class="var"><summary>J. Checking a proposed code</summary><div class="inner">
+<p><i>“A student proposes a = 0, b = 01, c = 11 for symbols with frequencies 5, 3, 2. Is it a valid prefix code? Is it optimal?”</i></p>
+<p>“0” is a prefix of “01”, so it is <b>not</b> prefix-free; for example 011 could be a·c or b followed by an incomplete code. The Huffman code (a = 0, c = 10, b = 11 with the tie rules here, or any lengths {1, 2, 2}) costs 5 + 6 + 4 = 15 bits.</p></div></details>
+
+<h3 class="toc" id="storymap">Clue → model cheat table</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Story mentions…</th><th>Weights</th><th>Output to give</th></tr>
+<tr><td>Text, message, telegraph, file of characters</td><td>Character counts</td><td>Codes, total bits, savings vs ASCII/fixed</td></tr>
+<tr><td>Probabilities, percentages, survey, sensor states</td><td>p<sub>i</sub> (or %)</td><td>Codes, expected length Σ p·l, entropy, efficiency</td></tr>
+<tr><td>Merge files / lists / ropes / sticks / piles (any two)</td><td>Sizes</td><td>Minimum total cost = sum of merges</td></tr>
+<tr><td>Yes/no questions, decision tree, search with known probabilities</td><td>p<sub>i</sub></td><td>Expected number of questions</td></tr>
+<tr><td>Words in documents, tags, commands</td><td>Word counts</td><td>Word codes, total bits</td></tr>
+<tr><td>Ternary / k-symbol signals (digits 0, 1, 2)</td><td>Counts</td><td>k-ary Huffman (Variation V11)</td></tr>
+</table></div>
+
+<h2 id="io" data-short="5. Input/output variations">5. Input and output variations: what changes and what does not</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Variation</th><th>What changes</th><th>Algorithm change?</th></tr>
+<tr><td>Frequency table given</td><td>Nothing</td><td>No</td></tr>
+<tr><td>Text given</td><td>Count frequencies first (decide: are spaces, case, punctuation, newline counted?)</td><td>No (preprocessing)</td></tr>
+<tr><td>Probabilities / percentages</td><td>Use doubles or scale to integers</td><td>No</td></tr>
+<tr><td>Output codes</td><td>DFS from root</td><td>No (post-processing)</td></tr>
+<tr><td>Output only total bits / merge cost</td><td>Sum merges; no tree needed</td><td>Simpler (just a heap of numbers)</td></tr>
+<tr><td>Average length, savings, compression ratio, entropy, efficiency</td><td>Formulas on the result</td><td>No</td></tr>
+<tr><td>Encode a message</td><td>Concatenate codewords</td><td>No</td></tr>
+<tr><td>Decode bits with a given tree or table</td><td>Tree walk / trie from codes</td><td>Different task (no building)</td></tr>
+<tr><td>Check prefix-free, Kraft sum</td><td>Sort and compare neighbours</td><td>Different task</td></tr>
+<tr><td>Is a given code optimal?</td><td>Compare its cost with Huffman’s</td><td>Build Huffman and compare</td></tr>
+<tr><td>Ties, “give any valid code”</td><td>Tie rule</td><td>No; cost identical</td></tr>
+<tr><td>Minimum-variance code</td><td>On ties, take leaves/older nodes before new merged nodes</td><td>Tie rule only</td></tr>
+<tr><td>Sorted frequencies, O(n) required</td><td>Two queues</td><td>Data structure</td></tr>
+<tr><td>Canonical codes (only lengths transmitted)</td><td>Reassign codewords from lengths</td><td>Post-processing</td></tr>
+<tr><td>k-ary code (ternary)</td><td>Merge k at a time, add zero dummies</td><td>Yes</td></tr>
+<tr><td>Single symbol</td><td>Give it code “0”</td><td>Special case</td></tr>
+<tr><td>Zero-frequency symbol</td><td>Usually drop it; if kept it gets the longest code and costs nothing</td><td>No</td></tr>
+<tr><td>Equal frequencies</td><td>Nothing</td><td>No (balanced tree)</td></tr>
+</table></div>
+
+<h3 class="toc" id="formulas">Formulas you will be asked to compute</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Quantity</th><th>Formula</th><th>CLRS example</th></tr>
+<tr><td>Total bits B(T)</td><td>Σ f·l = sum of internal node weights</td><td>224 (thousand)</td></tr>
+<tr><td>Fixed-length bits</td><td>(Σ f)·⌈log<sub>2</sub> n⌉</td><td>100 × 3 = 300</td></tr>
+<tr><td>ASCII bits</td><td>8 × number of characters</td><td>800</td></tr>
+<tr><td>Average length L</td><td>B(T)/Σ f (or Σ p·l)</td><td>2.24 bits/char</td></tr>
+<tr><td>Saving vs fixed</td><td>1 − B(T)/fixed</td><td>25.3%</td></tr>
+<tr><td>Compression ratio</td><td>original bits / compressed bits</td><td>300/224 ≈ 1.34 (vs ASCII 800/224 ≈ 3.57)</td></tr>
+<tr><td>Entropy H</td><td>−Σ p log<sub>2</sub> p</td><td>≈ 2.2199</td></tr>
+<tr><td>Efficiency</td><td>H / L</td><td>≈ 99.1%</td></tr>
+<tr><td>Redundancy</td><td>L − H</td><td>≈ 0.020</td></tr>
+<tr><td>Variance of length</td><td>Σ p(l − L)<sup>2</sup></td><td>used to compare tied trees</td></tr>
+</table></div>
+
+<h2 id="vars" data-short="6. Problem variations">6. Every relevant problem variation</h2>
+<p>Each card covers the same nine points. Code appears once, at the variation it belongs to. V1–V13 are standard undergraduate material; cards marked <span class="adv-badge">Advanced</span> go further.</p>
+
+<h3 class="toc" id="std">Standard variations</h3>
+
+<details class="var" open><summary>V1. Build the tree and codes from a frequency table <span class="tag">“construct a Huffman code”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Construct the Huffman tree and codewords for a:45, b:13, …”</dd>
+<dt>Recognise</dt><dd>Symbols with frequencies/probabilities + “Huffman”, “optimal prefix code”, “variable-length code”.</dd>
+<dt>Input</dt><dd>n pairs (symbol, frequency).</dd>
+<dt>Output</dt><dd>Tree, a codeword per symbol, usually total bits.</dd>
+<dt>Approach</dt><dd>Min-heap; n − 1 times extract two minima, make parent, insert; DFS for codes.</dd>
+<dt>Steps</dt><dd>Sort/heapify → merge table → draw tree bottom-up → label 0/1 → read codes → compute Σ f·l.</dd>
+<dt>Complexity</dt><dd>O(n log n) time, O(n) space.</dd>
+<dt>Edge cases</dt><dd>n = 1 (code “0”); ties (state rule); large frequencies (use <code>long long</code>).</dd>
+</dl>
+<p>The implementation stores nodes in a vector and keeps <code>(frequency, index)</code> pairs in the heap. Because an index grows with creation time, ties are broken “older node first” automatically, with no custom comparator and no pointers to free.</p>
+<div class="codeblock"><div class="codebar"><span>h01_huffman.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    long long freq;
+    string sym;
+    int left = -1, right = -1;
+};
+
+vector&lt;Node&gt; pool;
+map&lt;string, string&gt; code;
+
+void assign(int u, const string &amp;path) {
+    if (pool[u].left == -1) { code[pool[u].sym] = path.empty() ? &quot;0&quot; : path; return; }
+    assign(pool[u].left, path + &quot;0&quot;);
+    assign(pool[u].right, path + &quot;1&quot;);
+}
+
+string name(int u) { return pool[u].left == -1 ? pool[u].sym + &quot;:&quot; + to_string(pool[u].freq) : to_string(pool[u].freq); }
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;string&gt; order(n);
+    priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    for (int i = 0; i &lt; n; i++) {
+        long long f;
+        cin &gt;&gt; order[i] &gt;&gt; f;
+        pool.push_back({f, order[i]});
+        pq.push({f, i});
+    }
+    while (pq.size() &gt; 1) {
+        int x = pq.top().second; pq.pop();
+        int y = pq.top().second; pq.pop();
+        pool.push_back({pool[x].freq + pool[y].freq, &quot;&quot;, x, y});
+        int z = pool.size() - 1;
+        cout &lt;&lt; &quot;Merge &quot; &lt;&lt; name(x) &lt;&lt; &quot; + &quot; &lt;&lt; name(y) &lt;&lt; &quot; -&gt; &quot; &lt;&lt; pool[z].freq &lt;&lt; &quot;\n&quot;;
+        pq.push({pool[z].freq, z});
+    }
+    int root = pq.top().second;
+    assign(root, &quot;&quot;);
+
+    long long bits = 0, total = 0;
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; order[i] &lt;&lt; &quot; &quot; &lt;&lt; pool[i].freq &lt;&lt; &quot; &quot; &lt;&lt; code[order[i]] &lt;&lt; &quot;\n&quot;;
+        bits += pool[i].freq * (long long)code[order[i]].size();
+        total += pool[i].freq;
+    }
+    int fixedLen = max(1, (int)ceil(log2((double)n)));
+    cout &lt;&lt; &quot;Total bits: &quot; &lt;&lt; bits &lt;&lt; &quot;\n&quot;;
+    cout &lt;&lt; &quot;Fixed-length bits: &quot; &lt;&lt; total * fixedLen &lt;&lt; &quot; (&quot; &lt;&lt; fixedLen &lt;&lt; &quot; bits/symbol)\n&quot;;
+    cout &lt;&lt; fixed &lt;&lt; setprecision(4) &lt;&lt; &quot;Average code length: &quot; &lt;&lt; (double)bits / total &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+a 45
+b 13
+c 12
+d 16
+e 9
+f 5
+Output:
+Merge f:5 + e:9 -&gt; 14
+Merge c:12 + b:13 -&gt; 25
+Merge 14 + d:16 -&gt; 30
+Merge 25 + 30 -&gt; 55
+Merge a:45 + 55 -&gt; 100
+a 45 0
+b 13 101
+c 12 100
+d 16 111
+e 9 1101
+f 5 1100
+Total bits: 224
+Fixed-length bits: 300 (3 bits/symbol)
+Average code length: 2.2400</pre>
+</div></details>
+
+<details class="var"><summary>V2. From a text: count, build, encode, verify by decoding <span class="tag">“compress this message”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Using Huffman coding, compress ‘BCAADDDCCACACAC’. Give the encoded bit string and compare with ASCII.”</dd>
+<dt>Recognise</dt><dd>A raw message rather than a table.</dd>
+<dt>Input</dt><dd>One line of text (may include spaces).</dd>
+<dt>Output</dt><dd>Frequency table, codes, encoded bits, sizes.</dd>
+<dt>Approach</dt><dd>Count with <code>map&lt;char,long long&gt;</code> (sorted by character), build as V1, encode by concatenation, decode by walking the tree to check.</dd>
+<dt>Steps</dt><dd>Dry run 2.</dd>
+<dt>Complexity</dt><dd>O(L + n log n + B(T)).</dd>
+<dt>Edge cases</dt><dd>Read with <code>getline</code> so spaces count; empty text; one distinct character.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h02_text.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    long long freq;
+    char ch;
+    int left = -1, right = -1;
+};
+
+vector&lt;Node&gt; pool;
+map&lt;char, string&gt; code;
+
+void assign(int u, const string &amp;path) {
+    if (pool[u].left == -1) { code[pool[u].ch] = path.empty() ? &quot;0&quot; : path; return; }
+    assign(pool[u].left, path + &quot;0&quot;);
+    assign(pool[u].right, path + &quot;1&quot;);
+}
+
+string show(char c) { return c == &#x27; &#x27; ? &quot;space&quot; : string(1, c); }
+
+int main() {
+    string text;
+    getline(cin, text);
+    if (text.empty()) { cout &lt;&lt; &quot;Empty input\n&quot;; return 0; }
+    map&lt;char, long long&gt; freq;
+    for (char c : text) freq[c]++;
+
+    priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    for (auto [c, f] : freq) {
+        pool.push_back({f, c});
+        pq.push({f, (int)pool.size() - 1});
+    }
+    while (pq.size() &gt; 1) {
+        int x = pq.top().second; pq.pop();
+        int y = pq.top().second; pq.pop();
+        pool.push_back({pool[x].freq + pool[y].freq, 0, x, y});
+        pq.push({pool.back().freq, (int)pool.size() - 1});
+    }
+    int root = pq.top().second;
+    assign(root, &quot;&quot;);
+
+    for (auto [c, f] : freq) cout &lt;&lt; show(c) &lt;&lt; &quot; &quot; &lt;&lt; f &lt;&lt; &quot; &quot; &lt;&lt; code[c] &lt;&lt; &quot;\n&quot;;
+
+    string enc;
+    for (char c : text) enc += code[c];
+    cout &lt;&lt; &quot;Encoded: &quot; &lt;&lt; enc &lt;&lt; &quot;\n&quot;;
+    cout &lt;&lt; &quot;Huffman bits: &quot; &lt;&lt; enc.size() &lt;&lt; &quot;, ASCII bits: &quot; &lt;&lt; 8 * text.size() &lt;&lt; &quot;\n&quot;;
+
+    string dec;
+    int u = root;
+    for (char b : enc) {
+        if (pool[root].left != -1) u = (b == &#x27;0&#x27;) ? pool[u].left : pool[u].right;
+        if (pool[u].left == -1) { dec += pool[u].ch; u = root; }
+    }
+    cout &lt;&lt; &quot;Decoded matches: &quot; &lt;&lt; (dec == text ? &quot;yes&quot; : &quot;no&quot;) &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+</div></details>
+
+<details class="var"><summary>V3. Only the total cost (bits) is required <span class="tag">“how many bits”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“What is the minimum number of bits needed to encode the file?”</dd>
+<dt>Recognise</dt><dd>Only a number is asked; codes not required.</dd>
+<dt>Approach</dt><dd>B(T) = sum of all merged weights. Keep a heap of numbers only.</dd>
+<dt>Steps</dt><dd>CLRS: 14 + 25 + 30 + 55 + 100 = 224.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>n = 1: the sum of merges is 0, but encoding still needs 1 bit per symbol (answer = frequency). Overflow → <code>long long</code>.</dd>
+</dl>
+<p>Code: the merge-cost program in V9 (same program, different story).</p>
+</div></details>
+
+<details class="var"><summary>V4. Average length, savings, entropy and efficiency <span class="tag">probabilities</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Find the Huffman code for P = {0.4, 0.2, 0.2, 0.1, 0.1}; compute the average code length, entropy and efficiency.”</dd>
+<dt>Recognise</dt><dd>Probabilities (sum 1), words “expected”, “average”, “entropy”, “efficiency”, “redundancy”.</dd>
+<dt>Approach</dt><dd>Build as usual; L = Σ p·l; H = −Σ p log<sub>2</sub> p; efficiency = H/L; redundancy = L − H.</dd>
+<dt>Steps</dt><dd>Dry run 3: L = 2.2, H ≈ 2.1219, efficiency ≈ 96.45%.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Floating-point ties: 0.1 + 0.2 is not exactly 0.3 in binary. Prefer scaling to integers (×100) when the exam values allow it, or compare with a small epsilon.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h09_prob.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;string&gt; s(n);
+    vector&lt;double&gt; p(n);
+    for (int i = 0; i &lt; n; i++) cin &gt;&gt; s[i] &gt;&gt; p[i];
+
+    priority_queue&lt;pair&lt;double, int&gt;, vector&lt;pair&lt;double, int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    vector&lt;int&gt; parent(n, -1);
+    vector&lt;double&gt; w = p;
+    for (int i = 0; i &lt; n; i++) pq.push({p[i], i});
+    while (pq.size() &gt; 1) {
+        auto [a, x] = pq.top(); pq.pop();
+        auto [b, y] = pq.top(); pq.pop();
+        int z = w.size();
+        w.push_back(a + b);
+        parent.push_back(-1);
+        parent[x] = parent[y] = z;
+        pq.push({a + b, z});
+    }
+    double abl = 0, H = 0;
+    for (int i = 0; i &lt; n; i++) {
+        int len = 0;
+        for (int u = i; parent[u] != -1; u = parent[u]) len++;
+        len = max(len, 1);
+        cout &lt;&lt; s[i] &lt;&lt; &quot; length &quot; &lt;&lt; len &lt;&lt; &quot;\n&quot;;
+        abl += p[i] * len;
+        if (p[i] &gt; 0) H -= p[i] * log2(p[i]);
+    }
+    cout &lt;&lt; fixed &lt;&lt; setprecision(4);
+    cout &lt;&lt; &quot;ABL = &quot; &lt;&lt; abl &lt;&lt; &quot;, entropy H = &quot; &lt;&lt; H &lt;&lt; &quot;, efficiency = &quot; &lt;&lt; H / abl * 100 &lt;&lt; &quot;%\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+5
+A 0.4
+B 0.2
+C 0.2
+D 0.1
+E 0.1
+Output:
+A length 2
+B length 2
+C length 2
+D length 3
+E length 3
+ABL = 2.2000, entropy H = 2.1219, efficiency = 96.4513%</pre>
+<p class="small muted">This version stores only parent links, which is enough to get code lengths; use V1 when codewords are needed.</p>
+</div></details>
+
+<details class="var"><summary>V5. Encode a message with a given code table <span class="tag">“encode the word …”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Using the code above, encode ‘face’.”</dd>
+<dt>Approach</dt><dd>Concatenate codewords, no separators.</dd>
+<dt>Steps</dt><dd>f = 1100, a = 0, c = 100, e = 1101 → <code>110001001101</code> (12 bits; fixed 3-bit would be 12 too, because these are rare letters).</dd>
+<dt>Complexity</dt><dd>O(total output bits).</dd>
+<dt>Edge cases</dt><dd>A symbol not in the table cannot be encoded; never insert spaces between codewords in the final answer (you may show them for readability, then state the joined string).</dd>
+</dl>
+<p>Code: the encoding loop in V2.</p>
+</div></details>
+
+<details class="var"><summary>V6. Decode a bit string <span class="tag">“decode 001011101”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Given the codes (or tree), decode the bit string.”</dd>
+<dt>Recognise</dt><dd>A bit string + a code table or tree.</dd>
+<dt>Approach</dt><dd>Build a binary trie from the codewords (0 = left child, 1 = right child), walk it bit by bit; at a leaf output and return to the root.</dd>
+<dt>Steps</dt><dd>Dry run 5.</dd>
+<dt>Complexity</dt><dd>O(Σ code lengths) to build the trie, O(N) to decode N bits.</dd>
+<dt>Edge cases</dt><dd>Path to a missing child → invalid bits. Ending inside the tree → truncated input. Non-prefix-free table → trie cannot decide (check with V7 first).</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h03_decode.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;array&lt;int, 2&gt;&gt; child(1, {-1, -1});
+    vector&lt;string&gt; sym(1);
+    for (int i = 0; i &lt; n; i++) {
+        string s, c;
+        cin &gt;&gt; s &gt;&gt; c;
+        int u = 0;
+        for (char b : c) {
+            int d = b - &#x27;0&#x27;;
+            if (child[u][d] == -1) {
+                child[u][d] = child.size();
+                child.push_back({-1, -1});
+                sym.push_back(&quot;&quot;);
+            }
+            u = child[u][d];
+        }
+        sym[u] = s;
+    }
+    string bits;
+    cin &gt;&gt; bits;
+    string out;
+    int u = 0;
+    for (char b : bits) {
+        u = child[u][b - &#x27;0&#x27;];
+        if (u == -1) { cout &lt;&lt; &quot;Invalid bit string\n&quot;; return 0; }
+        if (!sym[u].empty()) { out += sym[u]; u = 0; }
+    }
+    if (u != 0) { cout &lt;&lt; &quot;Incomplete code at end\n&quot;; return 0; }
+    cout &lt;&lt; out &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+a 0
+b 101
+c 100
+d 111
+e 1101
+f 1100
+001011101
+Output:
+aabe</pre>
+<pre class="io">Input:
+6
+a 0
+b 101
+c 100
+d 111
+e 1101
+f 1100
+0010111
+Output:
+Incomplete code at end</pre>
+</div></details>
+
+<details class="var"><summary>V7. Is this code prefix-free? (and Kraft sum) <span class="tag">“is the code uniquely decodable?”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Which of these codes are prefix codes: {0, 10, 110, 111}, {0, 01, 11}?”</dd>
+<dt>Approach</dt><dd>Sort codewords lexicographically; if any codeword is a prefix of another, it is a prefix of its sorted successor. Kraft sum Σ 2<sup>−l</sup> ≤ 1 is necessary; = 1 for a full tree.</dd>
+<dt>Steps</dt><dd>{0, 10, 110, 111}: sorted, no neighbour prefix → prefix-free; Kraft = ½ + ¼ + ⅛ + ⅛ = 1. {0, 01, 11}: “0” prefixes “01” → not prefix-free (Kraft is 1, which shows Kraft alone does not prove prefix-freeness).</dd>
+<dt>Complexity</dt><dd>O(n log n · ℓ) for sorting strings of length ≤ ℓ.</dd>
+<dt>Edge cases</dt><dd>Duplicate codewords are prefixes of each other. A Kraft sum &lt; 1 means some branch is unused: the code is prefix-free but cannot be optimal.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h07_prefix_check.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;string&gt; c(n);
+    for (auto &amp;s : c) cin &gt;&gt; s;
+    sort(c.begin(), c.end());
+    bool prefixFree = true;
+    for (int i = 0; i + 1 &lt; n; i++)
+        if (c[i + 1].compare(0, c[i].size(), c[i]) == 0) {
+            prefixFree = false;
+            cout &lt;&lt; c[i] &lt;&lt; &quot; is a prefix of &quot; &lt;&lt; c[i + 1] &lt;&lt; &quot;\n&quot;;
+        }
+    double kraft = 0;
+    for (auto &amp;s : c) kraft += pow(2.0, -(double)s.size());
+    cout &lt;&lt; (prefixFree ? &quot;Prefix-free&quot; : &quot;Not prefix-free&quot;) &lt;&lt; &quot;\n&quot;;
+    cout &lt;&lt; &quot;Kraft sum: &quot; &lt;&lt; kraft &lt;&lt; (prefixFree &amp;&amp; fabs(kraft - 1) &lt; 1e-12 ? &quot; (complete: every node has 0 or 2 children)&quot; : &quot;&quot;) &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+4
+0 10 110 111
+Output:
+Prefix-free
+Kraft sum: 1 (complete: every node has 0 or 2 children)</pre>
+<pre class="io">Input:
+3
+0 01 11
+Output:
+0 is a prefix of 01
+Not prefix-free
+Kraft sum: 1</pre>
+</div></details>
+
+<details class="var"><summary>V8. Ties: multiple valid Huffman trees, minimum variance <span class="tag">“is the Huffman code unique?”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Show two different Huffman codes for 0.4, 0.2, 0.2, 0.1, 0.1. Which is better for transmission?”</dd>
+<dt>Recognise</dt><dd>Equal weights appear at some step.</dd>
+<dt>Approach</dt><dd>Run once with each tie choice. Costs are equal; compare length variance. Minimum variance: among equal weights, take original/older nodes before the newly merged one.</dd>
+<dt>Steps</dt><dd>Dry run 3: variances 0.16 vs 1.36.</dd>
+<dt>Complexity</dt><dd>Same.</dd>
+<dt>Edge cases</dt><dd>Swapping left/right children or flipping 0/1 also gives “different” codes with the same lengths; examiners accept these if the convention is stated.</dd>
+</dl>
+</div></details>
+
+<details class="var"><summary>V9. Optimal merge pattern / connect ropes (cost only) <span class="tag">“merge files with minimum cost”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Sorted files of sizes 20, 30, 10, 5, 30 must be merged two at a time, cost = sum of sizes. Find the optimal merge order and cost.”</dd>
+<dt>Recognise</dt><dd>“two at a time”, “cost equals the sum”, any pair may be combined.</dd>
+<dt>Approach</dt><dd>Huffman merging on sizes; answer = total of all merge sums. The “merge tree” is the Huffman tree.</dd>
+<dt>Steps</dt><dd>5+10 = 15, 15+20 = 35, 30+30 = 60, 35+60 = 95 → 205.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>If only adjacent piles may be merged → interval DP (O(n³) or O(n²) with Knuth), not greedy. One file → cost 0.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h04_merge_cost.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    priority_queue&lt;long long, vector&lt;long long&gt;, greater&lt;long long&gt;&gt; pq;
+    for (int i = 0; i &lt; n; i++) {
+        long long x;
+        cin &gt;&gt; x;
+        pq.push(x);
+    }
+    long long cost = 0;
+    while (pq.size() &gt; 1) {
+        long long a = pq.top(); pq.pop();
+        long long b = pq.top(); pq.pop();
+        cost += a + b;
+        cout &lt;&lt; &quot;Merge &quot; &lt;&lt; a &lt;&lt; &quot; + &quot; &lt;&lt; b &lt;&lt; &quot; = &quot; &lt;&lt; a + b &lt;&lt; &quot;\n&quot;;
+        pq.push(a + b);
+    }
+    cout &lt;&lt; &quot;Minimum total cost: &quot; &lt;&lt; cost &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+5
+20 30 10 5 30
+Output:
+Merge 5 + 10 = 15
+Merge 15 + 20 = 35
+Merge 30 + 30 = 60
+Merge 35 + 60 = 95
+Minimum total cost: 205</pre>
+</div></details>
+
+<details class="var"><summary>V10. Show the priority queue / forest at each step <span class="tag">“trace the algorithm”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Show the contents of the priority queue after each iteration” or “draw the forest after every merge”.</dd>
+<dt>Approach</dt><dd>Use the merge table format from Dry run 1: two extracted nodes, the new node, queue after insertion (sorted). Draw the forest bottom-up as you go.</dd>
+<dt>Steps</dt><dd>After step k the queue holds n − k items. Total iterations = n − 1.</dd>
+<dt>Complexity</dt><dd>—</dd>
+<dt>Edge cases</dt><dd>If the question asks for the actual heap array (not just its sorted contents), perform real sift-down/sift-up operations; the array order differs from sorted order.</dd>
+</dl>
+<p>Code: V1 prints each merge.</p>
+</div></details>
+
+<details class="var"><summary>V11. k-ary (ternary) Huffman code <span class="tag">“code alphabet {0, 1, 2}”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Construct an optimal ternary prefix code for a:45, b:13, c:12, d:16, e:9, f:5” (a classic textbook exercise).</dd>
+<dt>Recognise</dt><dd>Codewords use k symbols (digits 0..k−1), or k items are combined at a time.</dd>
+<dt>Approach</dt><dd>Add dummy symbols of frequency 0 until (n + dummies − 1) mod (k − 1) = 0, so every merge takes exactly k nodes and the tree is full. Then repeatedly merge the k smallest.</dd>
+<dt>Steps</dt><dd>n = 6, k = 3: (6 − 1) mod 2 = 1 → add 1 dummy. Merges: {0, 5, 9} → 14; {12, 13, 14} → 39; {16, 39, 45} → 100. Codes: d = 0, c = 10, b = 11, f = 121, e = 122, a = 2. Cost = 153 ternary digits.</dd>
+<dt>Complexity</dt><dd>O(n log n) (k constant).</dd>
+<dt>Edge cases</dt><dd>Without dummies the last merge has fewer than k children and the result is not optimal. Dummies get the deepest positions and cost nothing.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>h05_kary.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    long long freq;
+    string sym;
+    vector&lt;int&gt; kids;
+};
+
+vector&lt;Node&gt; pool;
+map&lt;string, string&gt; code;
+
+void assign(int u, const string &amp;path) {
+    if (pool[u].kids.empty()) {
+        if (!pool[u].sym.empty()) code[pool[u].sym] = path.empty() ? &quot;0&quot; : path;
+        return;
+    }
+    for (int d = 0; d &lt; (int)pool[u].kids.size(); d++) assign(pool[u].kids[d], path + char(&#x27;0&#x27; + d));
+}
+
+int main() {
+    int n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    vector&lt;string&gt; order(n);
+    priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    for (int i = 0; i &lt; n; i++) {
+        long long f;
+        cin &gt;&gt; order[i] &gt;&gt; f;
+        pool.push_back({f, order[i], {}});
+        pq.push({f, i});
+    }
+    int dummies = 0;
+    while (n &gt; 1 &amp;&amp; (n + dummies - 1) % (k - 1) != 0) {
+        pool.push_back({0, &quot;&quot;, {}});
+        pq.push({0, (int)pool.size() - 1});
+        dummies++;
+    }
+    cout &lt;&lt; &quot;Dummy nodes added: &quot; &lt;&lt; dummies &lt;&lt; &quot;\n&quot;;
+    while (pq.size() &gt; 1) {
+        Node z{0, &quot;&quot;, {}};
+        for (int t = 0; t &lt; k; t++) {
+            int x = pq.top().second; pq.pop();
+            z.freq += pool[x].freq;
+            z.kids.push_back(x);
+        }
+        pool.push_back(z);
+        pq.push({z.freq, (int)pool.size() - 1});
+    }
+    assign(pq.top().second, &quot;&quot;);
+    long long cost = 0;
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; order[i] &lt;&lt; &quot; &quot; &lt;&lt; code[order[i]] &lt;&lt; &quot;\n&quot;;
+        cost += pool[i].freq * (long long)code[order[i]].size();
+    }
+    cout &lt;&lt; &quot;Total digits: &quot; &lt;&lt; cost &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6 3
+a 45
+b 13
+c 12
+d 16
+e 9
+f 5
+Output:
+Dummy nodes added: 1
+a 2
+b 11
+c 10
+d 0
+e 122
+f 121
+Total digits: 153</pre>
+</div></details>
+
+<details class="var"><summary>V12. Is a proposed code optimal? Given lengths, is it Huffman? <span class="tag">verification</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“For frequencies 45, 13, 12, 16, 9, 5, a student uses lengths 2, 3, 3, 3, 3, 3. Is this optimal?”</dd>
+<dt>Approach</dt><dd>(1) Prefix-free / Kraft ≤ 1 check. (2) Compute its cost Σ f·l. (3) Compare with the Huffman cost. Also, in any optimal code, a more frequent symbol never has a longer codeword than a less frequent one, and Kraft sum must be exactly 1.</dd>
+<dt>Steps</dt><dd>Student: 45·2 + (13+12+16+9+5)·3 = 90 + 165 = 255 &gt; 224 → not optimal. Kraft = ¼ + 5·⅛ = 0.875 &lt; 1 also shows waste.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>A code can be optimal without being the one your tie rule produces: judge by cost, not by matching bits.</dd>
+</dl>
+</div></details>
+
+<details class="var"><summary>V13. Theory: explain, prove, analyse <span class="tag">written questions</span></summary><div class="inner">
+<div class="tbl-wrap"><table class="info">
+<tr><th>Question</th><th>Model answer outline</th></tr>
+<tr><td>Why does Huffman use a prefix code?</td><td>Unique, instantaneous decoding without separators; an optimal code can always be chosen prefix-free (no loss).</td></tr>
+<tr><td>Why is the greedy choice safe?</td><td>Lemma 1 exchange argument: the two least frequent symbols can be deepest siblings in some optimal tree.</td></tr>
+<tr><td>Optimal substructure</td><td>Lemma 2: B(T) = B(T′) + f(x) + f(y).</td></tr>
+<tr><td>Why is an optimal tree full?</td><td>An internal node with one child could be removed, shortening every codeword below it.</td></tr>
+<tr><td>Complexity</td><td>n − 1 iterations × O(log n) heap operations = O(n log n); O(n) space.</td></tr>
+<tr><td>Fixed vs variable length</td><td>Fixed = ⌈log<sub>2</sub> n⌉ bits each; variable exploits skewed frequencies; equal only when frequencies are (nearly) uniform.</td></tr>
+<tr><td>Is Huffman greedy or DP?</td><td>Greedy: one irrevocable locally best choice per step, proven safe; no table of subproblems.</td></tr>
+<tr><td>Bound on Huffman average length</td><td>H ≤ L &lt; H + 1.</td></tr>
+<tr><td>Maximum codeword length</td><td>n − 1 (skewed, e.g. Fibonacci weights).</td></tr>
+<tr><td>Why not Shannon–Fano?</td><td>Top-down splitting is not always optimal; Huffman’s bottom-up merging is.</td></tr>
+</table></div></div></details>
+
+<h3 class="toc" id="adv">Advanced extensions</h3>
+
+<details class="var"><summary>A1. O(n) Huffman for sorted frequencies (two queues) <span class="adv-badge">Advanced</span></summary><div class="inner">
+<p>If leaves are already sorted, merged weights come out in non-decreasing order, so a plain FIFO queue keeps them sorted. Keep queue 1 = leaves, queue 2 = merged nodes; the minimum is always at one of the two fronts. O(n) after sorting (van Leeuwen, 1976).</p>
+<div class="codeblock"><div class="codebar"><span>h08_two_queue.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;long long&gt; f(n);
+    for (auto &amp;x : f) cin &gt;&gt; x;
+    sort(f.begin(), f.end());
+    queue&lt;long long&gt; leaves, internal;
+    for (long long x : f) leaves.push(x);
+    auto takeMin = [&amp;]() {
+        long long v;
+        if (internal.empty() || (!leaves.empty() &amp;&amp; leaves.front() &lt;= internal.front())) {
+            v = leaves.front(); leaves.pop();
+        } else {
+            v = internal.front(); internal.pop();
+        }
+        return v;
+    };
+    long long cost = 0;
+    while (leaves.size() + internal.size() &gt; 1) {
+        long long a = takeMin(), b = takeMin();
+        cost += a + b;
+        internal.push(a + b);
+    }
+    cout &lt;&lt; &quot;Huffman cost (sum of merges): &quot; &lt;&lt; cost &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+45 13 12 16 9 5
+Output:
+Huffman cost (sum of merges): 224</pre>
+</div></details>
+
+<details class="var"><summary>A2. Canonical Huffman codes <span class="adv-badge">Advanced</span></summary><div class="inner">
+<p>Only code <b>lengths</b> are sent; both sides rebuild identical codewords: sort symbols by (length, symbol); the first code is all zeros; each next code = (previous + 1) shifted left by the length increase. Used by DEFLATE.</p>
+<div class="codeblock"><div class="codebar"><span>h06_canonical.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, string&gt;&gt; v(n);
+    for (auto &amp;[len, s] : v) cin &gt;&gt; s &gt;&gt; len;
+    sort(v.begin(), v.end());
+    long long c = 0;
+    int prevLen = v[0].first;
+    for (int i = 0; i &lt; n; i++) {
+        if (i &gt; 0) c = (c + 1) &lt;&lt; (v[i].first - prevLen);
+        prevLen = v[i].first;
+        string bits;
+        for (int b = v[i].first - 1; b &gt;= 0; b--) bits += ((c &gt;&gt; b) &amp; 1) ? &#x27;1&#x27; : &#x27;0&#x27;;
+        cout &lt;&lt; v[i].second &lt;&lt; &quot; &quot; &lt;&lt; bits &lt;&lt; &quot;\n&quot;;
+    }
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+a 1
+b 3
+c 3
+d 3
+e 4
+f 4
+Output:
+a 0
+b 100
+c 101
+d 110
+e 1110
+f 1111</pre>
+<p>Same lengths as the CLRS Huffman code (1, 3, 3, 3, 4, 4), so same cost 224, but tidier codewords.</p>
+</div></details>
+
+<details class="var"><summary>A3. Adaptive (dynamic) Huffman <span class="adv-badge">Beyond typical syllabus</span></summary><div class="inner">
+<p>One pass: encoder and decoder start with the same empty tree (an NYT “not yet transmitted” node), update counts after every symbol and restructure the tree to keep the sibling property (FGK and Vitter algorithms). No frequency table has to be sent.</p></div></details>
+
+<details class="var"><summary>A4. Length-limited Huffman <span class="adv-badge">Beyond typical syllabus</span></summary><div class="inner">
+<p>When no codeword may exceed L bits (hardware tables), plain Huffman may violate the limit (Fibonacci case). The package-merge algorithm finds the optimal code under the limit in O(nL).</p></div></details>
+
+<details class="var"><summary>A5. Storing / sending the tree <span class="adv-badge">Advanced</span></summary><div class="inner">
+<p>Pre-order traversal: write 0 for an internal node and 1 followed by the 8-bit symbol for a leaf. The receiver rebuilds the tree recursively. Cost ≈ (2n − 1) + 8n bits, which is why Huffman does not pay off for very short messages. Canonical codes (A2) send only lengths.</p></div></details>
+
+<h2 id="cpp" data-short="7. C++17 implementation guide">7. C++17 implementation guide</h2>
+<p>All ten programs on this sheet compile with <code>g++ -std=c++17 -Wall -Wextra</code> without warnings, and every “Output” block was produced by actually running them on the shown input.</p>
+
+<h3 class="toc" id="cppmap">Which program for which task</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Task</th><th>Program (variation)</th><th>Key idea</th></tr>
+<tr><td>Codes from a frequency table (memorise this one)</td><td>h01 (V1)</td><td>Node pool + heap of (freq, index)</td></tr>
+<tr><td>Text: count, encode, decode</td><td>h02 (V2, V5)</td><td><code>map&lt;char,long long&gt;</code>, tree walk</td></tr>
+<tr><td>Decode with a given code table</td><td>h03 (V6)</td><td>Binary trie</td></tr>
+<tr><td>Cost only: bits, file merging, ropes</td><td>h04 (V3, V9)</td><td>Heap of numbers, sum the merges</td></tr>
+<tr><td>Ternary / k-ary</td><td>h05 (V11)</td><td>Dummy zeros, merge k at a time</td></tr>
+<tr><td>Canonical codes</td><td>h06 (A2)</td><td>Sort by (length, symbol), shift-and-increment</td></tr>
+<tr><td>Prefix-free check, Kraft sum</td><td>h07 (V7)</td><td>Sort, compare neighbours</td></tr>
+<tr><td>O(n) for sorted input</td><td>h08 (A1)</td><td>Two FIFO queues</td></tr>
+<tr><td>Probabilities, ABL, entropy</td><td>h09 (V4)</td><td>Parent links, depth by climbing</td></tr>
+<tr><td>Word-level codes</td><td>h10 (story H)</td><td><code>stringstream</code> tokenising</td></tr>
+</table></div>
+
+<h3 class="toc" id="pointer">Pointer-based version (if your instructor expects <code>struct Node*</code>)</h3>
+<div class="codeblock"><div class="codebar"><span>huffman_pointers.cpp</span><button class="copy" type="button">Copy</button></div>
+<pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    char ch;
+    int freq;
+    Node *left, *right;
+    Node(char c, int f, Node *l = nullptr, Node *r = nullptr) : ch(c), freq(f), left(l), right(r) {}
+};
+
+struct Cmp {
+    bool operator()(Node *a, Node *b) const { return a-&gt;freq &gt; b-&gt;freq; }
+};
+
+void printCodes(Node *root, string s) {
+    if (!root) return;
+    if (!root-&gt;left &amp;&amp; !root-&gt;right) { cout &lt;&lt; root-&gt;ch &lt;&lt; ": " &lt;&lt; (s.empty() ? "0" : s) &lt;&lt; "\n"; return; }
+    printCodes(root-&gt;left, s + "0");
+    printCodes(root-&gt;right, s + "1");
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    priority_queue&lt;Node *, vector&lt;Node *&gt;, Cmp&gt; pq;
+    for (int i = 0; i &lt; n; i++) {
+        char c; int f;
+        cin &gt;&gt; c &gt;&gt; f;
+        pq.push(new Node(c, f));
+    }
+    while (pq.size() &gt; 1) {
+        Node *x = pq.top(); pq.pop();
+        Node *y = pq.top(); pq.pop();
+        pq.push(new Node('$', x-&gt;freq + y-&gt;freq, x, y));
+    }
+    printCodes(pq.top(), "");
+}</code></pre></div>
+<div class="box warn"><span class="label">Note on this version</span>
+<code>priority_queue</code> is a max-heap, so the comparator returns <code>a-&gt;freq &gt; b-&gt;freq</code> to make it a min-heap. With ties it does <b>not</b> guarantee a particular order, so codewords may differ from a hand trace even though lengths and total cost are optimal. The pool-and-index version (h01) is deterministic. Using <code>'$'</code> as an internal marker breaks if '$' is a real symbol; test for “no children” instead, as done above.</div>
+<p class="small muted">This program was compiled and tested too: on the CLRS table it gives lengths 1, 3, 3, 3, 4, 4 and cost 224.</p>
+
+<h3 class="toc" id="tests">Sample test cases (verified)</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Input</th><th>Code lengths</th><th>Total bits / cost</th></tr>
+<tr><td>a45 b13 c12 d16 e9 f5</td><td>a1 b3 c3 d3 e4 f4</td><td>224</td></tr>
+<tr><td>“BCAADDDCCACACAC”</td><td>A2 B3 C1 D3</td><td>28</td></tr>
+<tr><td>“MISSISSIPPI”</td><td>I2 M3 P3 S1</td><td>21</td></tr>
+<tr><td>“ABRACADABRA”</td><td>A1 B3 C3 D3 R3</td><td>23</td></tr>
+<tr><td>0.4 0.2 0.2 0.1 0.1</td><td>2 2 2 3 3 (or 1 2 3 4 4)</td><td>ABL 2.2</td></tr>
+<tr><td>a10 e15 i12 o3 u4 s13 t1</td><td>a3 e2 i2 o5 u4 s2 t5</td><td>146</td></tr>
+<tr><td>Fibonacci 1 1 2 3 5 8 13 21</td><td>7 7 6 5 4 3 2 1</td><td>132</td></tr>
+<tr><td>8 equal (10 each)</td><td>all 3</td><td>240</td></tr>
+<tr><td>6 equal (10 each)</td><td>3 3 3 3 2 2</td><td>160 (fixed 180)</td></tr>
+<tr><td>“AAAA”</td><td>1 (code “0”)</td><td>4</td></tr>
+<tr><td>Files 20 30 10 5 30</td><td>—</td><td>205</td></tr>
+<tr><td>Ropes 4 3 2 6</td><td>—</td><td>29</td></tr>
+</table></div>
+
+<h3 class="toc" id="cppmist">Implementation mistakes that cost marks</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr>
+<tr><td>Default <code>priority_queue</code> (max-heap)</td><td>Merges the largest items; terrible codes</td><td><code>greater&lt;&gt;</code> or comparator <code>a.freq &gt; b.freq</code></td></tr>
+<tr><td>Comparator returns <code>&lt;</code> on pointers</td><td>Max-heap again, or compares addresses</td><td>Compare <code>a-&gt;freq &gt; b-&gt;freq</code></td></tr>
+<tr><td>Single distinct symbol</td><td>Empty code, empty output, infinite decode loop</td><td>Special-case: code “0”</td></tr>
+<tr><td>Detecting leaves by a special character</td><td>Breaks when that character is in the text</td><td>Leaf = no children</td></tr>
+<tr><td><code>int</code> frequencies for large files</td><td>Overflow in sums</td><td><code>long long</code></td></tr>
+<tr><td><code>cin &gt;&gt; text</code></td><td>Spaces ignored, only first word compressed</td><td><code>getline(cin, text)</code></td></tr>
+<tr><td>Storing nodes by value in the heap and taking addresses</td><td>Dangling pointers, garbage tree</td><td>Pool vector + indices, or <code>new</code></td></tr>
+<tr><td>Pushing into a <code>vector&lt;Node&gt;</code> while holding references to its elements</td><td>References invalidated after reallocation</td><td>Use indices (as in h01) or <code>reserve(2n)</code></td></tr>
+<tr><td>Doubles compared with <code>==</code></td><td>Ties resolved unpredictably</td><td>Scale to integers or use epsilon</td></tr>
+<tr><td>Encoding with spaces between codewords</td><td>Wrong bit count, decoder fails</td><td>Concatenate; show spaces only for readability</td></tr>
+<tr><td>Decoding without resetting to the root after a leaf</td><td>Garbage output</td><td>Set <code>u = root</code> after each symbol</td></tr>
+<tr><td>Printing codes in heap order</td><td>Output order differs from the expected</td><td>Print in input order or sorted by symbol, as asked</td></tr>
+</table></div>
+
+<h2 id="bank" data-short="8. Exam question bank">8. Exam question bank with solutions</h2>
+<p>Try each before opening the solution. All numeric answers were checked by program; codewords follow this sheet’s conventions (smaller/older left, left = 0).</p>
+
+<h3 class="toc" id="lv1">Level 1: Basic</h3>
+<details><summary>Q1. A file has 100 000 characters from 6 symbols. How many bits does a fixed-length code need?</summary><div class="inner"><p>⌈log<sub>2</sub> 6⌉ = 3 bits per symbol → 300 000 bits.</p></div></details>
+<details><summary>Q2. Build the Huffman code for a:10, e:15, i:12, o:3, u:4, s:13, t:1. Find the total bits.</summary><div class="inner"><p>Merges: t1+o3 = 4; u4+4 = 8; 8+a10 = 18; i12+s13 = 25; e15+18 = 33; 25+33 = 58. Codes: i = 00, s = 01, e = 10, a = 111, u = 1100, t = 11010, o = 11011. Total = 4+8+18+25+33+58 = <b>146</b> bits (fixed 3-bit: 174).</p></div></details>
+<details><summary>Q3. Is {00, 01, 10, 110, 111} a prefix code? What is its Kraft sum?</summary><div class="inner"><p>Yes (no codeword begins another). Kraft = 3·¼ + 2·⅛ = 1, so it is a complete (full-tree) code.</p></div></details>
+<details><summary>Q4. With a = 0, b = 101, c = 100, d = 111, e = 1101, f = 1100, decode 1100 0 100 1101 (spaces added for you).</summary><div class="inner"><p>f a c e → <b>face</b>.</p></div></details>
+<details><summary>Q5. How many internal nodes and total nodes does a Huffman tree for n ≥ 2 symbols have?</summary><div class="inner"><p>n − 1 internal nodes (one per merge), 2n − 1 nodes in total.</p></div></details>
+<details><summary>Q6. Ropes of lengths 1, 2, 3, 4, 5: minimum cost to join them all?</summary><div class="inner"><p>1+2 = 3; 3+3 = 6; 4+5 = 9; 6+9 = 15. Total 3 + 6 + 9 + 15 = <b>33</b>.</p></div></details>
+<details><summary>Q7. What is the time complexity of Huffman’s algorithm and why?</summary><div class="inner"><p>O(n log n): n − 1 iterations, each with two EXTRACT-MIN and one INSERT on a binary heap of size ≤ n, each O(log n). Building the initial heap is O(n).</p></div></details>
+
+<h3 class="toc" id="lv2">Level 2: Intermediate</h3>
+<details><summary>Q8. Huffman code for “ABRACADABRA”: codes, total bits, and saving vs a fixed-length code.</summary><div class="inner"><div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length d(c)</th><th>f(c)·d(c)</th></tr><tr><td>A</td><td>5</td><td><code>0</code></td><td>1</td><td>5</td></tr><tr><td>B</td><td>2</td><td><code>110</code></td><td>3</td><td>6</td></tr><tr><td>C</td><td>1</td><td><code>100</code></td><td>3</td><td>3</td></tr><tr><td>D</td><td>1</td><td><code>101</code></td><td>3</td><td>3</td></tr><tr><td>R</td><td>2</td><td><code>111</code></td><td>3</td><td>6</td></tr><tr><th>Total</th><th>11</th><th></th><th></th><th>23</th></tr></table></div><p class="small">B(T) = 23; average length = 23/11 = 2.0909 bits/symbol; fixed-length (3 bits) = 33; saving 30.3%; entropy H = 2.0404.</p><p>23 bits vs 11 × 3 = 33 bits (30.3% saved) vs 88 ASCII bits.</p></div></details>
+<details><summary>Q9. Probabilities 0.25, 0.25, 0.20, 0.15, 0.15 (A–E). Find the code, the average length, entropy and efficiency.</summary><div class="inner"><p>Merges (×100): D15+E15 = 30; C20+A25 = 45; B25+30 = 55; 45+55 = 100. Codes: C = 00, A = 01, B = 10, D = 110, E = 111. L = 0.25·2 + 0.25·2 + 0.2·2 + 0.15·3 + 0.15·3 = <b>2.30</b>. H ≈ 2.2855. Efficiency ≈ 99.4%.</p></div></details>
+<details><summary>Q10. Show the queue contents after every iteration for frequencies 2, 3, 4, 5, 6 (A–E).</summary><div class="inner"><p>Start: A2, B3, C4, D5, E6. After 1: C4, D5, (5), E6 — note D5 (older) before the new 5. After 2: (5), E6, (9). After 3: (9), (11). After 4: (20). Codes: C = 00, D = 01, E = 11, A = 100, B = 101. Cost 5 + 9 + 11 + 20 = 45.</p></div></details>
+<details><summary>Q11. Give two different Huffman trees for frequencies 1, 1, 2, 2 and show both are optimal.</summary><div class="inner"><p>Tree 1 (older first): all lengths 2 → 2·(1+1+2+2) = 12. Tree 2 (newer first): 2 + 2 + 2 + 4 → lengths 1, 2, 3, 3 for weights 2, 2, 1, 1 → 2·1 + 2·2 + 1·3 + 1·3 = 12. Same cost, different shapes.</p></div></details>
+<details><summary>Q12. Frequencies a 45, b 13, c 12, d 16, e 9, f 5. A student uses a = 00 and the others 3 bits. Is it optimal?</summary><div class="inner"><p>Cost = 90 + 3·55 = 255 &gt; 224 (Huffman). Kraft sum = ¼ + 5·⅛ = 0.875 &lt; 1: a branch is wasted, so it cannot be optimal.</p></div></details>
+<details><summary>Q13. Could x = 0, y = 10, z = 11 be an optimal code for frequencies x 1, y 2, z 3?</summary><div class="inner"><p>No. The most frequent symbol (z) must not have a longer code than a less frequent one (x). Cost = 1 + 4 + 6 = 11; Huffman gives z = 0, x = 10, y = 11 → 3 + 2 + 4 = 9.</p></div></details>
+<details><summary>Q14. Six symbols with equal frequency 10. Is Huffman better than fixed length?</summary><div class="inner"><p>Yes, slightly: lengths 3, 3, 3, 3, 2, 2 → 160 bits vs 6 × 10 × 3 = 180. Equal frequencies give no gain only when n is a power of 2.</p></div></details>
+
+<h3 class="toc" id="lv3">Level 3: Advanced</h3>
+<details><summary>Q15. Story: a weather station sends Sunny 40%, Cloudy 20%, Rain 20%, Fog 10%, Snow 10% once per minute. How many bits per day with Huffman vs fixed length?</summary><div class="inner"><p>L = 2.2 bits/report; 1440 reports/day → 3168 bits vs 1440 × 3 = 4320 bits (26.7% less).</p></div></details>
+<details><summary>Q16. Optimal merge pattern: files of 20, 30, 10, 5, 30 records. Give the merge order and cost.</summary><div class="inner"><p>(5,10)→15, (15,20)→35, (30,30)→60, (35,60)→95. Cost 205.</p></div></details>
+<details><summary>Q17. Ternary Huffman for A 5, B 10, C 15, D 20, E 25, F 10, G 15.</summary><div class="inner"><p>n = 7, (7 − 1) mod 2 = 0 → no dummies. Merge {A5, B10, F10} → 25; {C15, G15, D20} → 50; {E25, 25, 50} → 100. Codes: E = 0, A = 10, B = 11, F = 12, C = 20, G = 21, D = 22. Cost = 175 ternary digits (binary Huffman: 270 bits).</p></div></details>
+<details><summary>Q18. Prove that in an optimal prefix code, if f(a) &gt; f(b) then d(a) ≤ d(b).</summary><div class="inner"><p>If d(a) &gt; d(b), swap a and b. Cost changes by (f(a) − f(b))(d(b) − d(a)) &lt; 0, strictly cheaper: contradiction with optimality.</p></div></details>
+<details><summary>Q19. Prove that the Huffman tree is always full.</summary><div class="inner"><p>Every node created by the algorithm gets exactly two children. More generally, in an optimal tree a node with one child can be replaced by that child, reducing every depth below it by 1 and strictly reducing the cost (if any frequency is positive).</p></div></details>
+<details><summary>Q20. Show that lengths {1, 2, 2, 3} cannot be a prefix code.</summary><div class="inner"><p>Kraft sum = ½ + ¼ + ¼ + ⅛ = 1.125 &gt; 1, violating Kraft’s inequality.</p></div></details>
+<details><summary>Q21. For frequencies equal to the first n Fibonacci numbers, what is the Huffman tree?</summary><div class="inner"><p>A spine: the sum of the first k Fibonacci numbers is F<sub>k+2</sub> − 1 &lt; F<sub>k+2</sub>, so the merged node always merges with the next leaf. Codes: the most frequent gets 0, next 10, …, last two get 1…10 and 1…11, length n − 1.</p></div></details>
+<details><summary>Q22. Show that the CLRS code satisfies H ≤ L &lt; H + 1.</summary><div class="inner"><p>H ≈ 2.2199, L = 2.24: 2.2199 ≤ 2.24 &lt; 3.2199 ✓. Efficiency ≈ 99.1%.</p></div></details>
+<details><summary>Q23. Programming: read n numbers and print the minimum cost of merging them (sum of merges).</summary><div class="inner"><p>Program h04 (V9). Use <code>long long</code>; n = 1 → 0.</p></div></details>
+<details><summary>Q24. Programming: read a line, print Huffman codes for each character (space included), the encoded string, and verify decoding.</summary><div class="inner"><p>Program h02 (V2). Test with “this is an example of a huffman tree” → 135 bits.</p></div></details>
+<details><summary>Q25. Why does Shannon–Fano not always give an optimal code?</summary><div class="inner"><p>It splits the sorted list top-down into two halves of nearly equal total probability. That split is a local decision at the top of the tree that cannot be undone, and for some distributions (for example 0.35, 0.17, 0.17, 0.16, 0.15) it produces a larger average length than Huffman’s bottom-up merging.</p></div></details>
+<details><summary>Q26. Huffman coding is greedy. Name the two properties that justify it and the problem it generalises.</summary><div class="inner"><p>Greedy-choice property (Lemma 1) and optimal substructure (Lemma 2). It solves minimum weighted external path length, so the same algorithm solves optimal merge pattern and connect-ropes.</p></div></details>
+
+<h2 id="recog" data-short="9. How to recognise the problem">9. How to recognise the problem</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Question clue / wording</th><th>What it actually means</th><th>Required approach</th></tr>
+<tr><td>“optimal prefix code”, “variable-length code”, “minimum-redundancy code”</td><td>Huffman code</td><td>Build the tree</td></tr>
+<tr><td>“no codeword is a prefix of another”, “instantaneous / uniquely decodable”</td><td>Prefix code</td><td>Huffman (if optimal is asked) or prefix check</td></tr>
+<tr><td>“minimum number of bits to store / transmit the file”</td><td>B(T)</td><td>Sum of merges</td></tr>
+<tr><td>“average / expected code length”, “bits per symbol”</td><td>Σ p·l</td><td>Huffman + formula</td></tr>
+<tr><td>“entropy”, “efficiency”, “redundancy”</td><td>Information-theory measures</td><td>H, H/L, L − H</td></tr>
+<tr><td>“merge sorted files two at a time, cost = total size”</td><td>Optimal merge pattern</td><td>Huffman merges</td></tr>
+<tr><td>“connect ropes / sticks / combine piles, cost = sum” (any two)</td><td>Same</td><td>Min-heap, sum merges</td></tr>
+<tr><td>“yes/no questions, minimum expected number”</td><td>Binary decision tree with weights</td><td>Huffman</td></tr>
+<tr><td>“code alphabet {0, 1, 2}”, “ternary”</td><td>k-ary Huffman</td><td>Dummies + merge k</td></tr>
+<tr><td>“decode the message”, “received bits”</td><td>Decoding</td><td>Tree / trie walk</td></tr>
+<tr><td>“only code lengths are transmitted”</td><td>Canonical Huffman</td><td>Sort by (length, symbol)</td></tr>
+<tr><td>“combine adjacent piles only”</td><td>Interval DP (not Huffman)</td><td>Matrix-chain-style DP</td></tr>
+<tr><td>“keys must remain in sorted order in the tree”, “search probabilities”</td><td>Optimal BST (DP) or alphabetic tree</td><td>Not Huffman</td></tr>
+<tr><td>“maximise value with weight limit, items divisible”</td><td>Fractional knapsack (another greedy)</td><td>Not Huffman</td></tr>
+</table></div>
+
+<div class="box warn"><span class="label">Misleading phrases</span>
+<ul>
+<li><b>“Binary tree with minimum cost”</b> could be Huffman (leaves freely arranged) or Optimal BST (keys in order, internal nodes are keys). Look for “search”, “keys in sorted order” → OBST.</li>
+<li><b>“Merge”</b> could be Huffman (any two) or interval DP (adjacent only).</li>
+<li><b>“Compression”</b> could also mean RLE (runs) or LZW (dictionary). If the question gives frequencies or asks for a prefix code, it is Huffman.</li>
+<li><b>“Shortest code”</b> per symbol is meaningless alone: Huffman minimises the <i>total weighted</i> length, not each codeword.</li>
+</ul></div>
+
+<h3 class="toc" id="confuse">Do not confuse this with…</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Problem</th><th>How it differs</th><th>Method</th></tr>
+<tr><td><b>Huffman coding</b></td><td>Leaves in any order; minimise Σ f·depth</td><td>Greedy, merge two smallest, O(n log n)</td></tr>
+<tr><td>Shannon–Fano coding</td><td>Top-down split into equal-probability halves</td><td>Greedy splitting, not always optimal</td></tr>
+<tr><td>Optimal binary search tree</td><td>Keys keep in-order; internal nodes are keys; includes failure probabilities</td><td>DP O(n³) (O(n²) Knuth)</td></tr>
+<tr><td>Hu–Tucker / optimal alphabetic code</td><td>Leaves stay in alphabetical order</td><td>Special algorithm O(n log n)</td></tr>
+<tr><td>Stone/pile merging (adjacent)</td><td>Only neighbouring piles can be merged</td><td>Interval DP O(n³)</td></tr>
+<tr><td>Fixed-length coding</td><td>All codewords ⌈log<sub>2</sub> n⌉ bits</td><td>No algorithm</td></tr>
+<tr><td>Run-length encoding</td><td>Replaces runs “AAAA” by (A, 4)</td><td>Linear scan</td></tr>
+<tr><td>LZ77 / LZW</td><td>Replaces repeated substrings by references / dictionary indices</td><td>Dictionary methods (often combined with Huffman)</td></tr>
+<tr><td>Arithmetic coding</td><td>Encodes the whole message as one number; can beat Huffman’s 1-bit-per-symbol floor</td><td>Interval narrowing</td></tr>
+<tr><td>Activity selection / fractional knapsack</td><td>Other greedy problems with different choice rules</td><td>Sort + scan</td></tr>
+</table></div>
+
+<h2 id="mist" data-short="10. Mistakes & edge cases">10. Common mistakes and edge cases</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Category</th><th>Mistake</th><th>How to detect</th><th>How to prevent</th></tr>
+<tr><td>Greedy step</td><td>Merging the two <i>largest</i>, or the two leftmost in the list</td><td>Rare symbols get short codes</td><td>Always extract the two minima of the current queue (leaves and merged nodes together)</td></tr>
+<tr><td>Greedy step</td><td>Forgetting to put the merged node back into the queue</td><td>Tree is a forest; codes missing</td><td>Every iteration: 2 out, 1 in; n − 1 iterations</td></tr>
+<tr><td>Greedy step</td><td>Only merging leaves, ignoring merged nodes</td><td>Wrong shape in step 3 of CLRS (should take 14 and d:16)</td><td>Re-sort the queue after each insert</td></tr>
+<tr><td>Ties</td><td>Changing the tie rule halfway</td><td>Hand trace and program disagree</td><td>Write the rule before starting</td></tr>
+<tr><td>Edge labels</td><td>Mixing 0/1 for left/right in different subtrees</td><td>Code not prefix-free or inconsistent</td><td>Left = 0 everywhere</td></tr>
+<tr><td>Single symbol</td><td>Code of length 0</td><td>Encoded output empty</td><td>Assign “0”</td></tr>
+<tr><td>Empty input</td><td>Pop from empty queue</td><td>Crash</td><td>Check before building</td></tr>
+<tr><td>Zero frequencies</td><td>Including symbols that never occur</td><td>Codes for unused symbols lengthen others</td><td>Drop them unless the question lists them</td></tr>
+<tr><td>Counting</td><td>Forgetting spaces, punctuation, newline, case</td><td>Frequency total ≠ message length</td><td>Check Σ f = L before building</td></tr>
+<tr><td>Cost</td><td>Adding the root twice or forgetting it</td><td>Two methods disagree</td><td>Σ f·l must equal the sum of all n − 1 merged weights (root included)</td></tr>
+<tr><td>Cost</td><td>Comparing with ASCII when the question says “fixed-length”</td><td>Exaggerated saving</td><td>Fixed-length = ⌈log<sub>2</sub> n⌉ bits; ASCII = 8 bits</td></tr>
+<tr><td>Averages</td><td>Dividing by n (number of symbols) instead of Σ f</td><td>ABL looks wrong</td><td>ABL = B(T)/Σ f</td></tr>
+<tr><td>Decoding</td><td>Not restarting at the root after each symbol</td><td>Output nonsense</td><td>Reset after every leaf</td></tr>
+<tr><td>k-ary</td><td>No dummy nodes</td><td>Root has fewer than k children</td><td>Add zeros until (n − 1) mod (k − 1) = 0</td></tr>
+<tr><td>Floating point</td><td>0.1 + 0.2 ≠ 0.3 changes tie handling</td><td>Unexpected tree shape</td><td>Scale to integers</td></tr>
+<tr><td>Output</td><td>Codes printed in wrong order / wrong format</td><td>Judge rejects</td><td>Match the sample output exactly</td></tr>
+</table></div>
+
+<h2 id="rev" data-short="11. Quick revision">11. Quick revision sheet</h2>
+<div class="cols">
+<div class="box formula"><span class="label" style="font-family:inherit">Core formulas</span>
+<div class="row">B(T) = Σ f(c)·d(c) = Σ internal weights</div>
+<div class="row">L = B(T)/Σf = Σ p·l</div>
+<div class="row">H = −Σ p log<sub>2</sub> p, &nbsp;H ≤ L &lt; H + 1</div>
+<div class="row">Kraft: Σ 2<sup>−l</sup> ≤ 1 (= 1 for Huffman)</div>
+<div class="row">Fixed length ⌈log<sub>2</sub> n⌉ bits</div></div>
+<div class="box"><span class="label">Algorithm</span>
+Put all symbols in a min-heap. Repeat n − 1 times: x = min, y = min, z = x + y with left x, right y, insert z. Root = last node. Codes: DFS, left 0, right 1.</div>
+<div class="box"><span class="label">Complexity</span>
+O(n log n) time, O(n) space; O(n) if frequencies are sorted (two queues); encode O(output bits); decode O(N).</div>
+<div class="box"><span class="label">Tree facts</span>
+Full binary tree, n leaves, n − 1 internal, 2n − 1 nodes. Two rarest are deepest siblings. Max depth n − 1. More frequent → not longer code.</div>
+</div>
+
+<div class="box"><span class="label">Key observations</span>
+<ul>
+<li>Huffman is greedy; proof = exchange argument (greedy choice) + B(T) = B(T′) + f(x) + f(y) (optimal substructure).</li>
+<li>Ties give different trees with the same cost; minimum variance takes older nodes first.</li>
+<li>Merge-cost problems (files, ropes) are Huffman without codes.</li>
+<li>k-ary: add zero dummies until (n − 1) mod (k − 1) = 0.</li>
+<li>Equal frequencies with n = 2<sup>k</sup> give no saving.</li>
+</ul></div>
+
+<div class="box"><span class="label">Recognition keywords</span>
+optimal prefix code · variable-length code · minimum bits · expected code length · entropy · merge files two at a time · connect ropes · yes/no questions · ternary code · decode the bits.</div>
+
+<h3 class="toc" id="template">Standard template to write from memory</h3>
+<div class="codeblock"><div class="codebar"><span>huffman_template.cpp</span><button class="copy" type="button">Copy</button></div>
+<pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node { long long f; char c; int l = -1, r = -1; };
+vector&lt;Node&gt; t;
+map&lt;char, string&gt; code;
+
+void dfs(int u, string p) {
+    if (t[u].l == -1) { code[t[u].c] = p.empty() ? "0" : p; return; }
+    dfs(t[u].l, p + "0");
+    dfs(t[u].r, p + "1");
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    priority_queue&lt;pair&lt;long long, int&gt;, vector&lt;pair&lt;long long, int&gt;&gt;, greater&lt;&gt;&gt; pq;
+    for (int i = 0; i &lt; n; i++) {
+        char c; long long f;
+        cin &gt;&gt; c &gt;&gt; f;
+        t.push_back({f, c});
+        pq.push({f, i});
+    }
+    while (pq.size() &gt; 1) {
+        int x = pq.top().second; pq.pop();
+        int y = pq.top().second; pq.pop();
+        t.push_back({t[x].f + t[y].f, 0, x, y});
+        pq.push({t.back().f, (int)t.size() - 1});
+    }
+    dfs(pq.top().second, "");
+    long long bits = 0;
+    for (int i = 0; i &lt; n; i++) {
+        cout &lt;&lt; t[i].c &lt;&lt; " " &lt;&lt; code[t[i].c] &lt;&lt; "\n";
+        bits += t[i].f * code[t[i].c].size();
+    }
+    cout &lt;&lt; "Total bits: " &lt;&lt; bits &lt;&lt; "\n";
+}</code></pre></div>
+
+<div class="box tip"><span class="label">Last-minute exam tips</span>
+<ol>
+<li>Write the symbols sorted by frequency first, and check that the frequencies add up to the message length.</li>
+<li>State the conventions: smaller node left, left edge = 0, tie rule.</li>
+<li>Show a merge table (x, y, new node, queue) and the final tree. Draw merged nodes as circles with their sum.</li>
+<li>Read codes from root to leaf; check the most frequent symbol has the shortest code.</li>
+<li>Compute the cost two ways (Σ f·l and Σ merges) and make sure they agree.</li>
+<li>Compare with fixed-length (⌈log<sub>2</sub> n⌉ bits) and ASCII (8 bits) if a saving is asked.</li>
+<li>For probabilities: give L, H, efficiency = H/L with 3–4 decimals.</li>
+<li>In the lab: test the CLRS table (224), “AAAA” (single symbol), and equal frequencies.</li>
+</ol></div>
+
+<p class="small muted" style="margin-top:40px">Scope: this sheet covers the standard Huffman coding material and related merge-cost problems in an undergraduate algorithms course; items marked Advanced or Beyond typical syllabus go further. It does not claim every possible variation.</p>
+</main>
+</div>
+<script>
+(function(){
+  const root=document.documentElement;
+  function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('algo-theme',t)}catch(e){}
+    document.getElementById('themeBtn').textContent=t==='dark'?'Light mode':'Dark mode';}
+  let saved=null;try{saved=localStorage.getItem('algo-theme')}catch(e){}
+  const sysDark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(saved||(sysDark?'dark':'light'));
+  document.getElementById('themeBtn').onclick=()=>setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');
+
+  const main=document.querySelector('main');
+  const toc=document.getElementById('toc');
+  const ol=document.createElement('ol');let cur=null;
+  main.querySelectorAll('h2,h3.toc').forEach((h,i)=>{
+    if(!h.id)h.id='s'+i;
+    const li=document.createElement('li');const a=document.createElement('a');
+    a.href='#'+h.id;a.textContent=h.dataset.short||h.textContent;li.appendChild(a);
+    if(h.tagName==='H2'){ol.appendChild(li);cur=document.createElement('ol');li.appendChild(cur);}
+    else if(cur)cur.appendChild(li);
+    a.addEventListener('click',()=>document.querySelector('aside').classList.remove('open'));
+  });
+  toc.appendChild(ol);
+  const links=[...toc.querySelectorAll('a')];
+  if('IntersectionObserver' in window){
+    const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'0px 0px -75% 0px'});
+    main.querySelectorAll('h2,h3.toc').forEach(h=>obs.observe(h));
+  }
+  document.getElementById('menuBtn').onclick=()=>document.querySelector('aside').classList.toggle('open');
+
+  document.getElementById('expandAll').onclick=()=>main.querySelectorAll('details').forEach(d=>d.open=true);
+  document.getElementById('collapseAll').onclick=()=>main.querySelectorAll('details').forEach(d=>d.open=false);
+  document.getElementById('printBtn').onclick=()=>window.print();
+  let openState=[];
+  window.addEventListener('beforeprint',()=>{openState=[...main.querySelectorAll('details')].map(d=>d.open);main.querySelectorAll('details').forEach(d=>d.open=true);});
+  window.addEventListener('afterprint',()=>{main.querySelectorAll('details').forEach((d,i)=>d.open=openState[i]??d.open);});
+
+  const KW=new Set('if else for while do return break continue switch case default using namespace template class struct typename const auto void new delete public private static inline operator true false nullptr sizeof this'.split(' '));
+  const TY=new Set('int long short char bool double float string vector map set pair size_t unsigned signed array deque queue stack unordered_map unordered_set istream ostream streamsize'.split(' '));
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function hl(src){
+    const re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(^[ \t]*#[^\n]*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/gm;
+    let out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      const t=m[0];
+      if(m[1])out+='<span class="tok-c">'+esc(t)+'</span>';
+      else if(m[2])out+='<span class="tok-s">'+esc(t)+'</span>';
+      else if(m[3])out+='<span class="tok-p">'+esc(t)+'</span>';
+      else if(m[4])out+='<span class="tok-n">'+t+'</span>';
+      else if(KW.has(t))out+='<span class="tok-k">'+t+'</span>';
+      else if(TY.has(t))out+='<span class="tok-t">'+t+'</span>';
+      else out+=t;
+      last=re.lastIndex;
+    }
+    return out+esc(src.slice(last));
+  }
+  document.querySelectorAll('pre code.cpp').forEach(c=>{c.innerHTML=hl(c.textContent)});
+  document.querySelectorAll('.codeblock').forEach(b=>{
+    const btn=b.querySelector('.copy');if(!btn)return;
+    btn.onclick=async()=>{
+      const txt=b.querySelector('code').textContent;
+      try{await navigator.clipboard.writeText(txt);}catch(e){
+        const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove();}
+      btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1400);
+    };
+  });
+
+  const sIn=document.getElementById('searchInput'),sStat=document.getElementById('searchStatus');
+  let hits=[],idx=-1,timer=null;
+  function clearMarks(){main.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode;p.replaceChild(document.createTextNode(m.textContent),m);p.normalize();});hits=[];idx=-1;}
+  function doSearch(){
+    clearMarks();const q=sIn.value.trim();
+    if(q.length<2){sStat.textContent=q?'Type at least 2 characters.':'';return;}
+    const ql=q.toLowerCase();
+    const w=document.createTreeWalker(main,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+      if(!n.nodeValue.toLowerCase().includes(ql))return NodeFilter.FILTER_REJECT;
+      const pe=n.parentElement;if(pe.closest('script,style,.lab'))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;}});
+    const nodes=[];while(w.nextNode())nodes.push(w.currentNode);
+    nodes.forEach(n=>{
+      let text=n.nodeValue,low=text.toLowerCase(),pos=0,i;const frag=document.createDocumentFragment();
+      while((i=low.indexOf(ql,pos))!==-1){
+        frag.appendChild(document.createTextNode(text.slice(pos,i)));
+        const mk=document.createElement('mark');mk.className='hl';mk.textContent=text.slice(i,i+q.length);frag.appendChild(mk);hits.push(mk);pos=i+q.length;}
+      frag.appendChild(document.createTextNode(text.slice(pos)));n.parentNode.replaceChild(frag,n);
+    });
+    if(!hits.length){sStat.textContent='No matches for “'+q+'”. Try a shorter word.';return;}
+    go(0);
+  }
+  function go(k){
+    if(!hits.length)return;
+    if(idx>=0)hits[idx].classList.remove('cur');
+    idx=(k+hits.length)%hits.length;const m=hits[idx];m.classList.add('cur');
+    let d=m.closest('details');while(d){d.open=true;d=d.parentElement.closest('details');}
+    m.scrollIntoView({block:'center'});
+    sStat.textContent=(idx+1)+' of '+hits.length+' matches';
+  }
+  sIn.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(doSearch,250)});
+  sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go(idx+(e.shiftKey?-1:1));}if(e.key==='Escape'){sIn.value='';clearMarks();sStat.textContent='';}});
+  document.getElementById('sNext').onclick=()=>go(idx+1);
+  document.getElementById('sPrev').onclick=()=>go(idx-1);
+
+  function parseInput(){
+    const mode=document.getElementById('labMode').value,raw=document.getElementById('labIn').value;
+    if(mode==='text'){
+      if(!raw.length)return {err:'Type some text to compress.'};
+      const m=new Map();for(const ch of raw)m.set(ch,(m.get(ch)||0)+1);
+      const items=[...m.entries()].sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:0);
+      return {items,text:[...raw]};
+    }
+    const parts=raw.split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);const items=[];
+    for(const p of parts){
+      const m=p.match(/^(.+?)\s*[:=\s]\s*([0-9]*\.?[0-9]+)$/);
+      if(!m)return {err:'Could not read “'+p+'”. Write each entry as symbol:frequency, separated by commas.'};
+      const f=parseFloat(m[2]);if(!(f>=0))return {err:'Frequencies must be zero or positive.'};
+      items.push([m[1],f]);
+    }
+    if(!items.length)return {err:'Enter at least one symbol:frequency pair.'};
+    const seen=new Set();for(const [s] of items){if(seen.has(s))return {err:'Symbol “'+s+'” appears twice.'};seen.add(s);}
+    return {items,text:null};
+  }
+  const fmt=x=>Number.isInteger(x)?String(x):String(+x.toFixed(6));
+  const disp=s=>s===' '?'␣':s==='\n'?'↵':s;
+  function huff(items,tie){
+    const nodes=items.map(([s,f],i)=>({f,s,id:i,l:null,r:null}));
+    let pq=nodes.slice();const key=(a,b)=>a.f-b.f||(tie==='old'?a.id-b.id:b.id-a.id);
+    const steps=[];let nid=nodes.length;
+    if(pq.length===1)return {root:pq[0],steps};
+    while(pq.length>1){
+      pq.sort(key);const x=pq.shift(),y=pq.shift();
+      const z={f:x.f+y.f,s:null,id:nid++,l:x,r:y};pq.push(z);pq.sort(key);
+      steps.push({x,y,z,rest:pq.slice()});
+    }
+    return {root:pq[0],steps};
+  }
+  const lab=n=>n.s!==null?disp(n.s)+':'+fmt(n.f):fmt(n.f);
+  function treeSVG(root,codes){
+    let leaf=0;const pos=new Map();let maxD=0;
+    (function lay(n,d){maxD=Math.max(maxD,d);if(n.s!==null){pos.set(n,{x:leaf++,d});return;}
+      lay(n.l,d+1);lay(n.r,d+1);pos.set(n,{x:(pos.get(n.l).x+pos.get(n.r).x)/2,d});})(root,0);
+    const W=64,H=62,pad=36,w=Math.max(1,leaf)*W+pad,h=(maxD+1)*H+40;
+    const X=p=>pad/2+p.x*W+W/2-8,Y=p=>24+p.d*H;
+    let e='',v='';
+    (function draw(n){const p=pos.get(n);
+      if(n.s===null){[[n.l,'0'],[n.r,'1']].forEach(([c,b])=>{const q=pos.get(c);
+        e+=`<line x1="${X(p)}" y1="${Y(p)}" x2="${X(q)}" y2="${Y(q)}" stroke="var(--muted)" stroke-width="1.5"/>`;
+        e+=`<text x="${(X(p)+X(q))/2+(b==='0'?-8:8)}" y="${(Y(p)+Y(q))/2}" text-anchor="middle" font-size="12" fill="var(--accent)" font-weight="700">${b}</text>`;draw(c);});
+        v+=`<circle cx="${X(p)}" cy="${Y(p)}" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><text x="${X(p)}" y="${Y(p)+4}" text-anchor="middle" font-size="11" fill="var(--ink)">${esc(fmt(n.f))}</text>`;
+      }else{
+        v+=`<rect x="${X(p)-27}" y="${Y(p)-14}" width="54" height="28" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="${X(p)}" y="${Y(p)+4}" text-anchor="middle" font-size="11" fill="var(--ink)" font-weight="700">${esc(lab(n))}</text>`;
+        v+=`<text x="${X(p)}" y="${Y(p)+28}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="ui-monospace,monospace">${codes.get(n.s)}</text>`;}
+    })(root);
+    return `<div class="tbl-wrap tree"><svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Huffman tree">${e}${v}</svg></div>`;
+  }
+  let lastRoot=null;
+  function runLab(){
+    const out=document.getElementById('labOut'),inp=parseInput();
+    if(inp.err){out.innerHTML='<p class="box warn">'+esc(inp.err)+'</p>';return;}
+    if(inp.items.length>40){out.innerHTML='<p class="box warn">Use 40 distinct symbols or fewer so the tree stays readable.</p>';return;}
+    const tie=document.getElementById('labTie').value;
+    const {root,steps}=huff(inp.items,tie);lastRoot=root;
+    const codes=new Map();(function go(n,p){if(n.s!==null){codes.set(n.s,p||'0');return;}go(n.l,p+'0');go(n.r,p+'1');})(root,'');
+    let h='';
+    if(steps.length){h+='<details><summary>Merge steps ('+steps.length+')</summary><div class="inner"><div class="tbl-wrap"><table class="info"><tr><th>Step</th><th>Extract min x (left, 0)</th><th>Extract min y (right, 1)</th><th>New node</th><th>Queue after insert</th></tr>';
+      steps.forEach((s,i)=>{h+='<tr><td>'+(i+1)+'</td><td>'+esc(lab(s.x))+'</td><td>'+esc(lab(s.y))+'</td><td>'+fmt(s.z.f)+'</td><td>'+s.rest.map(n=>esc(lab(n))).join(', ')+'</td></tr>';});
+      h+='</table></div></div></details>';}
+    h+=treeSVG(root,codes);
+    let tot=0,bits=0,H=0;
+    h+='<div class="tbl-wrap"><table class="info"><tr><th>Symbol</th><th>Frequency</th><th>Code</th><th>Length</th><th>freq × length</th></tr>';
+    inp.items.forEach(([s,f])=>{const c=codes.get(s);tot+=f;bits+=f*c.length;h+='<tr><td>'+esc(disp(s))+'</td><td>'+fmt(f)+'</td><td><code>'+c+'</code></td><td>'+c.length+'</td><td>'+fmt(f*c.length)+'</td></tr>';});
+    h+='<tr><th>Total</th><th>'+fmt(tot)+'</th><th></th><th></th><th>'+fmt(bits)+'</th></tr></table></div>';
+    inp.items.forEach(([,f])=>{if(f>0&&tot>0){const p=f/tot;H-=p*Math.log2(p);}});
+    const n=inp.items.length,fixedLen=Math.max(1,Math.ceil(Math.log2(n)));
+    const abl=tot?bits/tot:0;
+    h+='<p class="res">Weighted cost B(T) = <b>'+fmt(bits)+'</b>. Average code length = <b>'+abl.toFixed(4)+'</b> bits/symbol. Fixed-length code needs '+fixedLen+' bits/symbol → '+fmt(tot*fixedLen)+' total ('+(tot?(100*(1-bits/(tot*fixedLen))).toFixed(1):0)+'% saved). Entropy H = '+H.toFixed(4)+' bits/symbol.</p>';
+    if(inp.text){const enc=inp.text.map(c=>codes.get(c)).join('');
+      h+='<p class="res">Encoded ('+enc.length+' bits vs '+8*inp.text.length+' ASCII bits):</p><pre class="io" style="white-space:pre-wrap;word-break:break-all">'+enc+'</pre>';}
+    h+='<div class="lab-grid" style="margin-top:8px"><div><label for="decIn">Decode a bit string with this tree</label><input id="decIn" type="text" placeholder="e.g. 001011101"></div><div><label>&nbsp;</label><button id="decBtn" type="button">Decode bits</button></div></div><p id="decOut" class="res"></p>';
+    out.innerHTML=h;
+    document.getElementById('decBtn').onclick=()=>{
+      const bitsIn=document.getElementById('decIn').value.replace(/\s+/g,''),o=document.getElementById('decOut');
+      if(/[^01]/.test(bitsIn)){o.textContent='Bit strings may only contain 0 and 1.';return;}
+      let u=lastRoot,res='';
+      for(const b of bitsIn){if(lastRoot.s===null)u=b==='0'?u.l:u.r;if(u.s!==null){res+=disp(u.s);u=lastRoot;}}
+      o.innerHTML=u!==lastRoot?'Decoded “'+esc(res)+'”, then the bits ran out in the middle of a codeword.':'Decoded: <b>'+(esc(res)||'(nothing)')+'</b>';
+    };
+  }
+  document.getElementById('labRun').onclick=runLab;
+  document.getElementById('labIn').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runLab();}});
+  document.getElementById('labMode').onchange=e=>{
+    document.getElementById('labIn').value=e.target.value==='text'?'BCAADDDCCACACAC':'a:45, b:13, c:12, d:16, e:9, f:5';runLab();};
+  document.getElementById('labTie').onchange=runLab;
+  runLab();
+})();
+
+</script>
+</body>
+</html>

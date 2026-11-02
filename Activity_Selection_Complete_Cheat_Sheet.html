@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Activity Selection (Greedy) — Complete Exam Cheat Sheet</title>
+<style>
+:root{
+  --bg:#F5F7FA;--surface:#FFFFFF;--ink:#17212F;--muted:#566275;--rule:#D8DEE7;
+  --accent:#0F766E;--accent-soft:#D3F0EC;--hit:#0B5E57;
+  --warn:#9A4A06;--warn-bg:#FDF1E1;--tip:#3B3AA8;--tip-bg:#ECEDFE;
+  --formula-bg:#EEF2F7;--code-bg:#F3F5F8;--mark:#FFE58A;--mark-cur:#FFB547;
+  --k:#7C2D9E;--t:#0B5E8C;--s:#A2451A;--n:#0F766E;--c:#7A8494;--p:#A3266B;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F141B;--surface:#161D27;--ink:#E3E8EF;--muted:#9BA6B7;--rule:#2B3544;
+    --accent:#3CCFBC;--accent-soft:#123B37;--hit:#7DE8DA;
+    --warn:#F2B35C;--warn-bg:#2B2012;--tip:#AEB6FF;--tip-bg:#1D2142;
+    --formula-bg:#1B2431;--code-bg:#121922;--mark:#7A6410;--mark-cur:#B0700F;
+    --k:#D59BF2;--t:#7CC4F2;--s:#F2A97C;--n:#6FE0D0;--c:#7D8899;--p:#F28AC4;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F141B;--surface:#161D27;--ink:#E3E8EF;--muted:#9BA6B7;--rule:#2B3544;
+  --accent:#3CCFBC;--accent-soft:#123B37;--hit:#7DE8DA;
+  --warn:#F2B35C;--warn-bg:#2B2012;--tip:#AEB6FF;--tip-bg:#1D2142;
+  --formula-bg:#1B2431;--code-bg:#121922;--mark:#7A6410;--mark-cur:#B0700F;
+  --k:#D59BF2;--t:#7CC4F2;--s:#F2A97C;--n:#6FE0D0;--c:#7D8899;--p:#F28AC4;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:16px}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;}
+h1,h2,h3,h4{font-family:Charter,"Bitstream Charter","Sitka Text",Cambria,Georgia,serif;line-height:1.25;font-weight:700}
+h1{font-size:2.3rem;margin:.2em 0 .3em;letter-spacing:-.01em}
+h2{font-size:1.65rem;margin:2.6rem 0 .8rem;padding-top:1rem;border-top:2px solid var(--ink)}
+h3{font-size:1.25rem;margin:1.8rem 0 .5rem}
+h4{font-size:1.05rem;margin:1.2rem 0 .4rem}
+p,li{max-width:76ch}
+a{color:var(--accent)}
+code,kbd,pre,.mono{font-family:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;font-size:.9em}
+:not(pre)>code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;border:1px solid var(--rule)}
+var{font-family:Cambria,"Times New Roman",serif;font-size:1.08em}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+aside{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1px solid var(--rule);padding:18px 16px 40px}
+aside .brand{font-family:Charter,Georgia,serif;font-weight:700;font-size:1.1rem;margin-bottom:12px}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+button,select,input[type=text]{font:inherit;font-size:.9rem;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:6px 10px}
+button{cursor:pointer}
+button:hover{border-color:var(--accent)}
+.search{display:flex;gap:4px;margin-bottom:6px}
+.search input{flex:1;min-width:0}
+.search-status{font-size:.82rem;color:var(--muted);min-height:1.2em;margin-bottom:10px}
+nav.toc ol{list-style:none;margin:0;padding:0}
+nav.toc li{margin:0}
+nav.toc a{display:block;padding:3px 8px;border-radius:5px;color:var(--ink);text-decoration:none;font-size:.9rem;border-left:3px solid transparent}
+nav.toc a:hover{background:var(--formula-bg)}
+nav.toc a.active{border-left-color:var(--accent);background:var(--accent-soft)}
+nav.toc ol ol a{padding-left:22px;font-size:.84rem;color:var(--muted)}
+.menu-btn{display:none}
+
+main{padding:28px clamp(16px,4vw,56px) 80px;max-width:1080px}
+.hero p.lede{font-size:1.1rem;color:var(--muted);max-width:68ch}
+.hero .formula{font-size:1.05rem}
+
+.box{border-radius:8px;padding:12px 16px;margin:14px 0;border:1px solid var(--rule);background:var(--surface)}
+.box>:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.box .label{font-weight:700;display:block;margin-bottom:4px}
+.formula{background:var(--formula-bg);border-left:4px solid var(--accent);font-family:Cambria,"Times New Roman",serif;font-size:1.05rem;overflow-x:auto}
+.formula .row{white-space:nowrap}
+.warn{background:var(--warn-bg);border-left:4px solid var(--warn)}
+.warn .label{color:var(--warn)}
+.tip{background:var(--tip-bg);border-left:4px solid var(--tip)}
+.tip .label{color:var(--tip)}
+.algo{border-left:4px solid var(--ink)}
+.example{border-left:4px solid var(--accent)}
+.example .label{color:var(--accent)}
+
+.tbl-wrap{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;font-size:.92rem;background:var(--surface)}
+th,td{border:1px solid var(--rule);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--formula-bg)}
+table.info{width:100%}
+table.dp{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.88rem}
+table.dp th,table.dp td{text-align:center;padding:4px 7px;min-width:2.6em;vertical-align:middle}
+table.dp th.idx{color:var(--muted);font-weight:400;font-size:.75rem;background:transparent;border:none}
+table.dp td .ar{color:var(--muted);font-size:.8em;margin-right:2px}
+table.dp td.path{background:var(--accent-soft)}
+table.dp td.hit{background:var(--accent);color:var(--surface);font-weight:700}
+table.dp td.hit .ar{color:var(--surface)}
+table.dp.words th{font-size:.78rem}
+.legend{font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-block;width:14px;height:14px;vertical-align:-2px;border-radius:3px;margin:0 4px 0 10px}
+
+details{border:1px solid var(--rule);border-radius:8px;background:var(--surface);margin:12px 0}
+details>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none;position:relative;padding-left:34px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";position:absolute;left:14px;top:50%;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:translateY(-70%) rotate(-45deg);transition:transform .15s}
+details[open]>summary::before{transform:translateY(-50%) rotate(45deg)}
+details>.inner{padding:0 16px 14px}
+details.var>summary .tag{font-weight:400;font-size:.8rem;color:var(--muted);margin-left:8px}
+.adv-badge{display:inline-block;font-size:.75rem;font-weight:600;border:1px solid var(--warn);color:var(--warn);border-radius:4px;padding:0 6px;margin-left:6px}
+dl.v9{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:8px 0}
+dl.v9 dt{font-weight:600;color:var(--muted)}
+dl.v9 dd{margin:0}
+
+.codeblock{border:1px solid var(--rule);border-radius:8px;margin:12px 0;background:var(--code-bg);overflow:hidden}
+.codebar{display:flex;justify-content:space-between;align-items:center;padding:5px 10px;border-bottom:1px solid var(--rule);font-size:.82rem;color:var(--muted)}
+.codebar button{padding:2px 10px;font-size:.8rem}
+.codeblock pre{margin:0;padding:12px 14px;overflow-x:auto;line-height:1.45}
+.tok-k{color:var(--k);font-weight:600}.tok-t{color:var(--t)}.tok-s{color:var(--s)}.tok-n{color:var(--n)}.tok-c{color:var(--c);font-style:italic}.tok-p{color:var(--p)}
+pre.io{background:var(--code-bg);border:1px dashed var(--rule);border-radius:6px;padding:8px 12px;overflow-x:auto;margin:8px 0}
+
+.lab{border:2px solid var(--accent);border-radius:10px;padding:16px;background:var(--surface);margin:20px 0}
+.lab h3{margin-top:0}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lab-grid label{font-size:.85rem;color:var(--muted);display:block}
+.lab-grid input,.lab-grid select{width:100%}
+.lab-out{margin-top:12px}
+.lab-out .res{font-size:.95rem}
+.lab-out .res b{color:var(--accent)}
+
+.steps{counter-reset:s;padding-left:0;list-style:none}
+.steps>li{counter-increment:s;position:relative;padding-left:2.2em;margin:6px 0}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:.1em;width:1.6em;height:1.6em;border-radius:50%;background:var(--formula-bg);border:1px solid var(--rule);text-align:center;font-size:.8rem;line-height:1.6em;font-weight:700}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+mark.hl{background:var(--mark);color:inherit;border-radius:2px}
+mark.hl.cur{background:var(--mark-cur);outline:2px solid var(--mark-cur)}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+hr{border:none;border-top:1px solid var(--rule);margin:24px 0}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  main{overflow-wrap:anywhere}
+  main table{overflow-wrap:normal}
+  aside{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);transform:translateX(-102%);transition:transform .2s;z-index:20;box-shadow:0 0 0 100vmax transparent}
+  aside.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+  .menu-btn{display:inline-block;position:fixed;right:12px;bottom:12px;z-index:21;background:var(--ink);color:var(--surface);border:none;padding:10px 14px;border-radius:8px}
+  h1{font-size:1.8rem}
+  .lab-grid{grid-template-columns:1fr}
+  dl.v9{grid-template-columns:1fr}
+  dl.v9 dt{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--ink:#000;--muted:#333;--rule:#999;--accent:#000;--accent-soft:#e6e6e6;--formula-bg:#f2f2f2;--code-bg:#f7f7f7;--warn-bg:#fff;--tip-bg:#fff}
+  aside,.menu-btn,.codebar button,.lab,.no-print{display:none!important}
+  .layout{display:block}
+  main{padding:0;max-width:none}
+  body{font-size:11pt}
+  h2{break-after:avoid;page-break-after:avoid}
+  h3,h4{break-after:avoid}
+  .codeblock,table,.box{break-inside:avoid}
+  details>summary::before{display:none}
+  details>summary{padding-left:14px}
+  table.dp td.hit{background:#000;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  table.dp td.path{background:#ddd;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  a{color:#000;text-decoration:none}
+}
+
+.gantt svg{display:block;max-width:none}
+.gantt{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:6px}
+tr.sel td{background:var(--accent-soft)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside aria-label="Contents and tools">
+  <div class="brand">Activity selection cheat sheet</div>
+  <div class="tools">
+    <button id="themeBtn" type="button">Dark mode</button>
+    <button id="printBtn" type="button">Print / PDF</button>
+    <button id="expandAll" type="button">Expand all</button>
+    <button id="collapseAll" type="button">Collapse all</button>
+  </div>
+  <div class="search" role="search">
+    <input id="searchInput" type="text" placeholder="Search the sheet…" aria-label="Search the cheat sheet">
+    <button id="sPrev" type="button" aria-label="Previous match">↑</button>
+    <button id="sNext" type="button" aria-label="Next match">↓</button>
+  </div>
+  <div id="searchStatus" class="search-status" aria-live="polite"></div>
+  <nav class="toc" id="toc" aria-label="Table of contents"></nav>
+</aside>
+<button class="menu-btn" id="menuBtn" type="button">Contents</button>
+
+<main>
+<header class="hero">
+<h1>Activity Selection</h1>
+<p class="lede">The greedy algorithm for scheduling the maximum number of non-overlapping activities in one resource: earliest finish time first, its proof, dry runs with timelines, and every exam variation from meeting rooms and time strings to minimum removals, interval partitioning and the weighted version.</p>
+<div class="box formula">
+<div class="row">Sort activities by finish time <var>f</var><sub>1</sub> ≤ <var>f</var><sub>2</sub> ≤ … ≤ <var>f<sub>n</sub></var>.</div>
+<div class="row">Select <var>a</var><sub>1</sub>; then repeatedly select the next <var>a<sub>m</sub></var> with <var>s<sub>m</sub></var> ≥ <var>f</var> of the last selected activity.</div>
+<div class="row">Time Θ(<var>n</var> log <var>n</var>) for sorting + Θ(<var>n</var>) scan. Space O(1) extra (O(<var>n</var>) for indices).</div>
+</div>
+
+<section class="lab" aria-labelledby="labTitle">
+<h3 id="labTitle">Scheduling lab: check any exam answer</h3>
+<p class="small muted" style="margin-top:0">Enter activities as <code>start-finish</code>, optionally with a name first, separated by commas: <code>1-4, 3-5, 0-6</code> or <code>Math 09:00-10:30, Chess 10:30-12:00</code>. The timeline, greedy trace, answer, minimum removals and rooms needed appear below.</p>
+<div class="lab-grid">
+  <div style="grid-column:1/-1"><label for="labIn">Activities</label><input id="labIn" type="text" value="a1 1-4, a2 3-5, a3 0-6, a4 5-7, a5 3-9, a6 5-9, a7 6-10, a8 8-11, a9 8-12, a10 2-14, a11 12-16"></div>
+  <div><label for="labRule">Compatibility rule</label>
+    <select id="labRule"><option value="half">Touching allowed: next start ≥ last finish (half-open [s, f))</option><option value="strict">Touching not allowed: next start &gt; last finish (closed [s, f])</option></select></div>
+  <div><label>&nbsp;</label><button id="labRun" type="button">Schedule</button></div>
+</div>
+<div id="labOut" class="lab-out"></div>
+</section>
+</header>
+
+<h2 id="fund" data-short="1. Fundamentals">1. Fundamentals</h2>
+
+<h3 class="toc" id="what">What the problem is and why it is used</h3>
+<p>You are given <var>n</var> activities <var>S</var> = {<var>a</var><sub>1</sub>, …, <var>a<sub>n</sub></var>} that all need the <b>same single resource</b> (a lecture hall, a machine, one person). Activity <var>a<sub>i</sub></var> occupies the half-open interval [<var>s<sub>i</sub></var>, <var>f<sub>i</sub></var>). Two activities are <b>compatible</b> if their intervals do not overlap. The <b>activity selection problem</b> asks for a maximum-size set of mutually compatible activities.</p>
+<p>It models room booking, single-machine job scheduling, choosing TV programmes or conference talks to attend, and allocating a shared channel. It is the standard first example of a greedy algorithm in CLRS (Chapter 15/16 depending on edition) and in Kleinberg–Tardos (“interval scheduling”).</p>
+<div class="box tip"><span class="label">Core intuition</span>
+Among all activities, the one that <b>finishes first</b> leaves the most time for everything else. Choosing it can never hurt, so take it, throw away everything that overlaps it, and repeat.</div>
+
+<h3 class="toc" id="terms">Terminology</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Start time <var>s<sub>i</sub></var>, finish time <var>f<sub>i</sub></var></td><td>0 ≤ <var>s<sub>i</sub></var> &lt; <var>f<sub>i</sub></var>. The activity uses [<var>s<sub>i</sub></var>, <var>f<sub>i</sub></var>).</td></tr>
+<tr><td>Compatible (non-overlapping)</td><td><var>a<sub>i</sub></var>, <var>a<sub>j</sub></var> compatible ⇔ <var>s<sub>i</sub></var> ≥ <var>f<sub>j</sub></var> or <var>s<sub>j</sub></var> ≥ <var>f<sub>i</sub></var>. With half-open intervals an activity may start exactly when another ends.</td></tr>
+<tr><td>Closed-interval convention</td><td>Some questions treat [<var>s</var>, <var>f</var>] as closed: then touching is a conflict and the test becomes <var>s<sub>i</sub></var> &gt; <var>f<sub>j</sub></var>. Read the question.</td></tr>
+<tr><td>Mutually compatible set</td><td>Every pair in the set is compatible (equivalently, sorted by start, each starts at or after the previous one finishes).</td></tr>
+<tr><td>Maximum-size vs maximum-weight</td><td>Activity selection maximises the <b>count</b>. Maximising total value/profit/duration is <b>weighted interval scheduling</b> (DP, not greedy).</td></tr>
+<tr><td><var>S<sub>k</sub></var></td><td>Activities that start after <var>a<sub>k</sub></var> finishes: {<var>a<sub>i</sub></var> : <var>s<sub>i</sub></var> ≥ <var>f<sub>k</sub></var>}.</td></tr>
+<tr><td><var>S<sub>ij</sub></var> (CLRS DP)</td><td>Activities that start after <var>a<sub>i</sub></var> finishes and finish before <var>a<sub>j</sub></var> starts.</td></tr>
+</table></div>
+
+<h3 class="toc" id="whenuse">When to use it and when not to</h3>
+<div class="cols">
+<div class="box example"><span class="label">Use earliest-finish greedy when</span>
+<ul><li>There is <b>one</b> resource and each activity has a fixed start and finish.</li>
+<li>Every activity is equally valuable and you maximise <b>how many</b> are done.</li>
+<li>The question asks for the maximum number of non-overlapping intervals, the minimum number to remove, or the minimum number of points that hit every interval (same greedy).</li></ul></div>
+<div class="box warn"><span class="label">Do not use it when</span>
+<ul><li>Activities have different profits/weights → weighted interval scheduling (DP + binary search).</li>
+<li>You must schedule <b>all</b> activities using as few rooms as possible → interval partitioning (sort by start, min-heap).</li>
+<li>Jobs have deadlines and durations but no fixed start → job sequencing / scheduling to minimise lateness.</li>
+<li>Activities can be moved or split → different problems entirely.</li></ul></div>
+</div>
+
+<h3 class="toc" id="advlim">Advantages, limitations, typical pitfalls</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Advantages</th><th>Limitations</th></tr>
+<tr><td>Simple, O(<var>n</var> log <var>n</var>), O(<var>n</var>) if already sorted. Provably optimal. Easy to trace by hand and to code from memory. Same pattern solves several interval problems.</td>
+<td>Only maximises the count for one resource. The optimal set is often not unique (greedy finds one of them). Fails for weights. Results depend on the endpoint convention (touching allowed or not). Natural-looking alternatives (earliest start, shortest duration, fewest conflicts) are wrong.</td></tr>
+</table></div>
+
+<h2 id="form" data-short="2. Algorithm & proofs">2. The greedy algorithm, its correctness and complexity</h2>
+
+<h3 class="toc" id="pseudo">Pseudocode (CLRS)</h3>
+<div class="box algo"><pre class="mono" style="margin:0;white-space:pre;overflow-x:auto">GREEDY-ACTIVITY-SELECTOR(s, f)          ▷ activities sorted by f
+  n ← s.length
+  A ← {a1}
+  k ← 1                                  ▷ index of last selected
+  for m ← 2 to n
+      if s[m] ≥ f[k]
+          A ← A ∪ {am}
+          k ← m
+  return A
+
+RECURSIVE-ACTIVITY-SELECTOR(s, f, k, n)  ▷ call with k = 0, f[0] = 0
+  m ← k + 1
+  while m ≤ n and s[m] &lt; f[k]          ▷ skip activities that start too early
+      m ← m + 1
+  if m ≤ n
+      return {am} ∪ RECURSIVE-ACTIVITY-SELECTOR(s, f, m, n)
+  else return ∅</pre></div>
+<p>If the input is not sorted by finish time, sort first (carry original indices along so you can report the right activities).</p>
+
+<h3 class="toc" id="proof">Correctness proof</h3>
+<p><b>Theorem (greedy choice, CLRS 16.1).</b> For any non-empty subproblem <var>S<sub>k</sub></var>, let <var>a<sub>m</sub></var> be the activity in <var>S<sub>k</sub></var> with the earliest finish time. Then <var>a<sub>m</sub></var> belongs to some maximum-size compatible subset of <var>S<sub>k</sub></var>.</p>
+<details><summary>Proof (exchange argument)</summary><div class="inner">
+<p>Let <var>A<sub>k</sub></var> be a maximum-size compatible subset of <var>S<sub>k</sub></var> and let <var>a<sub>j</sub></var> be the activity in <var>A<sub>k</sub></var> with the earliest finish time. If <var>a<sub>j</sub></var> = <var>a<sub>m</sub></var>, done. Otherwise let <var>A′</var> = (<var>A<sub>k</sub></var> − {<var>a<sub>j</sub></var>}) ∪ {<var>a<sub>m</sub></var>}.</p>
+<p>Every other activity in <var>A<sub>k</sub></var> starts at or after <var>f<sub>j</sub></var> (they are compatible with <var>a<sub>j</sub></var> and finish later). Since <var>f<sub>m</sub></var> ≤ <var>f<sub>j</sub></var>, they also start at or after <var>f<sub>m</sub></var>, so <var>A′</var> is compatible. |<var>A′</var>| = |<var>A<sub>k</sub></var>|, so <var>A′</var> is also maximum and contains <var>a<sub>m</sub></var>.</p>
+<p><b>Optimal substructure:</b> after choosing <var>a<sub>m</sub></var>, the remaining problem is exactly <var>S<sub>m</sub></var> (activities starting after <var>f<sub>m</sub></var>), and an optimal solution of <var>S<sub>k</sub></var> containing <var>a<sub>m</sub></var> is {<var>a<sub>m</sub></var>} ∪ (an optimal solution of <var>S<sub>m</sub></var>). By induction the greedy algorithm is optimal.</p></div></details>
+<details><summary>Alternative proof: “greedy stays ahead” (Kleinberg–Tardos)</summary><div class="inner">
+<p>Let greedy pick <var>i</var><sub>1</sub>, …, <var>i<sub>k</sub></var> and an optimal solution <var>j</var><sub>1</sub>, …, <var>j<sub>m</sub></var>, both in finish order. Claim: <var>f</var>(<var>i<sub>r</sub></var>) ≤ <var>f</var>(<var>j<sub>r</sub></var>) for all <var>r</var> ≤ <var>k</var>. True for <var>r</var> = 1 (greedy picks the earliest finish overall). If true for <var>r</var> − 1, then <var>j<sub>r</sub></var> starts after <var>f</var>(<var>j</var><sub>r−1</sub>) ≥ <var>f</var>(<var>i</var><sub>r−1</sub>), so <var>j<sub>r</sub></var> was available to greedy at step <var>r</var>; greedy picks the earliest-finishing available one, so <var>f</var>(<var>i<sub>r</sub></var>) ≤ <var>f</var>(<var>j<sub>r</sub></var>).</p>
+<p>If <var>m</var> &gt; <var>k</var>, activity <var>j</var><sub>k+1</sub> starts after <var>f</var>(<var>j<sub>k</sub></var>) ≥ <var>f</var>(<var>i<sub>k</sub></var>), so greedy would not have stopped: contradiction. Hence <var>k</var> = <var>m</var>.</p></div></details>
+
+<h3 class="toc" id="dpform">The DP formulation (why greedy is better)</h3>
+<div class="box formula">
+<div class="row"><var>c</var>[<var>i</var>, <var>j</var>] = 0 if <var>S<sub>ij</sub></var> = ∅</div>
+<div class="row"><var>c</var>[<var>i</var>, <var>j</var>] = max<sub><var>a<sub>k</sub></var> ∈ <var>S<sub>ij</sub></var></sub> { <var>c</var>[<var>i</var>, <var>k</var>] + <var>c</var>[<var>k</var>, <var>j</var>] + 1 } otherwise</div>
+</div>
+<p>This DP is correct but takes O(<var>n</var><sup>3</sup>) time. A simpler O(<var>n</var><sup>2</sup>) DP sorts by finish and sets dp[<var>i</var>] = 1 + max dp[<var>j</var>] over compatible <var>j</var> &lt; <var>i</var>. The greedy theorem shows that only one choice (earliest finish) needs to be tried, collapsing the DP to one pass. Program a10 implements the O(<var>n</var><sup>2</sup>) DP and was used to cross-check the greedy answers on this sheet.</p>
+
+<h3 class="toc" id="complex">Complexity analysis</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Version</th><th>Time</th><th>Space</th></tr>
+<tr><td>Iterative greedy, input sorted by finish</td><td>Θ(<var>n</var>)</td><td>O(1) extra</td></tr>
+<tr><td>Iterative greedy, unsorted input</td><td>O(<var>n</var> log <var>n</var>) (sort dominates)</td><td>O(<var>n</var>) for the index array</td></tr>
+<tr><td>Recursive greedy (CLRS)</td><td>Θ(<var>n</var>) (each activity examined once in the while loops)</td><td>O(<var>n</var>) recursion depth</td></tr>
+<tr><td>Brute force over all subsets</td><td>O(<var>n</var>·2<sup><var>n</var></sup>)</td><td>O(<var>n</var>)</td></tr>
+<tr><td>CLRS interval DP c[i, j]</td><td>O(<var>n</var><sup>3</sup>)</td><td>O(<var>n</var><sup>2</sup>)</td></tr>
+<tr><td>Simple DP (LIS-style)</td><td>O(<var>n</var><sup>2</sup>)</td><td>O(<var>n</var>)</td></tr>
+<tr><td>Integer times in range [0, T], counting sort</td><td>O(<var>n</var> + <var>T</var>)</td><td>O(<var>T</var>)</td></tr>
+</table></div>
+
+<h2 id="dry" data-short="3. Dry runs">3. Step-by-step dry runs</h2>
+
+<h3 class="toc" id="dry1">Dry run 1: the CLRS 11 activities</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>i</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
+<tr><th>s<sub>i</sub></th><td>1</td><td>3</td><td>0</td><td>5</td><td>3</td><td>5</td><td>6</td><td>8</td><td>8</td><td>2</td><td>12</td></tr>
+<tr><th>f<sub>i</sub></th><td>4</td><td>5</td><td>6</td><td>7</td><td>9</td><td>9</td><td>10</td><td>11</td><td>12</td><td>14</td><td>16</td></tr>
+</table></div>
+<p><b>Initial conditions:</b> already sorted by finish. Selected set A = ∅, last finish = none.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>a1</td><td>1</td><td>4</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr><td>2</td><td>a2</td><td>3</td><td>5</td><td>4</td><td>3 ≥ 4 → no</td><td>Reject (overlaps)</td></tr><tr><td>3</td><td>a3</td><td>0</td><td>6</td><td>4</td><td>0 ≥ 4 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>4</td><td>a4</td><td>5</td><td>7</td><td>4</td><td>5 ≥ 4 → yes</td><td><b>Select</b></td></tr><tr><td>5</td><td>a5</td><td>3</td><td>9</td><td>7</td><td>3 ≥ 7 → no</td><td>Reject (overlaps)</td></tr><tr><td>6</td><td>a6</td><td>5</td><td>9</td><td>7</td><td>5 ≥ 7 → no</td><td>Reject (overlaps)</td></tr><tr><td>7</td><td>a7</td><td>6</td><td>10</td><td>7</td><td>6 ≥ 7 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>8</td><td>a8</td><td>8</td><td>11</td><td>7</td><td>8 ≥ 7 → yes</td><td><b>Select</b></td></tr><tr><td>9</td><td>a9</td><td>8</td><td>12</td><td>11</td><td>8 ≥ 11 → no</td><td>Reject (overlaps)</td></tr><tr><td>10</td><td>a10</td><td>2</td><td>14</td><td>11</td><td>2 ≥ 11 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>11</td><td>a11</td><td>12</td><td>16</td><td>11</td><td>12 ≥ 11 → yes</td><td><b>Select</b></td></tr></table></div><p>Selected: <b>a1, a4, a8, a11</b> → 4 activities.</p>
+<div class="tbl-wrap gantt"><svg viewBox="0 0 620 300" width="620" height="300" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="103.8" y1="14" x2="103.8" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="103.8" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="137.5" y1="14" x2="137.5" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="137.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="171.2" y1="14" x2="171.2" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="171.2" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="205.0" y1="14" x2="205.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="205.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="238.8" y1="14" x2="238.8" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="238.8" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="272.5" y1="14" x2="272.5" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="272.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="306.2" y1="14" x2="306.2" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="306.2" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="340.0" y1="14" x2="340.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="340.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="373.8" y1="14" x2="373.8" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="373.8" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><line x1="407.5" y1="14" x2="407.5" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="407.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10</text><line x1="441.2" y1="14" x2="441.2" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="441.2" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">11</text><line x1="475.0" y1="14" x2="475.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="475.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">12</text><line x1="508.8" y1="14" x2="508.8" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="508.8" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">13</text><line x1="542.5" y1="14" x2="542.5" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="542.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">14</text><line x1="576.2" y1="14" x2="576.2" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="576.2" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">15</text><line x1="610.0" y1="14" x2="610.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">16</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">a1</text><rect x="103.8" y="20" width="101.2" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="154.4" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">1–4</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">a2</text><rect x="171.2" y="44" width="67.5" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="205.0" y="57" font-size="10" text-anchor="middle" fill="var(--ink)">3–5</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">a3</text><rect x="70.0" y="68" width="202.5" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="171.2" y="81" font-size="10" text-anchor="middle" fill="var(--ink)">0–6</text><text x="62" y="106" font-size="11" text-anchor="end" fill="var(--ink)">a4</text><rect x="238.8" y="92" width="67.5" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="272.5" y="105" font-size="10" text-anchor="middle" fill="var(--surface)">5–7</text><text x="62" y="130" font-size="11" text-anchor="end" fill="var(--ink)">a5</text><rect x="171.2" y="116" width="202.5" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="272.5" y="129" font-size="10" text-anchor="middle" fill="var(--ink)">3–9</text><text x="62" y="154" font-size="11" text-anchor="end" fill="var(--ink)">a6</text><rect x="238.8" y="140" width="135.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="306.2" y="153" font-size="10" text-anchor="middle" fill="var(--ink)">5–9</text><text x="62" y="178" font-size="11" text-anchor="end" fill="var(--ink)">a7</text><rect x="272.5" y="164" width="135.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="340.0" y="177" font-size="10" text-anchor="middle" fill="var(--ink)">6–10</text><text x="62" y="202" font-size="11" text-anchor="end" fill="var(--ink)">a8</text><rect x="340.0" y="188" width="101.2" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="390.6" y="201" font-size="10" text-anchor="middle" fill="var(--surface)">8–11</text><text x="62" y="226" font-size="11" text-anchor="end" fill="var(--ink)">a9</text><rect x="340.0" y="212" width="135.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="407.5" y="225" font-size="10" text-anchor="middle" fill="var(--ink)">8–12</text><text x="62" y="250" font-size="11" text-anchor="end" fill="var(--ink)">a10</text><rect x="137.5" y="236" width="405.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="340.0" y="249" font-size="10" text-anchor="middle" fill="var(--ink)">2–14</text><text x="62" y="274" font-size="11" text-anchor="end" fill="var(--ink)">a11</text><rect x="475.0" y="260" width="135.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="542.5" y="273" font-size="10" text-anchor="middle" fill="var(--surface)">12–16</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p>
+<p><b>Answer:</b> {a1, a4, a8, a11}, 4 activities. Another maximum set is {a2, a4, a9, a11}: the optimum is not unique, but the count is.</p>
+<pre class="io">Input:
+11
+1 3 0 5 3 5 6 8 8 2 12
+4 5 6 7 9 9 10 11 12 14 16
+Output:
+Maximum activities: 4
+a1 [1, 4)
+a4 [5, 7)
+a8 [8, 11)
+a11 [12, 16)</pre>
+
+<h3 class="toc" id="dry2">Dry run 2: s = [1, 3, 0, 5, 8, 5], f = [2, 4, 6, 7, 9, 9]</h3>
+<div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>a1</td><td>1</td><td>2</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr class=sel><td>2</td><td>a2</td><td>3</td><td>4</td><td>2</td><td>3 ≥ 2 → yes</td><td><b>Select</b></td></tr><tr><td>3</td><td>a3</td><td>0</td><td>6</td><td>4</td><td>0 ≥ 4 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>4</td><td>a4</td><td>5</td><td>7</td><td>4</td><td>5 ≥ 4 → yes</td><td><b>Select</b></td></tr><tr class=sel><td>5</td><td>a5</td><td>8</td><td>9</td><td>7</td><td>8 ≥ 7 → yes</td><td><b>Select</b></td></tr><tr><td>6</td><td>a6</td><td>5</td><td>9</td><td>9</td><td>5 ≥ 9 → no</td><td>Reject (overlaps)</td></tr></table></div><p>Selected: <b>a1, a2, a4, a5</b> → 4 activities.</p>
+<div class="tbl-wrap gantt"><svg viewBox="0 0 620 180" width="620" height="180" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="130.0" y1="14" x2="130.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="130.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="190.0" y1="14" x2="190.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="190.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="250.0" y1="14" x2="250.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="250.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="310.0" y1="14" x2="310.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="310.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="370.0" y1="14" x2="370.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="370.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="430.0" y1="14" x2="430.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="430.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="490.0" y1="14" x2="490.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="490.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="550.0" y1="14" x2="550.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="550.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="610.0" y1="14" x2="610.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">a1</text><rect x="130.0" y="20" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="160.0" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">1–2</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">a2</text><rect x="250.0" y="44" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="280.0" y="57" font-size="10" text-anchor="middle" fill="var(--surface)">3–4</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">a3</text><rect x="70.0" y="68" width="360.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="250.0" y="81" font-size="10" text-anchor="middle" fill="var(--ink)">0–6</text><text x="62" y="106" font-size="11" text-anchor="end" fill="var(--ink)">a4</text><rect x="370.0" y="92" width="120.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="430.0" y="105" font-size="10" text-anchor="middle" fill="var(--surface)">5–7</text><text x="62" y="130" font-size="11" text-anchor="end" fill="var(--ink)">a5</text><rect x="550.0" y="116" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="580.0" y="129" font-size="10" text-anchor="middle" fill="var(--surface)">8–9</text><text x="62" y="154" font-size="11" text-anchor="end" fill="var(--ink)">a6</text><rect x="370.0" y="140" width="240.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="490.0" y="153" font-size="10" text-anchor="middle" fill="var(--ink)">5–9</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p>
+<p>Note a6 [5, 9) and a5 [8, 9) tie on finish time 9; the stable sort keeps input order (a5 first), but by then a5 is selected and a6 is rejected anyway.</p>
+
+<h3 class="toc" id="dry3">Dry run 3: unsorted input (sort first, keep names)</h3>
+<p>Meetings M1 = (5, 9), M2 = (1, 2), M3 = (3, 4), M4 = (0, 6), M5 = (5, 7), M6 = (8, 9).</p>
+<p><b>Step 1 — sort by finish:</b> M2 (2), M3 (4), M4 (6), M5 (7), M1 (9), M6 (9). M1 and M6 tie; stable order keeps M1 before M6.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>M2</td><td>1</td><td>2</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr class=sel><td>2</td><td>M3</td><td>3</td><td>4</td><td>2</td><td>3 ≥ 2 → yes</td><td><b>Select</b></td></tr><tr><td>3</td><td>M4</td><td>0</td><td>6</td><td>4</td><td>0 ≥ 4 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>4</td><td>M5</td><td>5</td><td>7</td><td>4</td><td>5 ≥ 4 → yes</td><td><b>Select</b></td></tr><tr><td>5</td><td>M1</td><td>5</td><td>9</td><td>7</td><td>5 ≥ 7 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>6</td><td>M6</td><td>8</td><td>9</td><td>7</td><td>8 ≥ 7 → yes</td><td><b>Select</b></td></tr></table></div><p>Selected: <b>M2, M3, M5, M6</b> → 4 activities.</p>
+<div class="tbl-wrap gantt"><svg viewBox="0 0 620 180" width="620" height="180" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="130.0" y1="14" x2="130.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="130.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="190.0" y1="14" x2="190.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="190.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="250.0" y1="14" x2="250.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="250.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="310.0" y1="14" x2="310.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="310.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="370.0" y1="14" x2="370.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="370.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="430.0" y1="14" x2="430.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="430.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="490.0" y1="14" x2="490.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="490.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="550.0" y1="14" x2="550.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="550.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="610.0" y1="14" x2="610.0" y2="176" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">M2</text><rect x="130.0" y="20" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="160.0" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">1–2</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">M3</text><rect x="250.0" y="44" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="280.0" y="57" font-size="10" text-anchor="middle" fill="var(--surface)">3–4</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">M4</text><rect x="70.0" y="68" width="360.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="250.0" y="81" font-size="10" text-anchor="middle" fill="var(--ink)">0–6</text><text x="62" y="106" font-size="11" text-anchor="end" fill="var(--ink)">M5</text><rect x="370.0" y="92" width="120.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="430.0" y="105" font-size="10" text-anchor="middle" fill="var(--surface)">5–7</text><text x="62" y="130" font-size="11" text-anchor="end" fill="var(--ink)">M1</text><rect x="370.0" y="116" width="240.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="490.0" y="129" font-size="10" text-anchor="middle" fill="var(--ink)">5–9</text><text x="62" y="154" font-size="11" text-anchor="end" fill="var(--ink)">M6</text><rect x="550.0" y="140" width="60.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="580.0" y="153" font-size="10" text-anchor="middle" fill="var(--surface)">8–9</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p>
+<p>Answer: M2, M3, M5, M6 (4 meetings). Report the <b>original names</b>, not the positions in the sorted list.</p>
+
+<h3 class="toc" id="dry4">Dry run 4: clock times</h3>
+<p>Math 09:00–10:30, Physics 10:00–11:00, Chess 10:30–12:00, Lunch 12:00–13:00, Debate 11:30–12:30. Convert every time to minutes after midnight (09:00 → 540) so comparisons are numeric.</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>Math</td><td>09:00</td><td>10:30</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr><td>2</td><td>Physics</td><td>10:00</td><td>11:00</td><td>10:30</td><td>10:00 ≥ 10:30 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>3</td><td>Chess</td><td>10:30</td><td>12:00</td><td>10:30</td><td>10:30 ≥ 10:30 → yes</td><td><b>Select</b></td></tr><tr><td>4</td><td>Debate</td><td>11:30</td><td>12:30</td><td>12:00</td><td>11:30 ≥ 12:00 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>5</td><td>Lunch</td><td>12:00</td><td>13:00</td><td>12:00</td><td>12:00 ≥ 12:00 → yes</td><td><b>Select</b></td></tr></table></div><p>Selected: <b>Math, Chess, Lunch</b> → 3 activities.</p>
+<div class="tbl-wrap gantt"><svg viewBox="0 0 620 156" width="620" height="156" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">09:00</text><line x1="137.5" y1="14" x2="137.5" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="137.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">09:30</text><line x1="205.0" y1="14" x2="205.0" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="205.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10:00</text><line x1="272.5" y1="14" x2="272.5" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="272.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10:30</text><line x1="340.0" y1="14" x2="340.0" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="340.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">11:00</text><line x1="407.5" y1="14" x2="407.5" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="407.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">11:30</text><line x1="475.0" y1="14" x2="475.0" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="475.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">12:00</text><line x1="542.5" y1="14" x2="542.5" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="542.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">12:30</text><line x1="610.0" y1="14" x2="610.0" y2="152" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">13:00</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">Math</text><rect x="70.0" y="20" width="202.5" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="171.2" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">09:00–10:30</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">Physics</text><rect x="205.0" y="44" width="135.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="272.5" y="57" font-size="10" text-anchor="middle" fill="var(--ink)">10:00–11:00</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">Chess</text><rect x="272.5" y="68" width="202.5" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="373.8" y="81" font-size="10" text-anchor="middle" fill="var(--surface)">10:30–12:00</text><text x="62" y="106" font-size="11" text-anchor="end" fill="var(--ink)">Debate</text><rect x="407.5" y="92" width="135.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="475.0" y="105" font-size="10" text-anchor="middle" fill="var(--ink)">11:30–12:30</text><text x="62" y="130" font-size="11" text-anchor="end" fill="var(--ink)">Lunch</text><rect x="475.0" y="116" width="135.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="542.5" y="129" font-size="10" text-anchor="middle" fill="var(--surface)">12:00–13:00</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p>
+<pre class="io">Input:
+5
+Math 09:00 10:30
+Physics 10:00 11:00
+Chess 10:30 12:00
+Lunch 12:00 13:00
+Debate 11:30 12:30
+Output:
+Math 09:00-10:30
+Chess 10:30-12:00
+Lunch 12:00-13:00
+Total: 3</pre>
+
+<h3 class="toc" id="dry5">Dry run 5: touching endpoints (convention matters)</h3>
+<p>P = [1, 3], Q = [3, 5], R = [5, 7].</p>
+<div class="cols">
+<div><h4>Half-open (start ≥ last finish)</h4><div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>P</td><td>1</td><td>3</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr class=sel><td>2</td><td>Q</td><td>3</td><td>5</td><td>3</td><td>3 ≥ 3 → yes</td><td><b>Select</b></td></tr><tr class=sel><td>3</td><td>R</td><td>5</td><td>7</td><td>5</td><td>5 ≥ 5 → yes</td><td><b>Select</b></td></tr></table></div><p>Selected: <b>P, Q, R</b> → 3 activities.</p></div>
+<div><h4>Closed (start &gt; last finish)</h4><div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s &gt; last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>P</td><td>1</td><td>3</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr><td>2</td><td>Q</td><td>3</td><td>5</td><td>3</td><td>3 &gt; 3 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>3</td><td>R</td><td>5</td><td>7</td><td>3</td><td>5 &gt; 3 → yes</td><td><b>Select</b></td></tr></table></div><p>Selected: <b>P, R</b> → 2 activities.</p></div>
+</div>
+<p>Same data, different answer (3 vs 2). CLRS uses half-open intervals; many lab problems say “an activity can start when the previous one ends” (half-open). If the question says “at least one minute gap” or treats endpoints as overlapping, use the strict test.</p>
+
+<h3 class="toc" id="dry6">Dry run 6: ties in finish time</h3>
+<p>A = (1, 4), B = (2, 4), C = (4, 6), D = (3, 6).</p>
+<div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start s</th><th>Finish f</th><th>Last selected finish</th><th>Test s ≥ last</th><th>Decision</th></tr><tr class=sel><td>1</td><td>A</td><td>1</td><td>4</td><td>—</td><td>first activity</td><td><b>Select</b></td></tr><tr><td>2</td><td>B</td><td>2</td><td>4</td><td>4</td><td>2 ≥ 4 → no</td><td>Reject (overlaps)</td></tr><tr class=sel><td>3</td><td>C</td><td>4</td><td>6</td><td>4</td><td>4 ≥ 4 → yes</td><td><b>Select</b></td></tr><tr><td>4</td><td>D</td><td>3</td><td>6</td><td>6</td><td>3 ≥ 6 → no</td><td>Reject (overlaps)</td></tr></table></div><p>Selected: <b>A, C</b> → 2 activities.</p>
+<p>A and B both finish at 4; picking either gives a maximum set (A, C or B, C). The count is unaffected by how ties are broken; only the reported set changes. Stable sorting (keep input order on ties) makes the output reproducible.</p>
+
+<h3 class="toc" id="dry7">Dry run 7: why other greedy rules fail</h3>
+<div class="cols">
+<div><h4>Earliest start first</h4><div class="tbl-wrap gantt"><svg viewBox="0 0 620 108" width="620" height="108" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="124.0" y1="14" x2="124.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="124.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="178.0" y1="14" x2="178.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="178.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="232.0" y1="14" x2="232.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="232.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="286.0" y1="14" x2="286.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="286.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="340.0" y1="14" x2="340.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="340.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="394.0" y1="14" x2="394.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="394.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="448.0" y1="14" x2="448.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="448.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="502.0" y1="14" x2="502.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="502.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="556.0" y1="14" x2="556.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="556.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><line x1="610.0" y1="14" x2="610.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">Short1</text><rect x="124.0" y="20" width="54.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="151.0" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">1–2</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">Short2</text><rect x="232.0" y="44" width="54.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="259.0" y="57" font-size="10" text-anchor="middle" fill="var(--surface)">3–4</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">Long</text><rect x="70.0" y="68" width="540.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="340.0" y="81" font-size="10" text-anchor="middle" fill="var(--ink)">0–10</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p><p>Earliest start picks Long (0, 10) and blocks both short ones → 1. Earliest finish picks Short1, Short2 → 2.</p></div>
+<div><h4>Shortest duration first</h4><div class="tbl-wrap gantt"><svg viewBox="0 0 620 108" width="620" height="108" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="119.1" y1="14" x2="119.1" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="119.1" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="168.2" y1="14" x2="168.2" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="168.2" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="217.3" y1="14" x2="217.3" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="217.3" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="266.4" y1="14" x2="266.4" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="266.4" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="315.5" y1="14" x2="315.5" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="315.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="364.5" y1="14" x2="364.5" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="364.5" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="413.6" y1="14" x2="413.6" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="413.6" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="462.7" y1="14" x2="462.7" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="462.7" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="511.8" y1="14" x2="511.8" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="511.8" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><line x1="560.9" y1="14" x2="560.9" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="560.9" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10</text><line x1="610.0" y1="14" x2="610.0" y2="104" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">11</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">Left</text><rect x="70.0" y="20" width="245.5" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="192.7" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">0–5</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">Middle</text><rect x="266.4" y="44" width="147.3" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="340.0" y="57" font-size="10" text-anchor="middle" fill="var(--ink)">4–7</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">Right</text><rect x="364.5" y="68" width="245.5" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="487.3" y="81" font-size="10" text-anchor="middle" fill="var(--surface)">6–11</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p><p>Shortest picks Middle (4, 7) (length 3), which overlaps both others → 1. Optimal: Left, Right → 2.</p></div>
+</div>
+<h4>Fewest conflicts first</h4>
+<div class="tbl-wrap gantt"><svg viewBox="0 0 620 300" width="620" height="300" role="img" aria-label="Timeline of activities"><line x1="70.0" y1="14" x2="70.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="70.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">0</text><line x1="106.0" y1="14" x2="106.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="106.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">1</text><line x1="142.0" y1="14" x2="142.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="142.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">2</text><line x1="178.0" y1="14" x2="178.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="178.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">3</text><line x1="214.0" y1="14" x2="214.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="214.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">4</text><line x1="250.0" y1="14" x2="250.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="250.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">5</text><line x1="286.0" y1="14" x2="286.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="286.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">6</text><line x1="322.0" y1="14" x2="322.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="322.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">7</text><line x1="358.0" y1="14" x2="358.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="358.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">8</text><line x1="394.0" y1="14" x2="394.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="394.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">9</text><line x1="430.0" y1="14" x2="430.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="430.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">10</text><line x1="466.0" y1="14" x2="466.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="466.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">11</text><line x1="502.0" y1="14" x2="502.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="502.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">12</text><line x1="538.0" y1="14" x2="538.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="538.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">13</text><line x1="574.0" y1="14" x2="574.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="574.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">14</text><line x1="610.0" y1="14" x2="610.0" y2="296" stroke="var(--rule)" stroke-width="1"/><text x="610.0" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">15</text><text x="62" y="34" font-size="11" text-anchor="end" fill="var(--ink)">A</text><rect x="70.0" y="20" width="108.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="124.0" y="33" font-size="10" text-anchor="middle" fill="var(--surface)">0–3</text><text x="62" y="58" font-size="11" text-anchor="end" fill="var(--ink)">P1</text><rect x="142.0" y="44" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="196.0" y="57" font-size="10" text-anchor="middle" fill="var(--ink)">2–5</text><text x="62" y="82" font-size="11" text-anchor="end" fill="var(--ink)">P2</text><rect x="142.0" y="68" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="196.0" y="81" font-size="10" text-anchor="middle" fill="var(--ink)">2–5</text><text x="62" y="106" font-size="11" text-anchor="end" fill="var(--ink)">P3</text><rect x="142.0" y="92" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="196.0" y="105" font-size="10" text-anchor="middle" fill="var(--ink)">2–5</text><text x="62" y="130" font-size="11" text-anchor="end" fill="var(--ink)">B</text><rect x="214.0" y="116" width="108.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="268.0" y="129" font-size="10" text-anchor="middle" fill="var(--surface)">4–7</text><text x="62" y="154" font-size="11" text-anchor="end" fill="var(--ink)">X</text><rect x="286.0" y="140" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="340.0" y="153" font-size="10" text-anchor="middle" fill="var(--ink)">6–9</text><text x="62" y="178" font-size="11" text-anchor="end" fill="var(--ink)">C</text><rect x="358.0" y="164" width="108.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="412.0" y="177" font-size="10" text-anchor="middle" fill="var(--surface)">8–11</text><text x="62" y="202" font-size="11" text-anchor="end" fill="var(--ink)">Q1</text><rect x="430.0" y="188" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="484.0" y="201" font-size="10" text-anchor="middle" fill="var(--ink)">10–13</text><text x="62" y="226" font-size="11" text-anchor="end" fill="var(--ink)">Q2</text><rect x="430.0" y="212" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="484.0" y="225" font-size="10" text-anchor="middle" fill="var(--ink)">10–13</text><text x="62" y="250" font-size="11" text-anchor="end" fill="var(--ink)">Q3</text><rect x="430.0" y="236" width="108.0" height="18" rx="3" fill="var(--surface)" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="3 2"/><text x="484.0" y="249" font-size="10" text-anchor="middle" fill="var(--ink)">10–13</text><text x="62" y="274" font-size="11" text-anchor="end" fill="var(--ink)">D</text><rect x="502.0" y="260" width="108.0" height="18" rx="3" fill="var(--accent)" stroke="var(--accent)" stroke-width="1.2"/><text x="556.0" y="273" font-size="10" text-anchor="middle" fill="var(--surface)">12–15</text></svg></div><p class="legend">Rows sorted by finish time. Filled bars = selected by earliest-finish greedy; dashed bars = rejected.</p>
+<p>Conflict counts: X overlaps only B and C (2 conflicts, the unique minimum); A and D have 3; every other activity has 4. Fewest-conflicts picks X first, which kills B and C, leaving at most A (or a P) and D (or a Q): total 3. The optimum is A, B, C, D = 4, exactly what earliest-finish finds.</p>
+
+<h2 id="story" data-short="4. Story → algorithm">4. Converting story problems into activity selection</h2>
+<ol class="steps">
+<li><b>Find the intervals.</b> Anything with a start and an end: meetings, lectures, shows, jobs, bookings, trips, advertisements, sensor windows.</li>
+<li><b>Count the resources.</b> One room / one person / one machine → activity selection. Several rooms and “schedule all” → interval partitioning. k rooms and “maximise how many” → k-resource variant.</li>
+<li><b>Check the objective.</b> “Maximum number”, “as many as possible”, “minimum to cancel/remove” → earliest-finish greedy. “Maximum profit/pay/value/total duration” → weighted DP.</li>
+<li><b>Fix the endpoint rule.</b> Can a new activity start exactly when one ends? Is there a required gap (travel, setup)?</li>
+<li><b>Normalise the input.</b> Convert times to minutes, durations to finish times (f = s + d), and keep names/indices before sorting.</li>
+</ol>
+
+<h3 class="toc" id="storyA">Worked translations</h3>
+
+<details class="var" open><summary>A. Direct start/finish arrays</summary><div class="inner">
+<p><i>“Given s = ⟨1, 3, 0, 5, 3, 5, 6, 8, 8, 2, 12⟩ and f = ⟨4, 5, 6, 7, 9, 9, 10, 11, 12, 14, 16⟩, find a maximum set of mutually compatible activities.”</i> Already standard: Dry run 1.</p></div></details>
+
+<details class="var"><summary>B. One seminar hall, many requests</summary><div class="inner">
+<p><i>“A university has one seminar hall. Clubs request it for: Robotics 9–11, Drama 10–12, Music 11–13, Chess 12–14, Debate 13–15, Art 9–15. Grant the maximum number of requests.”</i></p>
+<p><b>Extract:</b> one resource, equal value, maximise count. Sorted by finish: Robotics 11, Drama 12, Music 13, Chess 14, Debate 15, Art 15. Select Robotics (ends 11), Music (11 ≥ 11, ends 13), Debate (13 ≥ 13). <b>Answer: 3</b> (Robotics, Music, Debate).</p></div></details>
+
+<details class="var"><summary>C. A student at a festival (clock times)</summary><div class="inner">
+<p><i>“A student wants to attend as many events as possible: Math 09:00–10:30, Physics 10:00–11:00, Chess 10:30–12:00, Lunch 12:00–13:00, Debate 11:30–12:30.”</i> Convert to minutes: Dry run 4 → Math, Chess, Lunch.</p></div></details>
+
+<details class="var"><summary>D. Single machine with start and duration</summary><div class="inner">
+<p><i>“A 3D printer can run one job at a time. Jobs: J1 starts 0 for 3 h, J2 starts 2 for 2 h, J3 starts 3 for 4 h, J4 starts 5 for 1 h, J5 starts 6 for 2 h. Maximise completed jobs.”</i></p>
+<p><b>Extract:</b> f = s + d: J1 [0, 3), J2 [2, 4), J3 [3, 7), J4 [5, 6), J5 [6, 8). Sort by finish: J1 3, J2 4, J4 6, J3 7, J5 8. Select J1 (3), J2 rejected (2 &lt; 3), J4 (5 ≥ 3, ends 6), J3 rejected (3 &lt; 6), J5 (6 ≥ 6). <b>Answer: 3</b> (J1, J4, J5).</p></div></details>
+
+<details class="var"><summary>E. TV channel advertisements (count removals)</summary><div class="inner">
+<p><i>“Ad slots requested: [1, 2], [2, 3], [3, 4], [1, 3]. Overlapping ads cannot both air. What is the minimum number of ads to reject?”</i></p>
+<p>Minimum removals = n − (maximum compatible). Greedy keeps [1,2], [2,3], [3,4] → remove <b>1</b>.</p>
+<pre class="io">Input:
+4
+1 2
+2 3
+3 4
+1 3
+Output:
+Keep 3, remove 1</pre></div></details>
+
+<details class="var"><summary>F. How many rooms are needed? (not activity selection)</summary><div class="inner">
+<p><i>“All six lectures must take place: (1, 2), (3, 4), (0, 6), (5, 7), (8, 9), (5, 9). What is the minimum number of classrooms?”</i></p>
+<p>“All must happen” + “minimum rooms” = interval partitioning. Answer = maximum number of lectures overlapping at one moment = <b>3</b> (at time 5.5: (0, 6), (5, 7), (5, 9)). See Variation V8.</p></div></details>
+
+<details class="var"><summary>G. Freelancer gigs with pay (weighted, not greedy)</summary><div class="inner">
+<p><i>“Gigs (start, end, pay): (1, 3, 5), (2, 5, 6), (4, 6, 5), (6, 7, 4), (5, 8, 11), (7, 9, 2). Maximise total pay.”</i></p>
+<p>Different pays → weighted interval scheduling. Earliest-finish greedy would take (1, 3), (4, 6), (6, 7), (7, 9) = 5 + 5 + 4 + 2 = 16, but the optimum is (2, 5) + (5, 8) = <b>17</b>. See V9.</p></div></details>
+
+<details class="var"><summary>H. Balloons and arrows (interval stabbing)</summary><div class="inner">
+<p><i>“Balloons span x-ranges [10, 16], [2, 8], [1, 6], [7, 12]. An arrow shot at x bursts all balloons covering x. Minimum arrows?”</i></p>
+<p>Sort by right end; shoot at the right end of the first unburst balloon. Arrows at 6 and 12 → <b>2</b>. The number of arrows equals the maximum number of pairwise disjoint balloons (same greedy).</p></div></details>
+
+<details class="var"><summary>I. Travel or setup time between activities</summary><div class="inner">
+<p><i>“A technician needs 1 hour to travel between sites. Jobs: [1, 3], [3, 5], [6, 8]. How many can be done?”</i></p>
+<p>Compatibility becomes s ≥ last finish + gap. [1, 3] → ready at 4; [3, 5] rejected; [6, 8] accepted → <b>2</b>. Same greedy, modified test (V12).</p></div></details>
+
+<details class="var"><summary>J. Two identical rooms, maximise bookings</summary><div class="inner">
+<p><i>“There are 2 rooms. From the CLRS 11 activities, how many can be scheduled?”</i></p>
+<p>k-resource variant (V10): process by finish time; put each activity in the room that became free <b>latest</b> but still before its start. Answer: <b>6</b>.</p></div></details>
+
+<h3 class="toc" id="storymap">Clue → model cheat table</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Story says…</th><th>Model</th><th>Answer comes from</th></tr>
+<tr><td>one room/person/machine, maximise how many</td><td>Activity selection</td><td>Earliest-finish greedy</td></tr>
+<tr><td>minimum to cancel/remove/reject so no overlap</td><td>Activity selection</td><td>n − greedy count</td></tr>
+<tr><td>minimum rooms/platforms/servers to host all</td><td>Interval partitioning</td><td>Maximum overlap</td></tr>
+<tr><td>maximise profit/pay/value</td><td>Weighted interval scheduling</td><td>DP + binary search</td></tr>
+<tr><td>minimum points/arrows/guards hitting all intervals</td><td>Interval stabbing</td><td>Greedy by right end</td></tr>
+<tr><td>cover the whole range with fewest intervals</td><td>Interval covering</td><td>Greedy by start, extend farthest</td></tr>
+<tr><td>k rooms, maximise how many</td><td>k-resource selection</td><td>Greedy by finish + multiset</td></tr>
+<tr><td>gap/travel/setup time</td><td>Activity selection</td><td>Test s ≥ f + gap</td></tr>
+<tr><td>start + duration given</td><td>Activity selection</td><td>f = s + d first</td></tr>
+</table></div>
+
+<h2 id="io" data-short="5. Input/output variations">5. Input and output variations: what changes and what does not</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Variation</th><th>What changes</th><th>Algorithm change?</th></tr>
+<tr><td>Arrays s[] and f[], sorted by f</td><td>Nothing</td><td>No (skip sorting)</td></tr>
+<tr><td>Unsorted input</td><td>Sort indices by f</td><td>No (preprocessing)</td></tr>
+<tr><td>Pairs (s, f) on lines, or a struct list</td><td>Parsing</td><td>No</td></tr>
+<tr><td>Names with times “09:30”</td><td>Convert to minutes; keep names</td><td>No</td></tr>
+<tr><td>Start + duration</td><td>f = s + d</td><td>No</td></tr>
+<tr><td>Output count only</td><td>Counter</td><td>No</td></tr>
+<tr><td>Output the selected activities (original indices)</td><td>Store chosen indices</td><td>No</td></tr>
+<tr><td>Output in chronological order</td><td>Selected set is already in finish order (= start order)</td><td>No</td></tr>
+<tr><td>Output minimum removals</td><td>n − count</td><td>No</td></tr>
+<tr><td>Closed intervals / touching not allowed</td><td>&gt; instead of ≥</td><td>Comparison only</td></tr>
+<tr><td>Required gap between activities</td><td>s ≥ f + gap</td><td>Comparison only</td></tr>
+<tr><td>Equal finish times</td><td>Tie rule</td><td>No (count unchanged)</td></tr>
+<tr><td>Identical activities</td><td>At most one can be chosen (they overlap)</td><td>No</td></tr>
+<tr><td>Zero-length activities [t, t)</td><td>Several can share time t under ≥</td><td>Decide by question</td></tr>
+<tr><td>Multiple rooms, schedule all</td><td>Different objective</td><td>Yes: interval partitioning</td></tr>
+<tr><td>Weights/profits</td><td>Different objective</td><td>Yes: DP</td></tr>
+<tr><td>Recursive implementation requested</td><td>Form</td><td>Same logic</td></tr>
+<tr><td>Prove/explain</td><td>Theory</td><td>Exchange argument</td></tr>
+</table></div>
+
+<h2 id="vars" data-short="6. Problem variations">6. Every relevant problem variation</h2>
+<p>Each card covers the same nine points. Code appears once, at the variation it belongs to. V1–V7 are the core problem in different forms; V8–V12 are closely related interval problems that exams often place next to it. Cards marked <span class="adv-badge">Advanced</span> go further.</p>
+
+<h3 class="toc" id="std">Core variations</h3>
+
+<details class="var" open><summary>V1. Maximum number of activities, print them <span class="tag">the standard problem</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Given start and finish times of n activities, select the maximum number that can be performed by a single person.”</dd>
+<dt>Recognise</dt><dd>One resource, “maximum number”, “mutually compatible”, “non-overlapping”.</dd>
+<dt>Input</dt><dd>n, array s, array f (possibly unsorted).</dd>
+<dt>Output</dt><dd>The count and the chosen activities.</dd>
+<dt>Approach</dt><dd>Sort indices by finish (stable), scan, take an activity if s ≥ last finish.</dd>
+<dt>Steps</dt><dd>Dry run 1.</dd>
+<dt>Complexity</dt><dd>O(n log n) time, O(n) space for indices.</dd>
+<dt>Edge cases</dt><dd>n = 0 → 0. n = 1 → 1. All overlapping → 1. None overlapping → n. Initialise last finish to −∞ (or use “first activity always selected”), not 0 if times can be negative.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a01_greedy.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; s(n), f(n);
+    for (auto &amp;x : s) cin &gt;&gt; x;
+    for (auto &amp;x : f) cin &gt;&gt; x;
+
+    vector&lt;int&gt; idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    stable_sort(idx.begin(), idx.end(), [&amp;](int a, int b) { return f[a] &lt; f[b]; });
+
+    vector&lt;int&gt; chosen;
+    int lastFinish = INT_MIN;
+    for (int i : idx)
+        if (s[i] &gt;= lastFinish) {
+            chosen.push_back(i);
+            lastFinish = f[i];
+        }
+
+    cout &lt;&lt; &quot;Maximum activities: &quot; &lt;&lt; chosen.size() &lt;&lt; &quot;\n&quot;;
+    for (int i : chosen) cout &lt;&lt; &quot;a&quot; &lt;&lt; i + 1 &lt;&lt; &quot; [&quot; &lt;&lt; s[i] &lt;&lt; &quot;, &quot; &lt;&lt; f[i] &lt;&lt; &quot;)\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+1 3 0 5 8 5
+2 4 6 7 9 9
+Output:
+Maximum activities: 4
+a1 [1, 2)
+a2 [3, 4)
+a4 [5, 7)
+a5 [8, 9)</pre>
+</div></details>
+
+<details class="var"><summary>V2. Named activities with clock times <span class="tag">“09:00–10:30”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Each line has an event name, start time and end time in HH:MM. Print the schedule with the most events.”</dd>
+<dt>Recognise</dt><dd>Strings with colons; names to report.</dd>
+<dt>Approach</dt><dd>Parse HH:MM → minutes; sort a struct by finish; greedy; print original strings.</dd>
+<dt>Steps</dt><dd>Dry run 4.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Comparing time strings lexicographically works only with zero-padded 24-hour format (“9:00” &gt; “10:00” as strings!). AM/PM needs conversion. Events crossing midnight need a day offset.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a02_named_times.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int toMinutes(const string &amp;t) {
+    int h, m;
+    char colon;
+    stringstream ss(t);
+    ss &gt;&gt; h &gt;&gt; colon &gt;&gt; m;
+    return h * 60 + m;
+}
+
+struct Event {
+    string name;
+    int start, finish;
+    string s, f;
+};
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;Event&gt; e(n);
+    for (auto &amp;x : e) {
+        cin &gt;&gt; x.name &gt;&gt; x.s &gt;&gt; x.f;
+        x.start = toMinutes(x.s);
+        x.finish = toMinutes(x.f);
+    }
+    stable_sort(e.begin(), e.end(), [](const Event &amp;a, const Event &amp;b) { return a.finish &lt; b.finish; });
+
+    int last = INT_MIN, count = 0;
+    for (auto &amp;x : e)
+        if (x.start &gt;= last) {
+            cout &lt;&lt; x.name &lt;&lt; &quot; &quot; &lt;&lt; x.s &lt;&lt; &quot;-&quot; &lt;&lt; x.f &lt;&lt; &quot;\n&quot;;
+            last = x.finish;
+            count++;
+        }
+    cout &lt;&lt; &quot;Total: &quot; &lt;&lt; count &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+5
+Math 09:00 10:30
+Physics 10:00 11:00
+Chess 10:30 12:00
+Lunch 12:00 13:00
+Debate 11:30 12:30
+Output:
+Math 09:00-10:30
+Chess 10:30-12:00
+Lunch 12:00-13:00
+Total: 3</pre>
+</div></details>
+
+<details class="var"><summary>V3. Recursive version (CLRS RECURSIVE-ACTIVITY-SELECTOR) <span class="tag">“write the recursive algorithm”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Write a recursive greedy algorithm for activity selection and analyse it.”</dd>
+<dt>Approach</dt><dd>Fictitious activity a<sub>0</sub> with f<sub>0</sub> = 0; from k, skip m while s<sub>m</sub> &lt; f<sub>k</sub>; select m; recurse from m.</dd>
+<dt>Steps</dt><dd>CLRS data: k = 0 → m = 1 (a1); k = 1 → skip a2, a3 → a4; k = 4 → skip a5–a7 → a8; k = 8 → skip a9, a10 → a11; k = 11 → stop.</dd>
+<dt>Complexity</dt><dd>Θ(n) total (each m examined once across all calls), assuming sorted input.</dd>
+<dt>Edge cases</dt><dd>Requires sorted input. f<sub>0</sub> = 0 only works if all starts are ≥ 0.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a03_recursive.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+vector&lt;int&gt; s, f;
+vector&lt;int&gt; A;
+
+void recursiveSelector(int k, int n) {
+    int m = k + 1;
+    while (m &lt;= n &amp;&amp; s[m] &lt; f[k]) m++;
+    if (m &lt;= n) {
+        A.push_back(m);
+        recursiveSelector(m, n);
+    }
+}
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    s.assign(n + 1, 0);
+    f.assign(n + 1, 0);
+    for (int i = 1; i &lt;= n; i++) cin &gt;&gt; s[i];
+    for (int i = 1; i &lt;= n; i++) cin &gt;&gt; f[i];
+    recursiveSelector(0, n);
+    cout &lt;&lt; A.size() &lt;&lt; &quot;:&quot;;
+    for (int i : A) cout &lt;&lt; &quot; a&quot; &lt;&lt; i;
+    cout &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+11
+1 3 0 5 3 5 6 8 8 2 12
+4 5 6 7 9 9 10 11 12 14 16
+Output:
+4: a1 a4 a8 a11</pre>
+</div></details>
+
+<details class="var"><summary>V4. Symmetric greedy: latest start time first <span class="tag">“another greedy that works”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Show that selecting the activity that starts last is also optimal.” (CLRS 16.1-4/15.1-4 style)</dd>
+<dt>Approach</dt><dd>Mirror image of earliest finish: sort by start descending; take an activity if its finish ≤ the start of the last chosen.</dd>
+<dt>Steps</dt><dd>On CLRS data it picks a11 (12), a8 (8), a4 (5), a2 (3) → {a2, a4, a8, a11}, also 4.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>It may return a different maximum set than earliest finish; both are correct.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a04_latest_start.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s &gt;&gt; f;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.first &gt; y.first; });
+    int boundary = INT_MAX;
+    vector&lt;pair&lt;int, int&gt;&gt; chosen;
+    for (auto &amp;[s, f] : a)
+        if (f &lt;= boundary) {
+            chosen.push_back({s, f});
+            boundary = s;
+        }
+    reverse(chosen.begin(), chosen.end());
+    cout &lt;&lt; chosen.size() &lt;&lt; &quot;:&quot;;
+    for (auto &amp;[s, f] : chosen) cout &lt;&lt; &quot; [&quot; &lt;&lt; s &lt;&lt; &quot;,&quot; &lt;&lt; f &lt;&lt; &quot;)&quot;;
+    cout &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+11
+1 4
+3 5
+0 6
+5 7
+3 9
+5 9
+6 10
+8 11
+8 12
+2 14
+12 16
+Output:
+4: [3,5) [5,7) [8,11) [12,16)</pre>
+</div></details>
+
+<details class="var"><summary>V5. Minimum number of activities to remove <span class="tag">“erase overlapping intervals”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Find the minimum number of intervals to remove so that the rest do not overlap.”</dd>
+<dt>Approach</dt><dd>Answer = n − (maximum compatible set).</dd>
+<dt>Steps</dt><dd>[1, 2], [2, 3], [3, 4], [1, 3] → keep 3, remove 1.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Touching convention again: in the usual version [1, 2] and [2, 3] do not overlap.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a05_min_remove.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s &gt;&gt; f;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.second &lt; y.second; });
+    int kept = 0;
+    long long last = LLONG_MIN;
+    for (auto &amp;[s, f] : a)
+        if (s &gt;= last) { kept++; last = f; }
+    cout &lt;&lt; &quot;Keep &quot; &lt;&lt; kept &lt;&lt; &quot;, remove &quot; &lt;&lt; n - kept &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+</div></details>
+
+<details class="var"><summary>V6. Gap / travel / setup time between activities <span class="tag">modified compatibility</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“A person needs g minutes between events.” “Each machine needs 5 minutes of cleaning between jobs.”</dd>
+<dt>Approach</dt><dd>Same greedy; compatible if s ≥ last finish + g. Equivalent to adding g to every finish time.</dd>
+<dt>Steps</dt><dd>Gap 1, jobs [1, 3], [3, 5], [6, 8] → 2.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>If the gap depends on which two activities are consecutive (different travel times between sites), the greedy proof breaks: use DP.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a12_gap.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, gap;
+    cin &gt;&gt; n &gt;&gt; gap;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s &gt;&gt; f;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.second &lt; y.second; });
+    long long readyAt = LLONG_MIN;
+    int count = 0;
+    for (auto &amp;[s, f] : a)
+        if (s &gt;= readyAt) { count++; readyAt = (long long)f + gap; }
+    cout &lt;&lt; count &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+3 1
+1 3
+3 5
+6 8
+Output:
+2</pre>
+</div></details>
+
+<details class="var"><summary>V7. Theory: proof, wrong greedy rules, complexity, DP vs greedy <span class="tag">written questions</span></summary><div class="inner">
+<div class="tbl-wrap"><table class="info">
+<tr><th>Question</th><th>Model answer outline</th></tr>
+<tr><td>Prove earliest-finish greedy is optimal</td><td>Exchange: replace the first activity of any optimal solution by the earliest-finishing activity; still compatible, same size. Then induct on S<sub>m</sub> (Section 2).</td></tr>
+<tr><td>Show earliest start fails</td><td>(0, 10), (1, 2), (3, 4): greedy 1, optimal 2.</td></tr>
+<tr><td>Show shortest duration fails</td><td>(0, 5), (4, 7), (6, 11): greedy 1, optimal 2.</td></tr>
+<tr><td>Show fewest conflicts fails</td><td>11-interval example in Dry run 7: greedy 3, optimal 4.</td></tr>
+<tr><td>Why is the problem greedy-solvable?</td><td>Greedy-choice property + optimal substructure.</td></tr>
+<tr><td>Complexity</td><td>Θ(n log n) sorting + Θ(n) scan; Θ(n) if sorted.</td></tr>
+<tr><td>Write the DP recurrence</td><td>c[i, j] = max over a<sub>k</sub> ∈ S<sub>ij</sub> of c[i, k] + c[k, j] + 1; O(n<sup>3</sup>).</td></tr>
+<tr><td>Is the optimal set unique?</td><td>No; count is unique.</td></tr>
+<tr><td>Does greedy work with weights?</td><td>No; counterexample (1, 3, 1), (2, 5, 100): greedy takes 1, optimal takes 100.</td></tr>
+<tr><td>Why the selected activities come out in start order</td><td>Each selected activity starts after the previous one finishes, and finishes are increasing.</td></tr>
+</table></div>
+<p>The O(n<sup>2</sup>) DP used to cross-check answers:</p>
+<div class="codeblock"><div class="codebar"><span>a10_dp_check.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s;
+    for (auto &amp;[s, f] : a) cin &gt;&gt; f;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.second &lt; y.second; });
+    vector&lt;int&gt; dp(n, 1);
+    for (int i = 0; i &lt; n; i++)
+        for (int j = 0; j &lt; i; j++)
+            if (a[j].second &lt;= a[i].first) dp[i] = max(dp[i], dp[j] + 1);
+    cout &lt;&lt; &quot;DP answer: &quot; &lt;&lt; (n ? *max_element(dp.begin(), dp.end()) : 0) &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+11
+1 3 0 5 3 5 6 8 8 2 12
+4 5 6 7 9 9 10 11 12 14 16
+Output:
+DP answer: 4</pre>
+</div></details>
+
+<h3 class="toc" id="related">Related interval problems (often in the same exam)</h3>
+
+<details class="var"><summary>V8. Interval partitioning: minimum rooms to schedule all <span class="tag">“minimum classrooms / platforms”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“All lectures must be held. Find the minimum number of lecture halls.” “Minimum platforms for trains with arrival/departure times.”</dd>
+<dt>Recognise</dt><dd>“all”, “minimum number of rooms/resources”.</dd>
+<dt>Approach</dt><dd>Sort by <b>start</b>. Keep a min-heap of room free times; reuse the room that frees earliest if it is free by s, else open a new room. Answer = maximum overlap (depth).</dd>
+<dt>Steps</dt><dd>(1, 2), (3, 4), (0, 6), (5, 7), (8, 9), (5, 9): 3 rooms.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Sorting by finish here is <b>wrong</b>. Equal end/start: process the end first (half-open) so the room is reused; for platforms where a train arriving when another departs still needs a platform, process starts first.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a06_rooms.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;array&lt;int, 3&gt;&gt; a(n);
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; a[i][0] &gt;&gt; a[i][1];
+        a[i][2] = i;
+    }
+    sort(a.begin(), a.end());
+    priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;&gt;&gt; busy;
+    vector&lt;int&gt; room(n);
+    int rooms = 0;
+    for (auto &amp;[s, f, id] : a) {
+        int r;
+        if (!busy.empty() &amp;&amp; busy.top().first &lt;= s) {
+            r = busy.top().second;
+            busy.pop();
+        } else {
+            r = ++rooms;
+        }
+        room[id] = r;
+        busy.push({f, r});
+    }
+    cout &lt;&lt; &quot;Rooms needed: &quot; &lt;&lt; rooms &lt;&lt; &quot;\n&quot;;
+    for (int i = 0; i &lt; n; i++) cout &lt;&lt; &quot;activity &quot; &lt;&lt; i + 1 &lt;&lt; &quot; -&gt; room &quot; &lt;&lt; room[i] &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+1 2
+3 4
+0 6
+5 7
+8 9
+5 9
+Output:
+Rooms needed: 3
+activity 1 -&gt; room 2
+activity 2 -&gt; room 2
+activity 3 -&gt; room 1
+activity 4 -&gt; room 2
+activity 5 -&gt; room 1
+activity 6 -&gt; room 3</pre>
+</div></details>
+
+<details class="var"><summary>V9. Weighted interval scheduling <span class="tag">“maximum profit”</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Each job has start, finish and profit. Maximise total profit of non-overlapping jobs.”</dd>
+<dt>Recognise</dt><dd>Values differ: profit, pay, priority, duration as value.</dd>
+<dt>Approach</dt><dd>Sort by finish. p(k) = number of jobs finishing ≤ s<sub>k</sub> (binary search). dp[k] = max(dp[k − 1], w<sub>k</sub> + dp[p(k)]). Trace back to list the jobs.</dd>
+<dt>Steps</dt><dd>Gigs example (story G): 17 with jobs 2 and 5.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>When all weights are equal it reduces to activity selection. Use <code>upper_bound</code> on finishes (≤ s) for half-open intervals.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a07_weighted.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Job { int s, f; long long w; int id; };
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;Job&gt; j(n);
+    for (int i = 0; i &lt; n; i++) { cin &gt;&gt; j[i].s &gt;&gt; j[i].f &gt;&gt; j[i].w; j[i].id = i + 1; }
+    sort(j.begin(), j.end(), [](const Job &amp;a, const Job &amp;b) { return a.f &lt; b.f; });
+
+    vector&lt;int&gt; finish(n);
+    for (int i = 0; i &lt; n; i++) finish[i] = j[i].f;
+    vector&lt;int&gt; p(n + 1);
+    vector&lt;long long&gt; dp(n + 1, 0);
+    for (int k = 1; k &lt;= n; k++) {
+        p[k] = upper_bound(finish.begin(), finish.begin() + (k - 1), j[k - 1].s) - finish.begin();
+        dp[k] = max(dp[k - 1], j[k - 1].w + dp[p[k]]);
+    }
+
+    vector&lt;int&gt; chosen;
+    for (int k = n; k &gt; 0;) {
+        if (j[k - 1].w + dp[p[k]] &gt; dp[k - 1]) { chosen.push_back(j[k - 1].id); k = p[k]; }
+        else k--;
+    }
+    reverse(chosen.begin(), chosen.end());
+    cout &lt;&lt; &quot;Maximum weight: &quot; &lt;&lt; dp[n] &lt;&lt; &quot;\nJobs:&quot;;
+    for (int id : chosen) cout &lt;&lt; &quot; &quot; &lt;&lt; id;
+    cout &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+6
+1 3 5
+2 5 6
+4 6 5
+6 7 4
+5 8 11
+7 9 2
+Output:
+Maximum weight: 17
+Jobs: 2 5</pre>
+<pre class="io">Input:
+8
+1 4 5
+3 5 1
+0 6 8
+4 7 4
+3 9 6
+5 9 3
+6 10 2
+8 11 4
+Output:
+Maximum weight: 13
+Jobs: 1 4 8</pre>
+</div></details>
+
+<details class="var"><summary>V10. k identical resources, maximise the number <span class="adv-badge">Advanced</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“There are k rooms; schedule as many activities as possible.”</dd>
+<dt>Approach</dt><dd>Process by finish. Among rooms free by s, use the one whose last finish is <b>latest</b> (best fit). If none is free but fewer than k rooms are used, open one. Otherwise skip.</dd>
+<dt>Steps</dt><dd>CLRS data, k = 2 → 6.</dd>
+<dt>Complexity</dt><dd>O(n log k) with a multiset.</dd>
+<dt>Edge cases</dt><dd>Using the earliest-free room instead of the latest-free one can lose activities. Checked against brute force on random inputs.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a08_k_rooms.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, k;
+    cin &gt;&gt; n &gt;&gt; k;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s &gt;&gt; f;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.second &lt; y.second; });
+    multiset&lt;int&gt; lastFinish;
+    int count = 0;
+    for (auto &amp;[s, f] : a) {
+        auto it = lastFinish.upper_bound(s);
+        if (it != lastFinish.begin()) {
+            lastFinish.erase(prev(it));
+            lastFinish.insert(f);
+            count++;
+        } else if ((int)lastFinish.size() &lt; k) {
+            lastFinish.insert(f);
+            count++;
+        }
+    }
+    cout &lt;&lt; &quot;Maximum activities with &quot; &lt;&lt; k &lt;&lt; &quot; rooms: &quot; &lt;&lt; count &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+11 2
+1 4
+3 5
+0 6
+5 7
+3 9
+5 9
+6 10
+8 11
+8 12
+2 14
+12 16
+Output:
+Maximum activities with 2 rooms: 6</pre>
+</div></details>
+
+<details class="var"><summary>V11. Minimum points to stab all intervals (arrows/balloons) <span class="tag">same greedy, dual problem</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Minimum arrows to burst all balloons”, “minimum guards so each shift has one”, “minimum days to visit so every exhibition is seen”.</dd>
+<dt>Approach</dt><dd>Sort by right end; place a point at the right end of the first interval not yet hit; skip all intervals containing it.</dd>
+<dt>Steps</dt><dd>[10, 16], [2, 8], [1, 6], [7, 12] → points 6, 12 → 2.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Closed intervals here: a point at 6 hits [1, 6], so the new-point test is l &gt; last point.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a09_points.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;long long, long long&gt;&gt; a(n);
+    for (auto &amp;[l, r] : a) cin &gt;&gt; l &gt;&gt; r;
+    sort(a.begin(), a.end(), [](auto &amp;x, auto &amp;y) { return x.second &lt; y.second; });
+    vector&lt;long long&gt; points;
+    for (auto &amp;[l, r] : a)
+        if (points.empty() || l &gt; points.back()) points.push_back(r);
+    cout &lt;&lt; &quot;Points needed: &quot; &lt;&lt; points.size() &lt;&lt; &quot;\nAt:&quot;;
+    for (auto p : points) cout &lt;&lt; &quot; &quot; &lt;&lt; p;
+    cout &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+4
+10 16
+2 8
+1 6
+7 12
+Output:
+Points needed: 2
+At: 6 12</pre>
+</div></details>
+
+<details class="var"><summary>V12. Interval covering: fewest intervals to cover [L, R] <span class="tag">different greedy</span></summary><div class="inner">
+<dl class="v9">
+<dt>Looks like</dt><dd>“Choose the minimum number of shifts (or sprinklers, or video clips) that cover the whole period [L, R].”</dd>
+<dt>Approach</dt><dd>Sort by start. Repeatedly, among intervals starting ≤ current covered point, take the one reaching farthest.</dd>
+<dt>Steps</dt><dd>[0, 10] with (0, 3), (2, 6), (3, 4), (6, 10), (5, 9) → (0, 3), (2, 6), (6, 10) = 3.</dd>
+<dt>Complexity</dt><dd>O(n log n).</dd>
+<dt>Edge cases</dt><dd>Gap → impossible. This greedy picks by <i>farthest reach</i>, not by earliest finish.</dd>
+</dl>
+<div class="codeblock"><div class="codebar"><span>a11_cover.cpp</span><button class="copy" type="button">Copy</button></div><pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n, L, R;
+    cin &gt;&gt; n &gt;&gt; L &gt;&gt; R;
+    vector&lt;pair&lt;int, int&gt;&gt; a(n);
+    for (auto &amp;[s, f] : a) cin &gt;&gt; s &gt;&gt; f;
+    sort(a.begin(), a.end());
+    int covered = L, used = 0, i = 0;
+    while (covered &lt; R) {
+        int best = covered;
+        while (i &lt; n &amp;&amp; a[i].first &lt;= covered) best = max(best, a[i++].second);
+        if (best == covered) { cout &lt;&lt; &quot;Impossible to cover [&quot; &lt;&lt; L &lt;&lt; &quot;, &quot; &lt;&lt; R &lt;&lt; &quot;]\n&quot;; return 0; }
+        covered = best;
+        used++;
+    }
+    cout &lt;&lt; &quot;Minimum intervals: &quot; &lt;&lt; used &lt;&lt; &quot;\n&quot;;
+}
+</code></pre></div>
+<pre class="io">Input:
+5 0 10
+0 3
+2 6
+3 4
+6 10
+5 9
+Output:
+Minimum intervals: 3</pre>
+<pre class="io">Input:
+2 0 10
+0 3
+4 10
+Output:
+Impossible to cover [0, 10]</pre>
+</div></details>
+
+<details class="var"><summary>A1. Online / streaming arrival, DP on time axis, and other extensions <span class="adv-badge">Beyond typical syllabus</span></summary><div class="inner">
+<p><b>Integer times in a small range:</b> dp[t] = max(dp[t − 1], max over activities ending at t of dp[s] + 1) gives O(n + T). <b>Online arrival:</b> no algorithm can be optimal without knowing the future; competitive analysis applies. <b>Activities on a circle</b> (shifts crossing midnight repeatedly): try each activity as the first one or cut the circle, O(n<sup>2</sup>) or O(n log n) with doubling. <b>Maximum total duration</b> = weighted with weight = f − s (V9).</p></div></details>
+
+<h2 id="cpp" data-short="7. C++17 implementation guide">7. C++17 implementation guide</h2>
+<p>All twelve programs compile with <code>g++ -std=c++17 -Wall -Wextra</code> without warnings. Every “Output” block was produced by running them. Programs a01, a06, a07, a08 and a10 were also checked against brute force on 300 random inputs.</p>
+
+<h3 class="toc" id="cppmap">Which program for which task</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Task</th><th>Program (variation)</th><th>Key idea</th></tr>
+<tr><td>Max activities + list (memorise this one)</td><td>a01 (V1)</td><td>Stable sort indices by f, scan</td></tr>
+<tr><td>Names + HH:MM times</td><td>a02 (V2)</td><td>Parse to minutes, struct sort</td></tr>
+<tr><td>Recursive CLRS</td><td>a03 (V3)</td><td>Sentinel f[0] = 0</td></tr>
+<tr><td>Latest start first</td><td>a04 (V4)</td><td>Mirror greedy</td></tr>
+<tr><td>Minimum removals</td><td>a05 (V5)</td><td>n − kept</td></tr>
+<tr><td>Minimum rooms</td><td>a06 (V8)</td><td>Sort by start, min-heap of finishes</td></tr>
+<tr><td>Maximum profit</td><td>a07 (V9)</td><td>DP + <code>upper_bound</code></td></tr>
+<tr><td>k rooms, maximise count</td><td>a08 (V10)</td><td>Multiset best fit</td></tr>
+<tr><td>Minimum stabbing points</td><td>a09 (V11)</td><td>Sort by right end</td></tr>
+<tr><td>DP cross-check</td><td>a10 (V7)</td><td>O(n<sup>2</sup>) LIS-style DP</td></tr>
+<tr><td>Cover [L, R]</td><td>a11 (V12)</td><td>Sort by start, farthest reach</td></tr>
+<tr><td>Gap between activities</td><td>a12 (V6)</td><td>s ≥ f + gap</td></tr>
+</table></div>
+
+<h3 class="toc" id="altsort">Two other ways to write the sort</h3>
+<div class="codeblock"><div class="codebar"><span>sort_variants.cpp</span><button class="copy" type="button">Copy</button></div>
+<pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;pair&lt;int, int&gt;&gt; byFinish(n);
+    for (auto &amp;[f, s] : byFinish) cin &gt;&gt; s &gt;&gt; f;
+    sort(byFinish.begin(), byFinish.end());
+    int count = 0, last = INT_MIN;
+    for (auto &amp;[f, s] : byFinish)
+        if (s &gt;= last) { count++; last = f; }
+    cout &lt;&lt; count &lt;&lt; "\n";
+}</code></pre></div>
+<p>Storing <code>(finish, start)</code> pairs lets the default <code>sort</code> order by finish with no comparator. Ties are then broken by smaller start, which does not change the count.</p>
+<p class="small muted">Tested: reading the CLRS activities as 11 lines of “s f” prints 4.</p>
+
+<h3 class="toc" id="tests">Sample test cases (verified)</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Input</th><th>Answer</th></tr>
+<tr><td>CLRS 11 activities</td><td>4: a1, a4, a8, a11 (rooms needed for all: 6; with 2 rooms: 6 activities)</td></tr>
+<tr><td>s = 1 3 0 5 8 5, f = 2 4 6 7 9 9</td><td>4: a1, a2, a4, a5 (rooms: 3)</td></tr>
+<tr><td>[1, 3], [3, 5], [5, 7]</td><td>3 (half-open), 2 (closed)</td></tr>
+<tr><td>[1, 2], [2, 3], [3, 4], [1, 3]</td><td>keep 3, remove 1</td></tr>
+<tr><td>(0, 10), (1, 2), (3, 4)</td><td>2</td></tr>
+<tr><td>Single activity</td><td>1</td></tr>
+<tr><td>All identical [2, 5] × 4</td><td>1</td></tr>
+<tr><td>Disjoint [0,1], [2,3], [4,5]</td><td>3</td></tr>
+<tr><td>Weighted (1,3,5) (2,5,6) (4,6,5) (6,7,4) (5,8,11) (7,9,2)</td><td>17</td></tr>
+<tr><td>Balloons [10,16] [2,8] [1,6] [7,12]</td><td>2 arrows</td></tr>
+</table></div>
+
+<h3 class="toc" id="cppmist">Implementation mistakes that cost marks</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Mistake</th><th>Symptom</th><th>Fix</th></tr>
+<tr><td>Sorting s and f separately</td><td>Start and finish of different activities get paired</td><td>Sort indices, pairs or structs together</td></tr>
+<tr><td>Sorting by start time</td><td>Wrong answer on (0, 10), (1, 2), (3, 4)</td><td>Sort by finish</td></tr>
+<tr><td>Comparing with the previous activity in sorted order instead of the last <i>selected</i></td><td>Accepts overlapping activities</td><td>Keep a variable <code>lastFinish</code> updated only on selection</td></tr>
+<tr><td><code>&gt;</code> vs <code>&gt;=</code> mixed up</td><td>Off by one on touching intervals</td><td>Decide the convention from the statement</td></tr>
+<tr><td>Initial lastFinish = 0 with negative or zero-start activities and the strict rule</td><td>First activity wrongly rejected</td><td>Use <code>INT_MIN</code> / <code>LLONG_MIN</code> or a “first” flag</td></tr>
+<tr><td>Printing positions in the sorted order instead of original indices</td><td>Wrong activity numbers</td><td>Carry the original index</td></tr>
+<tr><td>Comparator that is not a strict weak ordering (<code>&lt;=</code>)</td><td>Undefined behaviour, crashes</td><td>Use <code>&lt;</code></td></tr>
+<tr><td>Lexicographic time-string comparison</td><td>“9:00” sorts after “10:00”</td><td>Convert to minutes</td></tr>
+<tr><td>Using <code>int</code> for timestamps in seconds/milliseconds</td><td>Overflow</td><td><code>long long</code></td></tr>
+<tr><td>Interval partitioning by finish time</td><td>Too many/too few rooms</td><td>Sort by start (V8)</td></tr>
+</table></div>
+
+<h2 id="bank" data-short="8. Exam question bank">8. Exam question bank with solutions</h2>
+<p>All answers checked by program.</p>
+
+<h3 class="toc" id="lv1">Level 1: Basic</h3>
+<details><summary>Q1. Apply GREEDY-ACTIVITY-SELECTOR to the CLRS 11 activities.</summary><div class="inner"><p>Dry run 1: {a1, a4, a8, a11}, 4 activities.</p></div></details>
+<details><summary>Q2. s = [1, 3, 0, 5, 8, 5], f = [2, 4, 6, 7, 9, 9]. Maximum activities?</summary><div class="inner"><p>Sorted order a1, a2, a3, a4, a5, a6. Select a1 (2), a2 (3 ≥ 2), skip a3, a4 (5 ≥ 4), a5 (8 ≥ 7), skip a6 → 4.</p></div></details>
+<details><summary>Q3. Meetings [10, 20), [12, 25), [20, 30). How many fit in one room?</summary><div class="inner"><p>[10, 20) then [20, 30) (starts exactly at 20) → 2.</p></div></details>
+<details><summary>Q4. What is the time complexity and why?</summary><div class="inner"><p>Θ(n log n) to sort by finish, then Θ(n) for one scan. If already sorted: Θ(n).</p></div></details>
+<details><summary>Q5. Why sort by finish time rather than start time?</summary><div class="inner"><p>The earliest finish leaves the maximum remaining time (exchange argument). Earliest start fails: (0, 10), (1, 2), (3, 4).</p></div></details>
+<details><summary>Q6. Minimum intervals to remove from [1, 2], [2, 3], [3, 4], [1, 3] so the rest do not overlap.</summary><div class="inner"><p>Greedy keeps 3, so remove 4 − 3 = 1 (the interval [1, 3]).</p></div></details>
+
+<h3 class="toc" id="lv2">Level 2: Intermediate</h3>
+<details><summary>Q7. Unsorted: A(3, 5), B(1, 4), C(0, 6), D(5, 7), E(3, 8), F(5, 9), G(6, 10), H(8, 11), I(8, 12), J(2, 13), K(12, 14). Show the sorted table and the selection.</summary><div class="inner"><p>Sorted by finish: B 4, A 5, C 6, D 7, E 8, F 9, G 10, H 11, I 12, J 13, K 14. Select B (4); A (3 &lt; 4) no; C no; D (5 ≥ 4) yes, last 7; E, F, G no; H (8 ≥ 7) yes, last 11; I, J no; K (12 ≥ 11) yes. Answer: B, D, H, K = 4.</p></div></details>
+<details><summary>Q8. [1, 4], [4, 6], [6, 8], [2, 5], [5, 7]: answer under half-open and closed conventions.</summary><div class="inner"><p>Half-open: [1, 4], [4, 6], [6, 8] → 3. Closed (touching conflicts): [1, 4], [5, 7] → 2.</p></div></details>
+<details><summary>Q9. Trace RECURSIVE-ACTIVITY-SELECTOR on the CLRS data. How many times is the while-loop test evaluated in total?</summary><div class="inner"><p>Calls with k = 0, 1, 4, 8, 11. Tests: k=0: m=1, test fails at once → 1 test; k=1: m=2,3 fail, m=4 ok → 3 tests; k=4: m=5,6,7 fail, 8 ok → 4; k=8: m=9,10 fail, 11 ok → 3; k=11: m=12 &gt; n the m ≤ n check fails → 1. Total 1 + 3 + 4 + 3 + 1 = 12 tests: every activity is examined once, plus one final check, so Θ(n).</p></div></details>
+<details><summary>Q10. Run the latest-start-first greedy on the CLRS data.</summary><div class="inner"><p>a11 (start 12), then the latest start with finish ≤ 12 is a8 (8, 11), then a4 (5, 7) finishes ≤ 8, then a2 (3, 5) finishes ≤ 5 → {a2, a4, a8, a11}, 4.</p></div></details>
+<details><summary>Q11. A printer job list gives start and duration: (0, 3), (2, 2), (3, 4), (5, 1), (6, 2). Maximum jobs?</summary><div class="inner"><p>Finish = start + duration: [0,3), [2,4), [3,7), [5,6), [6,8). Greedy picks [0,3), [5,6), [6,8) → 3.</p></div></details>
+<details><summary>Q12. Prove with an example that “shortest activity first” is not optimal.</summary><div class="inner"><p>(0, 5), (4, 7), (6, 11): the shortest (4, 7) overlaps both others → 1; optimal (0, 5), (6, 11) → 2.</p></div></details>
+
+<h3 class="toc" id="lv3">Level 3: Advanced</h3>
+<details><summary>Q13. All CLRS activities must be scheduled. Minimum number of rooms?</summary><div class="inner"><p>Maximum overlap: in [8, 9) activities a5, a6, a7, a8, a9, a10 are all active → 6 rooms.</p></div></details>
+<details><summary>Q14. Gigs (s, f, pay): (1, 3, 5), (2, 5, 6), (4, 6, 5), (6, 7, 4), (5, 8, 11), (7, 9, 2). Maximum pay. Does earliest-finish greedy work?</summary><div class="inner"><p>DP gives 17 (gigs 2 and 5). Greedy by finish gives 4 gigs worth 16. Weights break the greedy.</p></div></details>
+<details><summary>Q15. With 2 identical rooms, how many CLRS activities can be scheduled?</summary><div class="inner"><p>6 (best-fit greedy by finish, verified by brute force).</p></div></details>
+<details><summary>Q16. Minimum arrows for balloons [10, 16], [2, 8], [1, 6], [7, 12].</summary><div class="inner"><p>Sorted by right end: [1,6], [2,8], [7,12], [10,16]. Arrow at 6 bursts [1,6], [2,8]; arrow at 12 bursts [7,12], [10,16] → 2.</p></div></details>
+<details><summary>Q17. Cover [0, 10] with (0, 3), (2, 6), (3, 4), (6, 10), (5, 9) using the fewest intervals.</summary><div class="inner"><p>From 0: best reach 3 (0, 3). From 3: candidates (2, 6), (3, 4) → 6. From 6: (6, 10), (5, 9) → 10. Total 3.</p></div></details>
+<details><summary>Q18. Story: a technician needs 1 hour of travel between jobs [1, 3], [3, 5], [6, 8]. Maximum jobs?</summary><div class="inner"><p>Test s ≥ f + 1: [1, 3] → ready 4; [3, 5] rejected; [6, 8] accepted → 2.</p></div></details>
+<details><summary>Q19. Prove the “greedy stays ahead” lemma f(i<sub>r</sub>) ≤ f(j<sub>r</sub>).</summary><div class="inner"><p>Induction on r (Section 2): base r = 1 from the earliest-finish choice; step: j<sub>r</sub> is compatible with greedy’s first r − 1 picks, so it was a candidate, and greedy chose the earliest finishing candidate.</p></div></details>
+<details><summary>Q20. Programming: read events as “name HH:MM HH:MM”, print the maximum schedule in time order.</summary><div class="inner"><p>Program a02 (V2). Selected events are printed in finish order, which is also chronological.</p></div></details>
+<details><summary>Q21. A night-shift booking runs 22:00–02:00. How do you handle it?</summary><div class="inner"><p>Convert to minutes on a continuous axis: 22:00 = 1320, 02:00 next day = 1440 + 120 = 1560. If schedules repeat daily (circular), that is the circular variant (A1).</p></div></details>
+<details><summary>Q22. Does a maximum set always contain the activity with the earliest finish? Does it always contain the shortest one?</summary><div class="inner"><p>Some maximum set always contains the earliest-finishing activity (the theorem), but not every maximum set does. The shortest activity need not be in any maximum set (Q12).</p></div></details>
+<details><summary>Q23. Programming: given n intervals, print the maximum compatible count, the minimum removals and the minimum rooms.</summary><div class="inner"><p>Combine a01 (count), n − count, and a06 (rooms). The lab at the top of this sheet computes all three for any input.</p></div></details>
+
+<h2 id="recog" data-short="9. How to recognise the problem">9. How to recognise the problem</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Question clue / wording</th><th>What it actually means</th><th>Required approach</th></tr>
+<tr><td>“maximum number of activities / meetings / events”, “single room / person / machine”</td><td>Activity selection</td><td>Earliest-finish greedy</td></tr>
+<tr><td>“mutually compatible”, “non-overlapping”, “no two at the same time”</td><td>Compatibility constraint</td><td>Same</td></tr>
+<tr><td>“minimum number to cancel / remove / reject”</td><td>n − maximum compatible</td><td>Same greedy</td></tr>
+<tr><td>“an activity can start when the previous ends”</td><td>Half-open intervals</td><td>Test s ≥ f</td></tr>
+<tr><td>“must not touch”, “at least one minute apart”, closed intervals</td><td>Strict test</td><td>s &gt; f (or s ≥ f + gap)</td></tr>
+<tr><td>“minimum rooms / halls / platforms / servers to hold all”</td><td>Interval partitioning</td><td>Sort by start, heap / maximum overlap</td></tr>
+<tr><td>“maximum profit / value / pay / priority sum”</td><td>Weighted interval scheduling</td><td>DP + binary search</td></tr>
+<tr><td>“minimum arrows / points / guards / checks hitting every interval”</td><td>Interval stabbing</td><td>Greedy by right end</td></tr>
+<tr><td>“cover the whole day / road / range with fewest”</td><td>Interval covering</td><td>Sort by start, farthest reach</td></tr>
+<tr><td>“merge overlapping intervals”</td><td>Interval union</td><td>Sort by start, merge</td></tr>
+<tr><td>“jobs with deadlines and profits, each takes 1 unit”</td><td>Job sequencing with deadlines</td><td>Greedy by profit + slots (different problem)</td></tr>
+<tr><td>“minimise maximum lateness”</td><td>Scheduling with deadlines</td><td>Earliest deadline first</td></tr>
+</table></div>
+<div class="box warn"><span class="label">Misleading phrases</span>
+<ul>
+<li><b>“Schedule the activities”</b> alone does not say whether you choose some (selection) or all (partitioning). Look for “maximum number” vs “minimum rooms”.</li>
+<li><b>“Earliest deadline first”</b> sounds like earliest finish but belongs to lateness scheduling, where jobs have durations and no fixed start.</li>
+<li><b>“Longest schedule”</b> may mean most activities (count) or longest total time (weighted with weight = duration).</li>
+<li><b>“Greedy”</b> in the question does not tell you the rule; the rule is the point of the exercise.</li>
+</ul></div>
+
+<h3 class="toc" id="confuse">Do not confuse this with…</h3>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Problem</th><th>Objective</th><th>Sort by</th><th>Method</th></tr>
+<tr><td><b>Activity selection</b></td><td>Max count, one resource</td><td>Finish</td><td>Greedy O(n log n)</td></tr>
+<tr><td>Interval partitioning</td><td>Min resources, schedule all</td><td>Start</td><td>Greedy + min-heap</td></tr>
+<tr><td>Weighted interval scheduling</td><td>Max total weight</td><td>Finish</td><td>DP + binary search</td></tr>
+<tr><td>Interval stabbing</td><td>Min points hitting all</td><td>Right end</td><td>Greedy</td></tr>
+<tr><td>Interval covering</td><td>Min intervals covering a range</td><td>Start</td><td>Greedy (farthest reach)</td></tr>
+<tr><td>Merge intervals</td><td>Union of overlapping intervals</td><td>Start</td><td>Linear merge</td></tr>
+<tr><td>Job sequencing with deadlines</td><td>Max profit, unit jobs, deadlines</td><td>Profit (desc.)</td><td>Greedy + latest free slot</td></tr>
+<tr><td>Minimising lateness</td><td>Min max lateness</td><td>Deadline</td><td>Greedy (EDF)</td></tr>
+<tr><td>Fractional knapsack</td><td>Max value, divisible items</td><td>Value/weight</td><td>Greedy</td></tr>
+<tr><td>0/1 knapsack</td><td>Max value, indivisible</td><td>—</td><td>DP</td></tr>
+</table></div>
+
+<h2 id="mist" data-short="10. Mistakes & edge cases">10. Common mistakes and edge cases</h2>
+<div class="tbl-wrap"><table class="info">
+<tr><th>Category</th><th>Mistake</th><th>How to detect</th><th>How to prevent</th></tr>
+<tr><td>Greedy rule</td><td>Sorting by start, duration or conflicts</td><td>Fails the counterexamples in Dry run 7</td><td>Always finish time (or the mirrored latest start)</td></tr>
+<tr><td>Greedy rule</td><td>Using greedy for weighted versions</td><td>Profit/value in the input</td><td>Switch to DP</td></tr>
+<tr><td>Comparison</td><td>Comparing with the previous activity in the list rather than the last selected</td><td>Selected activities overlap</td><td>Track lastFinish only on selection</td></tr>
+<tr><td>Endpoints</td><td>Wrong convention for touching</td><td>Answer differs by one from the expected</td><td>Read “can start as soon as” vs “cannot overlap even at endpoints”</td></tr>
+<tr><td>Sorting</td><td>Separating s and f</td><td>Strange intervals in the output</td><td>Sort pairs/structs/indices</td></tr>
+<tr><td>Reporting</td><td>Sorted positions instead of original labels</td><td>“a3” printed for the original a5</td><td>Keep the original index</td></tr>
+<tr><td>Empty input</td><td>Accessing first element</td><td>Crash</td><td>Handle n = 0 → 0</td></tr>
+<tr><td>Single activity</td><td>Off-by-one in loops starting at 2</td><td>Answer 0 instead of 1</td><td>Select a<sub>1</sub> unconditionally (or use −∞ initial)</td></tr>
+<tr><td>Duplicates</td><td>Counting identical intervals twice</td><td>Answer exceeds possible</td><td>They overlap; the test rejects the second</td></tr>
+<tr><td>Ties</td><td>Thinking ties change the count</td><td>—</td><td>They only change which set is reported</td></tr>
+<tr><td>Times</td><td>String comparison, AM/PM, midnight</td><td>Wrong order</td><td>Convert to minutes on one axis</td></tr>
+<tr><td>Durations</td><td>Treating the second number as finish</td><td>Strange overlaps</td><td>f = s + d when “duration” or “lasts” appears</td></tr>
+<tr><td>Output</td><td>Wrong format/order</td><td>Judge rejects</td><td>Match sample output; print chronologically</td></tr>
+</table></div>
+
+<h2 id="rev" data-short="11. Quick revision">11. Quick revision sheet</h2>
+<div class="cols">
+<div class="box formula"><span class="label" style="font-family:inherit">Core rule</span>
+<div class="row">Sort by f ascending.</div>
+<div class="row">Take a<sub>1</sub>; then take a<sub>m</sub> if s<sub>m</sub> ≥ f<sub>last</sub>.</div>
+<div class="row">Min removals = n − count.</div>
+<div class="row">Min rooms (all) = maximum overlap.</div></div>
+<div class="box"><span class="label">Complexity</span>
+Θ(n log n) sort + Θ(n) scan; Θ(n) if sorted; recursive Θ(n); DP O(n<sup>2</sup>) or O(n<sup>3</sup>); weighted O(n log n).</div>
+<div class="box"><span class="label">Proof in two lines</span>
+Exchange: the earliest-finishing activity can replace the first activity of any optimal solution. Then the rest is the same problem on S<sub>m</sub>.</div>
+<div class="box"><span class="label">Counterexamples</span>
+Earliest start: (0,10), (1,2), (3,4). Shortest: (0,5), (4,7), (6,11). Fewest conflicts: 11-interval example. Weighted: (1,3,1), (2,5,100).</div>
+</div>
+<div class="box"><span class="label">Key observations</span>
+<ul>
+<li>One resource + count → greedy by finish. Weights → DP. All activities + min rooms → sort by start.</li>
+<li>Count is unique, the set is not. Latest-start-first is the mirror greedy and also works.</li>
+<li>Selected activities are automatically in chronological order.</li>
+<li>State the endpoint convention; it changes answers.</li>
+</ul></div>
+<div class="box"><span class="label">Recognition keywords</span>
+maximum number of activities · single room / person · non-overlapping · mutually compatible · minimum to remove · can start when previous ends.</div>
+
+<h3 class="toc" id="template">Standard template to write from memory</h3>
+<div class="codeblock"><div class="codebar"><span>activity_template.cpp</span><button class="copy" type="button">Copy</button></div>
+<pre><code class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    vector&lt;int&gt; s(n), f(n), idx(n);
+    for (auto &amp;x : s) cin &gt;&gt; x;
+    for (auto &amp;x : f) cin &gt;&gt; x;
+    iota(idx.begin(), idx.end(), 0);
+    stable_sort(idx.begin(), idx.end(), [&amp;](int a, int b) { return f[a] &lt; f[b]; });
+    vector&lt;int&gt; chosen;
+    int last = INT_MIN;
+    for (int i : idx)
+        if (s[i] &gt;= last) { chosen.push_back(i); last = f[i]; }
+    cout &lt;&lt; chosen.size() &lt;&lt; "\n";
+    for (int i : chosen) cout &lt;&lt; "a" &lt;&lt; i + 1 &lt;&lt; " ";
+    cout &lt;&lt; "\n";
+}</code></pre></div>
+
+<div class="box tip"><span class="label">Last-minute exam tips</span>
+<ol>
+<li>Write the activities in a table sorted by finish time first, keeping original labels.</li>
+<li>State the rule (“earliest finish first; compatible if s ≥ last finish”).</li>
+<li>Show a decision column: s vs last finish → select / reject.</li>
+<li>Draw a timeline if asked to “show” or “illustrate”.</li>
+<li>Check the answer: selected intervals must not overlap; count ≤ n; with half-open intervals touching is fine.</li>
+<li>If profits appear, stop and use the weighted DP. If “all” and “minimum rooms” appear, sort by start.</li>
+<li>For proofs, write the exchange argument; for “show greedy X fails”, use the counterexamples above.</li>
+<li>In the lab: test CLRS (4), all overlapping (1), disjoint (n), touching endpoints, n = 0.</li>
+</ol></div>
+
+<p class="small muted" style="margin-top:40px">Scope: this sheet covers the activity selection problem and the interval problems usually taught alongside it in an undergraduate algorithms course; items marked Advanced or Beyond typical syllabus go further. It does not claim every possible variation.</p>
+</main>
+</div>
+<script>
+(function(){
+  const root=document.documentElement;
+  function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('algo-theme',t)}catch(e){}
+    document.getElementById('themeBtn').textContent=t==='dark'?'Light mode':'Dark mode';}
+  let saved=null;try{saved=localStorage.getItem('algo-theme')}catch(e){}
+  const sysDark=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches;
+  setTheme(saved||(sysDark?'dark':'light'));
+  document.getElementById('themeBtn').onclick=()=>setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark');
+
+  const main=document.querySelector('main');
+  const toc=document.getElementById('toc');
+  const ol=document.createElement('ol');let cur=null;
+  main.querySelectorAll('h2,h3.toc').forEach((h,i)=>{
+    if(!h.id)h.id='s'+i;
+    const li=document.createElement('li');const a=document.createElement('a');
+    a.href='#'+h.id;a.textContent=h.dataset.short||h.textContent;li.appendChild(a);
+    if(h.tagName==='H2'){ol.appendChild(li);cur=document.createElement('ol');li.appendChild(cur);}
+    else if(cur)cur.appendChild(li);
+    a.addEventListener('click',()=>document.querySelector('aside').classList.remove('open'));
+  });
+  toc.appendChild(ol);
+  const links=[...toc.querySelectorAll('a')];
+  if('IntersectionObserver' in window){
+    const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));}})},{rootMargin:'0px 0px -75% 0px'});
+    main.querySelectorAll('h2,h3.toc').forEach(h=>obs.observe(h));
+  }
+  document.getElementById('menuBtn').onclick=()=>document.querySelector('aside').classList.toggle('open');
+
+  document.getElementById('expandAll').onclick=()=>main.querySelectorAll('details').forEach(d=>d.open=true);
+  document.getElementById('collapseAll').onclick=()=>main.querySelectorAll('details').forEach(d=>d.open=false);
+  document.getElementById('printBtn').onclick=()=>window.print();
+  let openState=[];
+  window.addEventListener('beforeprint',()=>{openState=[...main.querySelectorAll('details')].map(d=>d.open);main.querySelectorAll('details').forEach(d=>d.open=true);});
+  window.addEventListener('afterprint',()=>{main.querySelectorAll('details').forEach((d,i)=>d.open=openState[i]??d.open);});
+
+  const KW=new Set('if else for while do return break continue switch case default using namespace template class struct typename const auto void new delete public private static inline operator true false nullptr sizeof this'.split(' '));
+  const TY=new Set('int long short char bool double float string vector map set pair size_t unsigned signed array deque queue stack unordered_map unordered_set istream ostream streamsize'.split(' '));
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+  function hl(src){
+    const re=/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(^[ \t]*#[^\n]*)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/gm;
+    let out='',last=0,m;
+    while((m=re.exec(src))){
+      out+=esc(src.slice(last,m.index));
+      const t=m[0];
+      if(m[1])out+='<span class="tok-c">'+esc(t)+'</span>';
+      else if(m[2])out+='<span class="tok-s">'+esc(t)+'</span>';
+      else if(m[3])out+='<span class="tok-p">'+esc(t)+'</span>';
+      else if(m[4])out+='<span class="tok-n">'+t+'</span>';
+      else if(KW.has(t))out+='<span class="tok-k">'+t+'</span>';
+      else if(TY.has(t))out+='<span class="tok-t">'+t+'</span>';
+      else out+=t;
+      last=re.lastIndex;
+    }
+    return out+esc(src.slice(last));
+  }
+  document.querySelectorAll('pre code.cpp').forEach(c=>{c.innerHTML=hl(c.textContent)});
+  document.querySelectorAll('.codeblock').forEach(b=>{
+    const btn=b.querySelector('.copy');if(!btn)return;
+    btn.onclick=async()=>{
+      const txt=b.querySelector('code').textContent;
+      try{await navigator.clipboard.writeText(txt);}catch(e){
+        const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove();}
+      btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1400);
+    };
+  });
+
+  const sIn=document.getElementById('searchInput'),sStat=document.getElementById('searchStatus');
+  let hits=[],idx=-1,timer=null;
+  function clearMarks(){main.querySelectorAll('mark.hl').forEach(m=>{const p=m.parentNode;p.replaceChild(document.createTextNode(m.textContent),m);p.normalize();});hits=[];idx=-1;}
+  function doSearch(){
+    clearMarks();const q=sIn.value.trim();
+    if(q.length<2){sStat.textContent=q?'Type at least 2 characters.':'';return;}
+    const ql=q.toLowerCase();
+    const w=document.createTreeWalker(main,NodeFilter.SHOW_TEXT,{acceptNode:n=>{
+      if(!n.nodeValue.toLowerCase().includes(ql))return NodeFilter.FILTER_REJECT;
+      const pe=n.parentElement;if(pe.closest('script,style,.lab'))return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;}});
+    const nodes=[];while(w.nextNode())nodes.push(w.currentNode);
+    nodes.forEach(n=>{
+      let text=n.nodeValue,low=text.toLowerCase(),pos=0,i;const frag=document.createDocumentFragment();
+      while((i=low.indexOf(ql,pos))!==-1){
+        frag.appendChild(document.createTextNode(text.slice(pos,i)));
+        const mk=document.createElement('mark');mk.className='hl';mk.textContent=text.slice(i,i+q.length);frag.appendChild(mk);hits.push(mk);pos=i+q.length;}
+      frag.appendChild(document.createTextNode(text.slice(pos)));n.parentNode.replaceChild(frag,n);
+    });
+    if(!hits.length){sStat.textContent='No matches for “'+q+'”. Try a shorter word.';return;}
+    go(0);
+  }
+  function go(k){
+    if(!hits.length)return;
+    if(idx>=0)hits[idx].classList.remove('cur');
+    idx=(k+hits.length)%hits.length;const m=hits[idx];m.classList.add('cur');
+    let d=m.closest('details');while(d){d.open=true;d=d.parentElement.closest('details');}
+    m.scrollIntoView({block:'center'});
+    sStat.textContent=(idx+1)+' of '+hits.length+' matches';
+  }
+  sIn.addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(doSearch,250)});
+  sIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();go(idx+(e.shiftKey?-1:1));}if(e.key==='Escape'){sIn.value='';clearMarks();sStat.textContent='';}});
+  document.getElementById('sNext').onclick=()=>go(idx+1);
+  document.getElementById('sPrev').onclick=()=>go(idx-1);
+
+  let isTime=false;
+  const num=x=>{if(x.includes(':')){isTime=true;const [h,m]=x.split(':').map(Number);return h*60+m;}return Number(x);};
+  const show=x=>isTime?String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'):String(x);
+  function parse(){
+    isTime=false;
+    const raw=document.getElementById('labIn').value;
+    const parts=raw.split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);const acts=[];
+    for(const p of parts){
+      const tk=p.split(/\s*[-–]\s*|\s+/).filter(Boolean);
+      let name,s,f;
+      if(tk.length===3){[name,s,f]=tk;}else if(tk.length===2){[s,f]=tk;name='a'+(acts.length+1);}
+      else return {err:'Could not read “'+p+'”. Write each activity as start-finish (optionally with a name first), separated by commas.'};
+      const S=num(s),F=num(f);
+      if(!isFinite(S)||!isFinite(F))return {err:'“'+p+'” does not contain two numbers or times.'};
+      if(F<S)return {err:'In “'+p+'” the finish time is before the start time.'};
+      acts.push({name,s:S,f:F,i:acts.length});
+    }
+    if(!acts.length)return {err:'Enter at least one activity.'};
+    return {acts};
+  }
+  function runLab(){
+    const out=document.getElementById('labOut'),p=parse();
+    if(p.err){out.innerHTML='<p class="box warn">'+esc(p.err)+'</p>';return;}
+    const strict=document.getElementById('labRule').value==='strict';
+    const acts=p.acts;
+    if(acts.length>60){out.innerHTML='<p class="box warn">Use 60 activities or fewer so the timeline stays readable.</p>';return;}
+    const order=acts.slice().sort((a,b)=>a.f-b.f||a.i-b.i);
+    let last=null;const sel=new Set();let rows='';const op=strict?'&gt;':'≥';
+    order.forEach((a,k)=>{const ok=last===null||(strict?a.s>last:a.s>=last);
+      rows+='<tr'+(ok?' class="sel"':'')+'><td>'+(k+1)+'</td><td>'+esc(a.name)+'</td><td>'+show(a.s)+'</td><td>'+show(a.f)+'</td><td>'+(last===null?'—':show(last))+'</td><td>'+(last===null?'first activity':show(a.s)+' '+op+' '+show(last)+' → '+(ok?'yes':'no'))+'</td><td>'+(ok?'<b>Select</b>':'Reject (overlaps)')+'</td></tr>';
+      if(ok){sel.add(a.i);last=a.f;}});
+    const ev=[];acts.forEach(a=>{ev.push([a.s,1]);ev.push([a.f,-1]);});
+    ev.sort((x,y)=>x[0]-y[0]||(strict?y[1]-x[1]:x[1]-y[1]));
+    let cur=0,rooms=0;ev.forEach(([,d])=>{cur+=d;rooms=Math.max(rooms,cur);});
+    const lo=Math.min(...acts.map(a=>a.s)),hi=Math.max(...acts.map(a=>a.f)),span=(hi-lo)||1;
+    const W=640,lab=80,rh=24,H=order.length*rh+36,sx=x=>lab+(x-lo)*(W-lab-10)/span;
+    let step=isTime?30:(span<=20?1:Math.ceil(span/10));if(isTime&&span>600)step=60;
+    let svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Timeline">';
+    for(let x=lo;x<=hi;x+=step)svg+='<line x1="'+sx(x)+'" y1="14" x2="'+sx(x)+'" y2="'+(H-4)+'" stroke="var(--rule)"/><text x="'+sx(x)+'" y="10" font-size="10" text-anchor="middle" fill="var(--muted)">'+show(x)+'</text>';
+    order.forEach((a,r)=>{const y=20+r*rh,on=sel.has(a.i);
+      svg+='<text x="'+(lab-8)+'" y="'+(y+14)+'" font-size="11" text-anchor="end" fill="var(--ink)">'+esc(a.name)+'</text>';
+      svg+='<rect x="'+sx(a.s)+'" y="'+y+'" width="'+Math.max(2,sx(a.f)-sx(a.s))+'" height="'+(rh-6)+'" rx="3" fill="'+(on?'var(--accent)':'var(--surface)')+'" stroke="'+(on?'var(--accent)':'var(--muted)')+'"'+(on?'':' stroke-dasharray="3 2"')+'/>';
+      svg+='<text x="'+((sx(a.s)+sx(a.f))/2)+'" y="'+(y+13)+'" font-size="10" text-anchor="middle" fill="'+(on?'var(--surface)':'var(--ink)')+'">'+show(a.s)+'–'+show(a.f)+'</text>';});
+    svg+='</svg>';
+    const names=order.filter(a=>sel.has(a.i)).map(a=>esc(a.name)).join(', ');
+    out.innerHTML='<p class="res">Maximum compatible activities: <b>'+sel.size+'</b> → '+names+'.</p>'+
+      '<p class="res small muted">Minimum to remove for no overlap: '+(acts.length-sel.size)+'. Rooms needed to run all of them (maximum overlap): '+rooms+'.</p>'+
+      '<div class="tbl-wrap gantt">'+svg+'</div>'+
+      '<details><summary>Greedy trace ('+order.length+' rows)</summary><div class="inner"><div class="tbl-wrap"><table class="info"><tr><th>Order</th><th>Activity</th><th>Start</th><th>Finish</th><th>Last finish</th><th>Test s '+op+' last</th><th>Decision</th></tr>'+rows+'</table></div></div></details>';
+  }
+  document.getElementById('labRun').onclick=runLab;
+  document.getElementById('labIn').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();runLab();}});
+  document.getElementById('labRule').onchange=runLab;
+  runLab();
+})();
+
+</script>
+</body>
+</html>
