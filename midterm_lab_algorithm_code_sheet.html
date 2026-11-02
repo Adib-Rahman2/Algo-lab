@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Midterm Lab Exam — Algorithm Code Sheet</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#5d687d;--line:#dce2ec;--accent:#2457c5;--accent2:#eaf0ff;--code:#111827;--good:#e8f7ee;--warn:#fff5df;--bad:#ffeded}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.58 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(120deg,#15264b,#2457c5);color:#fff;padding:34px max(22px,calc((100% - 1180px)/2))}
+header h1{font-size:clamp(27px,4vw,40px);line-height:1.15;margin:0 0 9px}header p{margin:0;color:#e0e9ff;max-width:850px}
+main{max-width:1180px;margin:25px auto;padding:0 18px 60px;display:grid;grid-template-columns:245px minmax(0,1fr);gap:22px}
+nav{position:sticky;top:16px;align-self:start;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px}
+nav strong{display:block;margin-bottom:9px}nav a{display:block;color:var(--accent);text-decoration:none;padding:6px 0;font-size:14px}nav a:hover{text-decoration:underline}
+article{min-width:0}.intro,.topic,.quick{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:23px;margin-bottom:18px;box-shadow:0 3px 12px #17203308}
+h2{font-size:25px;margin:0 0 12px}h3{font-size:18px;margin:23px 0 8px}h4{font-size:15px;margin:17px 0 6px}
+p{margin:8px 0}ul,ol{padding-left:22px}li{margin:4px 0}
+.tag{display:inline-block;background:var(--accent2);color:#2149a1;border-radius:20px;padding:3px 9px;font-size:12px;font-weight:650;margin:3px 5px 3px 0}
+.note,.warning,.success{padding:12px 14px;border-radius:9px;margin:12px 0}.note{background:var(--accent2)}.warning{background:var(--warn)}.success{background:var(--good)}
+pre{position:relative;background:var(--code);color:#e5e7eb;padding:17px;border-radius:10px;overflow:auto;font:13px/1.55 Consolas,Monaco,monospace;tab-size:4;margin:9px 0 14px}
+code{font-family:Consolas,Monaco,monospace}p code,li code{background:#eef1f6;padding:2px 5px;border-radius:4px;color:#26334b}
+.copy{position:absolute;right:9px;top:8px;border:1px solid #667085;background:#263247;color:#fff;border-radius:6px;padding:5px 9px;cursor:pointer;font-size:12px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14px}th,td{border:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}th{background:#f0f3f9}
+.small{color:var(--muted);font-size:13px}.tocline{border-top:1px solid var(--line);margin:18px 0}
+@media(max-width:850px){main{grid-template-columns:1fr}nav{position:static}nav a{display:inline-block;margin-right:13px}}
+@media print{body{background:white}header{background:#15264b!important;print-color-adjust:exact}main{display:block;max-width:none;margin:0;padding:12px}nav{display:none}.intro,.topic,.quick{box-shadow:none;break-inside:avoid}pre{white-space:pre-wrap;word-break:break-word;print-color-adjust:exact}.copy{display:none}a{color:inherit}}
+</style>
+</head>
+<body>
+<header>
+<h1>Midterm Lab Examination — C++17 Code Sheet</h1>
+<p>Activity Selection · Huffman Coding · Longest Common Subsequence (LCS)<br>
+Offline revision reference with complete implementations, common variations, edge cases, complexity, and exam traps.</p>
+</header>
+<main>
+<nav>
+<strong>Quick navigation</strong>
+<a href="#start">How to use this sheet</a>
+<a href="#activity">1. Activity Selection</a>
+<a href="#huffman">2. Huffman Coding</a>
+<a href="#lcs">3. LCS — Dynamic Programming</a>
+<a href="#compare">Complexity comparison</a>
+<a href="#checklist">Exam checklist</a>
+</nav>
+<article>
+<section class="intro" id="start">
+<h2>Before the exam</h2>
+<p>All programs below use standard <strong>C++17</strong> and can be compiled with <code>g++ -std=c++17 file.cpp -o app</code>. Each full solution is standalone. If your lab instructor expects a particular input format or function signature, preserve that format and adapt only the core algorithm.</p>
+<div class="warning"><strong>Important:</strong> “Every possible scenario” is not finite, but this sheet covers the standard lab-exam interpretations, boundary cases, common input formats, reconstruction/output requirements, and frequent mistakes. Activity Selection here means the classic <em>unweighted</em> maximum-cardinality problem. Weighted interval scheduling is a different DP problem.</div>
+<h3>Fast recognition guide</h3>
+<table><tr><th>If the question says…</th><th>Think…</th></tr>
+<tr><td>Maximum number of non-overlapping activities / meetings</td><td>Activity Selection — sort by finish time, then greedy</td></tr>
+<tr><td>Minimum total encoded bits / prefix-free binary codes</td><td>Huffman — min-priority queue / greedy tree construction</td></tr>
+<tr><td>Longest sequence common to two strings, order preserved</td><td>LCS — 2D DP table</td></tr></table>
+</section>
+
+<section class="topic" id="activity">
+<h2>1. Activity Selection</h2>
+<span class="tag">Greedy algorithm</span><span class="tag">Sort by finish time</span><span class="tag">O(n log n)</span>
+<p><strong>Goal:</strong> Select the maximum number of mutually compatible activities. Activity <code>i</code> has start time <code>s[i]</code> and finish time <code>f[i]</code>. The standard convention is that an activity can start exactly when the previous one finishes: <code>next.start >= last.finish</code>.</p>
+<h3>Core idea</h3>
+<ol><li>Sort activities in ascending order of finish time.</li><li>Select the first activity (earliest finish).</li><li>Scan the rest. Select an activity if its start time is at least the finish time of the last selected activity.</li></ol>
+<div class="note"><strong>Why earliest finish?</strong> It leaves the largest remaining time window for future activities. This greedy choice is optimal for the unweighted problem.</div>
+<h3>Complete program — input as start/finish pairs</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Activity {
+    int start, finish, id;
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin &gt;&gt; n;
+
+    vector&lt;Activity&gt; a(n);
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; a[i].start &gt;&gt; a[i].finish;
+        a[i].id = i + 1;
+    }
+
+    sort(a.begin(), a.end(), [](const Activity&amp; x, const Activity&amp; y) {
+        if (x.finish != y.finish) return x.finish &lt; y.finish;
+        if (x.start != y.start) return x.start &lt; y.start;
+        return x.id &lt; y.id;
+    });
+
+    vector&lt;Activity&gt; selected;
+    int lastFinish = INT_MIN;
+
+    for (const auto&amp; act : a) {
+        if (act.start &gt;= lastFinish) {
+            selected.push_back(act);
+            lastFinish = act.finish;
+        }
+    }
+
+    cout &lt;&lt; "Maximum activities: " &lt;&lt; selected.size() &lt;&lt; '\\n';
+    cout &lt;&lt; "Selected activity IDs: ";
+    for (const auto&amp; act : selected) cout &lt;&lt; act.id &lt;&lt; ' ';
+    cout &lt;&lt; '\\n';
+
+    cout &lt;&lt; "Selected intervals:\\n";
+    for (const auto&amp; act : selected)
+        cout &lt;&lt; act.start &lt;&lt; " " &lt;&lt; act.finish &lt;&lt; '\\n';
+
+    return 0;
+}</code></pre>
+<p class="small">Input format: first <code>n</code>, then <code>n</code> lines containing <code>start finish</code>. IDs in output refer to original input order.</p>
+<h3>Variation A — already sorted by finish time</h3>
+<p>If the question explicitly says activities are already sorted by finish time, remove <code>sort(...)</code>. The greedy scan is then O(n).</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>vector&lt;int&gt; selected;
+int lastFinish = INT_MIN;
+
+for (int i = 0; i &lt; n; i++) {
+    if (start[i] &gt;= lastFinish) {
+        selected.push_back(i);
+        lastFinish = finish[i];
+    }
+}</code></pre>
+<h3>Variation B — input in two arrays</h3>
+<p>Some lab questions give all start times first and all finish times second. Build the activity objects from those arrays, then use the same sorting and greedy scan.</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>int n;
+cin &gt;&gt; n;
+vector&lt;int&gt; start(n), finish(n);
+for (int i = 0; i &lt; n; i++) cin &gt;&gt; start[i];
+for (int i = 0; i &lt; n; i++) cin &gt;&gt; finish[i];
+
+vector&lt;pair&lt;int,int&gt;&gt; a;
+for (int i = 0; i &lt; n; i++)
+    a.push_back({finish[i], i});
+
+sort(a.begin(), a.end());
+
+int lastFinish = INT_MIN;
+vector&lt;int&gt; chosen;
+for (auto [f, i] : a) {
+    if (start[i] &gt;= lastFinish) {
+        chosen.push_back(i);
+        lastFinish = finish[i];
+    }
+}</code></pre>
+<h3>Variation C — print only the maximum count</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>sort(a.begin(), a.end(), [](const Activity&amp; x, const Activity&amp; y) {
+    return x.finish &lt; y.finish;
+});
+
+int count = 0;
+int lastFinish = INT_MIN;
+
+for (const auto&amp; x : a) {
+    if (x.start &gt;= lastFinish) {
+        count++;
+        lastFinish = x.finish;
+    }
+}
+cout &lt;&lt; count &lt;&lt; '\\n';</code></pre>
+<h3>Boundary cases and interpretation</h3>
+<table><tr><th>Scenario</th><th>Correct handling</th></tr>
+<tr><td><code>n = 0</code></td><td>Answer is 0; the loop naturally does nothing.</td></tr>
+<tr><td><code>n = 1</code></td><td>Select the only activity.</td></tr>
+<tr><td>Activities overlap</td><td>Reject an activity when its start is less than the last selected finish.</td></tr>
+<tr><td>Same finish time</td><td>Any tie order is valid for the maximum count. A secondary sort makes output deterministic.</td></tr>
+<tr><td>Back-to-back activities</td><td>With the usual convention, <code>start == lastFinish</code> is compatible; use <code>&gt;=</code>.</td></tr>
+<tr><td>Zero-duration activity</td><td>Handled by the same condition, assuming the problem permits it.</td></tr>
+<tr><td>Negative times</td><td>Use <code>INT_MIN</code> as initial finish rather than 0.</td></tr>
+<tr><td>Unsorted input</td><td>Sort by finish time before scanning.</td></tr>
+<tr><td>Maximum number vs maximum profit</td><td>Profit/weight changes the problem. Use weighted interval scheduling DP, not this greedy method.</td></tr></table>
+<h3>Example</h3>
+<pre><code>Input:
+6
+1 3
+2 5
+4 6
+6 7
+5 8
+8 9
+
+One valid output:
+Maximum activities: 4
+Selected activity IDs: 1 3 4 6</code></pre>
+<p class="small">Complexity: sorting O(n log n), scan O(n), total O(n log n). Extra space O(n) for stored and selected activities (excluding sorting implementation details).</p>
+<h3>Common mistakes</h3>
+<ul><li>Sorting by start time instead of finish time.</li><li>Updating <code>lastFinish</code> even when an activity is rejected.</li><li>Using <code>&gt;</code> instead of <code>&gt;=</code> when back-to-back activities are allowed.</li><li>Assuming this solves maximum profit. It does not.</li><li>Forgetting to retain original indices when the question asks which input activities were selected.</li></ul>
+</section>
+
+<section class="topic" id="huffman">
+<h2>2. Huffman Coding</h2>
+<span class="tag">Greedy algorithm</span><span class="tag">Min-priority queue</span><span class="tag">Prefix-free code</span>
+<p><strong>Goal:</strong> Construct an optimal prefix-free binary code for symbols with known frequencies. Repeatedly combine the two least-frequent nodes. The first removed node becomes the left child (bit 0), the second becomes the right child (bit 1).</p>
+<h3>Core steps</h3>
+<ol><li>Create one leaf node per symbol with its frequency.</li><li>Insert all leaves into a min-priority queue.</li><li>Remove the two minimum-frequency nodes.</li><li>Create a parent with frequency equal to their sum; attach the two nodes as children.</li><li>Insert the parent. Repeat until one root remains.</li><li>Traverse the tree: left edge = 0, right edge = 1. The root-to-leaf path is the symbol's code.</li></ol>
+<div class="note"><strong>Prefix-free property:</strong> No symbol's code is the prefix of another symbol's code. This allows unambiguous decoding without separators.</div>
+<h3>Complete program — build tree, print codes, encode and decode</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+struct Node {
+    char ch;
+    long long freq;
+    Node *left, *right;
+
+    Node(char c, long long f) : ch(c), freq(f), left(nullptr), right(nullptr) {}
+    Node(Node* l, Node* r)
+        : ch('\\0'), freq(l-&gt;freq + r-&gt;freq), left(l), right(r) {}
+    bool isLeaf() const {
+        return left == nullptr &amp;&amp; right == nullptr;
+    }
+};
+
+struct Compare {
+    bool operator()(const Node* a, const Node* b) const {
+        if (a-&gt;freq != b-&gt;freq) return a-&gt;freq &gt; b-&gt;freq;
+        return a-&gt;ch &gt; b-&gt;ch;
+    }
+};
+
+void buildCodes(Node* root, string code,
+                unordered_map&lt;char,string&gt;&amp; codes) {
+    if (!root) return;
+
+    if (root-&gt;isLeaf()) {
+        codes[root-&gt;ch] = code.empty() ? "0" : code;
+        return;
+    }
+
+    buildCodes(root-&gt;left, code + "0", codes);
+    buildCodes(root-&gt;right, code + "1", codes);
+}
+
+string encode(const string&amp; text,
+              const unordered_map&lt;char,string&gt;&amp; codes) {
+    string bits;
+    for (char ch : text) {
+        auto it = codes.find(ch);
+        if (it == codes.end())
+            throw runtime_error("Input contains a symbol absent from the Huffman tree");
+        bits += it-&gt;second;
+    }
+    return bits;
+}
+
+string decode(const string&amp; bits, Node* root) {
+    if (!root) {
+        if (bits.empty()) return "";
+        throw runtime_error("Cannot decode with an empty tree");
+    }
+
+    if (root-&gt;isLeaf()) {
+        for (char bit : bits)
+            if (bit != '0') throw runtime_error("Invalid bit for single-symbol tree");
+        return string(bits.size(), root-&gt;ch);
+    }
+
+    string result;
+    Node* cur = root;
+
+    for (char bit : bits) {
+        if (bit == '0') cur = cur-&gt;left;
+        else if (bit == '1') cur = cur-&gt;right;
+        else throw runtime_error("Encoded input must contain only 0 and 1");
+
+        if (!cur) throw runtime_error("Invalid encoded bit sequence");
+
+        if (cur-&gt;isLeaf()) {
+            result += cur-&gt;ch;
+            cur = root;
+        }
+    }
+
+    if (cur != root)
+        throw runtime_error("Incomplete final codeword");
+
+    return result;
+}
+
+void deleteTree(Node* root) {
+    if (!root) return;
+    deleteTree(root-&gt;left);
+    deleteTree(root-&gt;right);
+    delete root;
+}
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n;
+    cin &gt;&gt; n;
+
+    if (n &lt; 0) {
+        cout &lt;&lt; "Invalid number of symbols\\n";
+        return 0;
+    }
+
+    priority_queue&lt;Node*, vector&lt;Node*&gt;, Compare&gt; pq;
+    unordered_set&lt;char&gt; seen;
+
+    for (int i = 0; i &lt; n; i++) {
+        char ch;
+        long long freq;
+        cin &gt;&gt; ch &gt;&gt; freq;
+
+        if (freq &lt; 0 || seen.count(ch)) {
+            cout &lt;&lt; "Invalid frequency or duplicate symbol\\n";
+            while (!pq.empty()) {
+                deleteTree(pq.top());
+                pq.pop();
+            }
+            return 0;
+        }
+
+        seen.insert(ch);
+        pq.push(new Node(ch, freq));
+    }
+
+    if (pq.empty()) {
+        cout &lt;&lt; "No symbols provided\\n";
+        return 0;
+    }
+
+    while (pq.size() &gt; 1) {
+        Node* left = pq.top(); pq.pop();
+        Node* right = pq.top(); pq.pop();
+        pq.push(new Node(left, right));
+    }
+
+    Node* root = pq.top();
+
+    unordered_map&lt;char,string&gt; codes;
+    buildCodes(root, "", codes);
+
+    cout &lt;&lt; "Huffman Codes:\\n";
+    vector&lt;pair&lt;char,string&gt;&gt; ordered(codes.begin(), codes.end());
+    sort(ordered.begin(), ordered.end());
+    for (auto&amp; [ch, code] : ordered)
+        cout &lt;&lt; ch &lt;&lt; " : " &lt;&lt; code &lt;&lt; '\\n';
+
+    string message;
+    cout &lt;&lt; "Enter message to encode (one token): ";
+    cin &gt;&gt; message;
+
+    try {
+        string bits = encode(message, codes);
+        cout &lt;&lt; "Encoded: " &lt;&lt; bits &lt;&lt; '\\n';
+        cout &lt;&lt; "Decoded: " &lt;&lt; decode(bits, root) &lt;&lt; '\\n';
+    } catch (const exception&amp; e) {
+        cout &lt;&lt; e.what() &lt;&lt; '\\n';
+    }
+
+    deleteTree(root);
+    return 0;
+}</code></pre>
+<p class="small">Input format: number of symbols, then one character and its frequency per line, then a one-token message to encode. This compact input format assumes symbols do not contain whitespace.</p>
+<h3>Variation A — only print Huffman codes</h3>
+<p>If the question only asks for codes, you need the node structure, min-priority queue, and recursive traversal. Omit <code>encode</code>, <code>decode</code>, and the message input.</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>void printCodes(Node* root, string code = "") {
+    if (!root) return;
+
+    if (!root-&gt;left &amp;&amp; !root-&gt;right) {
+        cout &lt;&lt; root-&gt;ch &lt;&lt; " : "
+             &lt;&lt; (code.empty() ? "0" : code) &lt;&lt; '\\n';
+        return;
+    }
+
+    printCodes(root-&gt;left, code + "0");
+    printCodes(root-&gt;right, code + "1");
+}</code></pre>
+<h3>Variation B — frequencies from a text string</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>string text;
+getline(cin, text);
+
+map&lt;char, long long&gt; freq;
+for (char ch : text) freq[ch]++;
+
+for (auto [ch, count] : freq)
+    cout &lt;&lt; ch &lt;&lt; " " &lt;&lt; count &lt;&lt; '\\n';</code></pre>
+<p>Build the priority queue from the resulting frequency map. Use <code>getline</code> if spaces and punctuation are part of the message. For arbitrary bytes or Unicode text, a <code>char</code>-based example is not a full Unicode implementation.</p>
+<h3>Variation C — calculate total encoded cost</h3>
+<p>Total weighted path length is the sum of <code>frequency × code length</code>. You can calculate it from the generated code map:</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>long long totalBits = 0;
+for (auto [ch, code] : codes)
+    totalBits += frequency[ch] * (long long)code.size();
+
+cout &lt;&lt; "Total bits: " &lt;&lt; totalBits &lt;&lt; '\\n';</code></pre>
+<h3>Boundary cases and interpretation</h3>
+<table><tr><th>Scenario</th><th>Correct handling</th></tr>
+<tr><td>0 symbols</td><td>No tree exists. Handle before calling traversal.</td></tr>
+<tr><td>1 symbol</td><td>Tree is a single leaf. Assign code <code>0</code> by convention so repeated symbols can be represented.</td></tr>
+<tr><td>2 symbols</td><td>Both are direct children; codes are 0 and 1.</td></tr>
+<tr><td>Equal frequencies</td><td>Several optimal trees may exist. Codes can differ while total cost remains optimal. Tie-break consistently if exact output is required.</td></tr>
+<tr><td>Zero frequency</td><td>Mathematically can be inserted, but many problem statements expect positive frequencies. Follow the stated constraint.</td></tr>
+<tr><td>Negative frequency</td><td>Invalid input.</td></tr>
+<tr><td>Duplicate symbol</td><td>Combine its frequency before building the tree, or reject duplicates as this program does.</td></tr>
+<tr><td>Unknown character during encoding</td><td>Reject it; no code exists for that symbol.</td></tr>
+<tr><td>Invalid bit / incomplete final code</td><td>Decoder should report invalid input rather than silently return partial text.</td></tr>
+<tr><td>Spaces in message</td><td>Use <code>getline</code>, not <code>cin &gt;&gt; message</code>.</td></tr></table>
+<h3>Example</h3>
+<pre><code>Input:
+4
+a 5
+b 9
+c 12
+d 13
+abcd
+
+One possible output:
+Huffman Codes:
+a : 110
+b : 111
+c : 10
+d : 0
+Encoded: 110111100
+Decoded: abcd</code></pre>
+<p class="small">The exact codes depend on tie-breaking and left/right assignment. Verify prefix-freeness and total weighted code length rather than memorizing one output.</p>
+<h3>Complexity</h3>
+<ul><li>Tree construction: O(k log k), where k is the number of distinct symbols.</li><li>Generating codes: O(k) tree traversal, excluding the total number of output bits in the strings.</li><li>Encoding: O(L) plus output size, where L is message length.</li><li>Decoding: O(B), where B is encoded bit length.</li><li>Tree space: O(k). Code storage is proportional to the total code lengths.</li></ul>
+<h3>Common mistakes</h3>
+<ul><li>Using a max-heap instead of a min-heap.</li><li>Combining the two largest frequencies instead of the two smallest.</li><li>Forgetting to push the new parent back into the queue.</li><li>Printing internal nodes as symbols. Only leaves represent symbols.</li><li>Forgetting the single-symbol case, which otherwise produces an empty code.</li><li>Assuming exact bit strings are unique when frequencies tie.</li><li>Using <code>int</code> for frequency sums when constraints may require <code>long long</code>.</li></ul>
+</section>
+
+<section class="topic" id="lcs">
+<h2>3. Longest Common Subsequence (LCS)</h2>
+<span class="tag">Dynamic programming</span><span class="tag">2D table</span><span class="tag">O(mn)</span>
+<p><strong>Goal:</strong> Find the longest sequence that appears in both strings in the same relative order. Characters do not need to be contiguous. For example, the LCS of <code>ABCBDAB</code> and <code>BDCABA</code> has length 4; one valid LCS is <code>BCBA</code> (another valid answer may exist).</p>
+<div class="warning"><strong>Subsequence is not substring.</strong> A substring must be contiguous. An LCS may skip characters in either input.</div>
+<h3>Recurrence</h3>
+<p>Let <code>dp[i][j]</code> be the LCS length of the first <code>i</code> characters of string A and first <code>j</code> characters of string B.</p>
+<ul><li>Base: <code>dp[0][j] = dp[i][0] = 0</code>.</li><li>If <code>A[i-1] == B[j-1]</code>: <code>dp[i][j] = 1 + dp[i-1][j-1]</code>.</li><li>Otherwise: <code>dp[i][j] = max(dp[i-1][j], dp[i][j-1])</code>.</li></ul>
+<h3>Complete program — LCS length, one actual LCS, and DP table</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    string a, b;
+    getline(cin, a);
+    getline(cin, b);
+
+    int m = (int)a.size();
+    int n = (int)b.size();
+
+    vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
+
+    for (int i = 1; i &lt;= m; i++) {
+        for (int j = 1; j &lt;= n; j++) {
+            if (a[i - 1] == b[j - 1])
+                dp[i][j] = 1 + dp[i - 1][j - 1];
+            else
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+
+    int lcsLength = dp[m][n];
+    string lcs;
+    int i = m, j = n;
+
+    while (i &gt; 0 &amp;&amp; j &gt; 0) {
+        if (a[i - 1] == b[j - 1]) {
+            lcs.push_back(a[i - 1]);
+            i--;
+            j--;
+        } else if (dp[i - 1][j] &gt;= dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+
+    reverse(lcs.begin(), lcs.end());
+
+    cout &lt;&lt; "LCS length: " &lt;&lt; lcsLength &lt;&lt; '\\n';
+    cout &lt;&lt; "One LCS: " &lt;&lt; lcs &lt;&lt; '\\n';
+
+    cout &lt;&lt; "DP Table:\\n";
+    for (const auto&amp; row : dp) {
+        for (int value : row) cout &lt;&lt; value &lt;&lt; ' ';
+        cout &lt;&lt; '\\n';
+    }
+
+    return 0;
+}</code></pre>
+<p class="small">Input format: two complete lines, one string per line. <code>getline</code> preserves spaces and also permits an empty string line.</p>
+<h3>Variation A — only calculate LCS length</h3>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>int lcsLength(string a, string b) {
+    int m = a.size(), n = b.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
+
+    for (int i = 1; i &lt;= m; i++) {
+        for (int j = 1; j &lt;= n; j++) {
+            if (a[i - 1] == b[j - 1])
+                dp[i][j] = dp[i - 1][j - 1] + 1;
+            else
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    }
+    return dp[m][n];
+}</code></pre>
+<h3>Variation B — reconstruct one LCS</h3>
+<p>Start at <code>dp[m][n]</code>. If the current characters match, include the character and move diagonally. Otherwise move toward the neighboring cell with the larger DP value. Reverse the collected characters at the end.</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>string getLCS(string a, string b) {
+    int m = a.size(), n = b.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(m + 1, vector&lt;int&gt;(n + 1, 0));
+
+    for (int i = 1; i &lt;= m; i++)
+        for (int j = 1; j &lt;= n; j++)
+            dp[i][j] = (a[i - 1] == b[j - 1])
+                ? dp[i - 1][j - 1] + 1
+                : max(dp[i - 1][j], dp[i][j - 1]);
+
+    string ans;
+    int i = m, j = n;
+    while (i &gt; 0 &amp;&amp; j &gt; 0) {
+        if (a[i - 1] == b[j - 1]) {
+            ans += a[i - 1];
+            i--; j--;
+        } else if (dp[i - 1][j] &gt;= dp[i][j - 1]) {
+            i--;
+        } else {
+            j--;
+        }
+    }
+    reverse(ans.begin(), ans.end());
+    return ans;
+}</code></pre>
+<h3>Variation C — space-optimized length only</h3>
+<p>Use this only when the question asks for the length, not to print the sequence or reconstruct it. It reduces DP storage from O(mn) to O(min(m,n)).</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>int lcsLengthOptimized(string a, string b) {
+    if (b.size() &gt; a.size()) swap(a, b);
+
+    int m = a.size(), n = b.size();
+    vector&lt;int&gt; prev(n + 1, 0), cur(n + 1, 0);
+
+    for (int i = 1; i &lt;= m; i++) {
+        fill(cur.begin(), cur.end(), 0);
+        for (int j = 1; j &lt;= n; j++) {
+            if (a[i - 1] == b[j - 1])
+                cur[j] = prev[j - 1] + 1;
+            else
+                cur[j] = max(prev[j], cur[j - 1]);
+        }
+        swap(prev, cur);
+    }
+    return prev[n];
+}</code></pre>
+<h3>Variation D — print all distinct LCS strings (advanced)</h3>
+<p>Some questions ask for all distinct LCS strings. This can produce exponentially many outputs, so it is not the usual basic lab requirement. The memoized set-based approach below is suitable only for small strings.</p>
+<pre><button class="copy" onclick="copyCode(this)">Copy</button><code>set&lt;string&gt; allLCS(
+    int i, int j,
+    const string&amp; a, const string&amp; b,
+    const vector&lt;vector&lt;int&gt;&gt;&amp; dp,
+    map&lt;pair&lt;int,int&gt;, set&lt;string&gt;&gt;&amp; memo
+) {
+    if (i == 0 || j == 0) return {""};
+
+    auto key = make_pair(i, j);
+    if (memo.count(key)) return memo[key];
+
+    set&lt;string&gt; result;
+
+    if (a[i - 1] == b[j - 1]) {
+        for (const string&amp; s : allLCS(i - 1, j - 1, a, b, dp, memo))
+            result.insert(s + a[i - 1]);
+    } else {
+        if (dp[i - 1][j] &gt;= dp[i][j - 1]) {
+            auto top = allLCS(i - 1, j, a, b, dp, memo);
+            for (auto&amp; s : top)
+                if ((int)s.size() == dp[i][j]) result.insert(s);
+        }
+        if (dp[i][j - 1] &gt;= dp[i - 1][j]) {
+            auto left = allLCS(i, j - 1, a, b, dp, memo);
+            for (auto&amp; s : left)
+                if ((int)s.size() == dp[i][j]) result.insert(s);
+        }
+    }
+
+    return memo[key] = result;
+}</code></pre>
+<p class="small">First build the standard DP table. Then call <code>allLCS(m, n, a, b, dp, memo)</code> and print the returned set. The number of distinct answers can be very large.</p>
+<h3>Boundary cases and interpretation</h3>
+<table><tr><th>Scenario</th><th>Correct handling</th></tr>
+<tr><td>Both strings empty</td><td>LCS length 0; LCS string empty.</td></tr>
+<tr><td>One string empty</td><td>LCS length 0.</td></tr>
+<tr><td>No common characters</td><td>Length 0 and empty LCS.</td></tr>
+<tr><td>Identical strings</td><td>The entire string is an LCS.</td></tr>
+<tr><td>Repeated characters</td><td>DP handles them; more than one distinct LCS may exist.</td></tr>
+<tr><td>Multiple optimal LCS strings</td><td>Backtracking with one tie rule returns one valid LCS, not necessarily all.</td></tr>
+<tr><td>Case sensitivity</td><td><code>'A'</code> and <code>'a'</code> differ unless you normalize input first.</td></tr>
+<tr><td>Spaces and punctuation</td><td><code>getline</code> reads them as characters.</td></tr>
+<tr><td>Substring requested instead</td><td>This recurrence is for subsequence, not longest common substring.</td></tr>
+<tr><td>Very long strings</td><td>O(mn) time and memory may be too expensive; consider the length-only optimized version if allowed.</td></tr></table>
+<h3>Example and DP intuition</h3>
+<pre><code>Input:
+ABCBDAB
+BDCABA
+
+Output:
+LCS length: 4
+One LCS: BCBA</code></pre>
+<p>At each cell, a matching pair extends the diagonal solution. A mismatch means the best solution must skip one character from A or one from B, so take the larger of the top and left cells.</p>
+<h3>Common mistakes</h3>
+<ul><li>Using <code>a[i]</code> and <code>b[j]</code> instead of <code>a[i-1]</code> and <code>b[j-1]</code> in a 1-based DP table.</li><li>Allocating only <code>m × n</code> instead of <code>(m+1) × (n+1)</code>.</li><li>Forgetting to initialize the first row and first column to zero.</li><li>When reconstructing, forgetting to reverse the collected string.</li><li>Printing only the length when the question asks for the actual subsequence.</li><li>Claiming the LCS is unique when several answers may exist.</li><li>Confusing subsequence with substring.</li></ul>
+</section>
+
+<section class="quick" id="compare">
+<h2>Complexity comparison</h2>
+<table><tr><th>Algorithm</th><th>Time</th><th>Extra space</th><th>Main technique</th></tr>
+<tr><td>Activity Selection</td><td>O(n log n), or O(n) if already sorted</td><td>O(n) including stored activities</td><td>Greedy + sorting</td></tr>
+<tr><td>Huffman Coding</td><td>O(k log k) construction</td><td>O(k) tree, plus code storage</td><td>Greedy + min-heap</td></tr>
+<tr><td>LCS full DP</td><td>O(mn)</td><td>O(mn)</td><td>Dynamic programming</td></tr>
+<tr><td>LCS length-only optimized</td><td>O(mn)</td><td>O(min(m,n))</td><td>Rolling DP rows</td></tr></table>
+</section>
+
+<section class="quick" id="checklist">
+<h2>Exam checklist</h2>
+<h3>Activity Selection</h3>
+<ul><li>Can you explain why sorting by finish time is necessary?</li><li>Can you write the compatibility test correctly?</li><li>Can you output selected IDs, not just the count?</li><li>Can you handle empty input and unsorted activities?</li></ul>
+<h3>Huffman Coding</h3>
+<ul><li>Can you implement a min-priority queue of tree-node pointers?</li><li>Do you remove exactly two minimum nodes and reinsert their parent?</li><li>Do you assign 0 to left and 1 to right?</li><li>Do you handle one symbol and frequency ties?</li><li>Can you explain why the result is prefix-free?</li></ul>
+<h3>LCS</h3>
+<ul><li>Can you write the recurrence from memory?</li><li>Do you understand why the table is sized (m+1) × (n+1)?</li><li>Can you reconstruct one LCS by backtracking?</li><li>Can you explain the difference between subsequence and substring?</li><li>Can you state O(mn) time and space?</li></ul>
+<div class="success"><strong>Practical exam strategy:</strong> First write the data structure and recurrence/greedy rule, then implement the core loop, then test a tiny case, an empty/boundary case, and a tie/repetition case. Keep input/output formatting exactly aligned with the question.</div>
+<p class="small">This is a study reference. Match your instructor's exact conventions, constraints, and regular-lab code style if they differ.</p>
+</section>
+</article>
+</main>
+<script>
+function copyCode(button){
+  const code=button.parentElement.querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(()=>{
+    const old=button.innerText;button.innerText='Copied';
+    setTimeout(()=>button.innerText=old,1200);
+  }).catch(()=>{button.innerText='Select code'});
+}
+</script>
+</body>
+</html>
